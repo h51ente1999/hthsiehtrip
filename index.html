@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>旅遊行程規劃</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233691c9'/%3E%3Cpath d='M32 12c-8.8 0-15.5 6.6-15.5 15 0 10.6 13.2 23.6 14.2 24.5.8.7 1.8.7 2.6 0C34.3 50.6 47.5 37.6 47.5 27c0-8.4-6.7-15-15.5-15z' fill='%23fff'/%3E%3Ccircle cx='32' cy='27' r='6.5' fill='%233691c9'/%3E%3C/svg%3E">
+<script defer src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
+<style>
+:root{--page:#afc3d0;--page-ink:#F2EBEB;--page-muted:color-mix(in srgb,var(--page-ink) 78%,var(--page));--bg:#ffffff;--surface:#ffffff;--ink:#0D2626;--muted:#025E73;--line:#d3c7c7;--blue:#afc3d0;--accent-text:color-mix(in srgb,var(--blue) 40%,var(--ink));--blue-soft:#e6eef3;--on-blue:#ffffff;--hit:#3691c9;--tag-bg:#afc3d0;--tag-ink:#ffffff;--tag-food:#e8b08c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--muted:#7fc4bc;--line:#1f4a4a;--blue:#025373;--accent-text:#2EA69A;--blue-soft:#17403f;--on-blue:#F2EBEB;--hit:#2EA69A}}
+:root[data-theme="dark"]{--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--muted:#7fc4bc;--line:#1f4a4a;--blue:#025373;--accent-text:#2EA69A;--blue-soft:#17403f;--on-blue:#F2EBEB;--hit:#2EA69A}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--page-ink);font:16px/1.5 "Noto Serif TC","Songti TC","PMingLiU","SimSun",serif}
+main{max-width:1500px;margin:0 auto;padding:20px 16px 48px}
+h2{font-size:1.05rem;margin:0 0 10px}
+input[type=text].title{width:100%;font-size:1.6rem;font-weight:700;background:transparent;border:0;border-bottom:2px solid var(--line);color:var(--ink);padding:4px 0;margin-bottom:6px}
+input[type=text].title::placeholder{color:var(--muted)}
+input[type=text].title:focus{outline:none;border-color:var(--blue)}
+p.hint{margin:0 0 16px;color:var(--muted);font-size:.9rem}
+p.hint.top{color:var(--page-muted)}
+.gmrow{display:flex;flex-wrap:wrap;gap:8px}
+#gm{flex:1 1 200px;width:auto;height:42px;min-height:0;resize:none;overflow:hidden;line-height:1.4}
+form.add[hidden]{display:none}
+form.add{margin-top:12px}
+main{position:relative}
+.titlebar p.hint{margin:4px 0 0}
+.sidehead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.sidehead h2{margin:0}
+.selrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#catFilter,#areaFilter,#dayJump,#dayW{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 8px;font:inherit;font-size:.88rem;max-width:150px}
+input[type=datetime-local]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%;font:inherit;color:var(--ink)}
+.bottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px;align-items:start}
+.bottom .panel{margin-bottom:0}
+.legs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.leg h3{margin:0 0 6px;font-size:.95rem;color:var(--accent-text)}
+.fld{display:flex;flex-direction:column;gap:2px;font-size:.82rem;color:var(--muted);margin-bottom:8px}
+.hotel{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+.hotel:first-child{border-top:0;padding-top:0;margin-top:0}
+.hdel{font-size:.8rem;padding:2px 10px;color:var(--muted)}
+#addHotel{margin-top:10px}
+@media (max-width:860px){.bottom{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.legs{grid-template-columns:minmax(0,1fr)}}
+.top{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+[hidden]{display:none!important}
+.mlinks{display:flex;gap:8px;align-items:center}
+.mi{display:inline-block;line-height:0}
+.mi img{width:22px;height:22px;border-radius:6px;display:block}
+*{scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{display:none;width:0;height:0}
+::placeholder{opacity:.4!important}
+input[type=text].title::placeholder{opacity:.4}
+p.hint:not(.top),.drop .empty,.settings p,#syncInfo{opacity:.6}
+p.hint.top{opacity:.75}
+.tripbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tripbar select{flex:1 1 180px;min-width:0;padding:8px 10px;border-radius:8px;border:0;background:var(--bg);color:var(--ink);font:inherit;font-weight:700}
+.tripbar .sharebox{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
+.tripbar .sharebox input{flex:1 1 220px;min-width:0}
+.tripbar .sharebox .hint{flex-basis:100%;margin:0}
+body.viewer main{display:none}
+#viewer{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+#viewer h1{margin:0 0 6px}#viewer h2{margin:22px 0 8px;font-size:1.1rem}
+#viewer .row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.vlist{display:grid;gap:8px}.vrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.vcard,.vitem{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px}
+.vitem{display:flex;gap:12px}.vth{width:84px;height:84px;object-fit:cover;border-radius:8px;background:var(--bg);flex:none}
+.vbd{min-width:0;flex:1}.vbd .n{font-weight:700}.vsub{font-size:.9rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.vnote{font-size:.9rem;margin-top:4px;white-space:pre-wrap}.vtime{margin-right:6px}
+.vtags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px}.vtag{background:var(--tag-bg);color:var(--tag-ink);font-weight:700;font-size:.75rem;padding:1px 8px;border-radius:6px}.vtag.food{background:var(--tag-food)}
+.vbd a{font-size:.85rem;color:var(--hit)}
+.syncbadge{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.gear{color:var(--accent-text);border-color:var(--accent-text);background:transparent;font-size:1.2rem;line-height:1;padding:6px 10px}
+.settings{position:absolute;right:32px;top:64px;z-index:30;width:290px;max-width:calc(100vw - 32px);max-height:calc(100vh - 90px);overflow-y:auto;background:#fff;color:#0D2626;border:1px solid #cfc4c4;border-radius:12px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.settings[hidden]{display:none}
+.settings h2{margin:0 0 8px}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;font-size:.92rem}
+.srow input[type=color]{width:44px;height:28px;padding:0;border:1px solid #cfc4c4;border-radius:6px;background:transparent;cursor:pointer}
+.settings .row{margin-top:10px}
+.settings .row button{color:#025373;border-color:#025373}
+.settings .bk{margin-top:14px;padding-top:10px;border-top:1px solid #e3d9d9}
+.settings .bk h2{font-size:1rem}
+.settings .bk p{margin:0 0 8px;font-size:.82rem;color:#025E73}
+.settings textarea{width:100%;margin-top:8px;font-size:.78rem;border:1px solid #cfc4c4;border-radius:8px;padding:6px;background:#fff;color:#0D2626}
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:18px;align-items:stretch;height:78vh;min-height:460px}
+.layout>.panel{margin-bottom:0;min-width:0;min-height:0;overflow-y:auto}
+.layout>.panel.side{position:static}
+.layout #lib{flex-direction:column;flex-wrap:nowrap}
+.layout #lib .blk{width:100%}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr);grid-template-rows:none;height:auto;min-height:0}.layout>.panel.side{max-height:45vh}.layout>.panel:not(.side){overflow:visible}.layout #lib{flex-direction:row;flex-wrap:wrap}.layout #lib .blk{width:calc(50% - 4px)}}
+@media (max-width:520px){.layout #lib .blk{width:100%}}
+input,button{font:inherit;color:inherit}
+input[type=text],textarea.f{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%;font:inherit;color:var(--ink)}
+textarea.f{resize:vertical;min-height:2.6em}
+input:focus-visible,button:focus-visible,.upload:focus-within,.blk:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+button{cursor:pointer;border:1px solid var(--blue);background:transparent;color:var(--accent-text);border-radius:8px;padding:8px 14px}
+button.primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue);font-weight:700}
+section.panel{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:18px}
+form.add{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin-bottom:14px}
+form.add .full{grid-column:1/-1}
+form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.upload{position:relative;border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;color:var(--muted);white-space:nowrap;font-size:.9rem;display:flex;gap:6px;align-items:center}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+.upload img{width:22px;height:22px;border-radius:4px;object-fit:cover}
+#lib{display:flex;flex-wrap:wrap;gap:8px;min-height:56px;padding:4px;border-radius:10px;align-items:flex-start}
+.dz.hit{outline:2px solid var(--hit);background:var(--blue-soft)}
+.blk{position:relative;display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:0;border-radius:10px;padding:6px;user-select:none;-webkit-user-select:none;cursor:pointer}
+.blk .th{flex:0 0 38px;width:38px;height:38px;border-radius:7px;object-fit:cover;background:var(--blue-soft);display:grid;place-items:center;font-size:1rem}
+.blk .bd{flex:1;min-width:0;padding-top:0}
+.blk .bd .n:first-child{padding-top:8px}
+.tag.food{background:var(--tag-food)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.tags .tag{margin-bottom:0}
+.tag.area{background:transparent;color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent-text)}
+.chip.food[aria-pressed="true"],.blk .d .chip.food[aria-pressed="true"]{background:var(--tag-food);border-color:var(--tag-food)}
+
+.blk .ko{font-size:.82rem;color:var(--muted);line-height:1.3;overflow-wrap:anywhere}
+.blk .n{font-weight:500;line-height:1.3;overflow-wrap:anywhere}
+.tag{display:block;width:fit-content;max-width:100%;margin-bottom:2px;font-weight:700;font-size:.72rem;line-height:1.5;padding:0 7px;border-radius:5px;background:var(--tag-bg);color:var(--tag-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blk .d{margin-top:6px;padding-bottom:4px;font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;align-items:stretch;cursor:auto;user-select:text;-webkit-user-select:text}
+.blk .d input[type=text],.blk .d textarea{padding:5px 8px;font-size:.85rem}
+.blk .d a{color:var(--accent-text)}
+.blk .d button{align-self:flex-start;padding:2px 10px;font-size:.8rem;color:var(--muted)}
+.blk .d .upload{align-self:flex-start;padding:2px 10px;font-size:.8rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip,.blk .d .chip{padding:2px 10px;font-size:.85rem;border-radius:999px;border:1px solid var(--accent-text);background:transparent;color:var(--accent-text);align-self:auto}
+.chip[aria-pressed="true"],.blk .d .chip[aria-pressed="true"]{background:var(--tag-bg);color:var(--tag-ink);border-color:var(--tag-bg);font-weight:700}
+
+.blk.open{background:var(--surface);box-shadow:0 2px 10px rgba(0,0,0,.2)}
+#lib .blk{width:230px}
+.days{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;align-items:flex-start}
+.day{flex:0 0 var(--dayw,300px);background:var(--surface);border-radius:14px;padding:12px}
+.day header{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:8px}
+.day header b{color:var(--accent-text)}
+.day header span{color:var(--muted);font-size:.85rem;margin-left:auto}
+.day header button{padding:0 8px;font-size:.8rem;color:var(--muted);background:transparent;border:0}
+.drop{min-height:100px;display:flex;flex-direction:column;gap:6px;border:0;border-radius:10px;padding:6px}
+.drop .blk{background:var(--bg)}
+.slot{display:flex;flex-direction:column;gap:3px}
+.itime{align-self:flex-start;width:auto;background:transparent;border:0;color:var(--muted);font:inherit;font-size:.82rem;padding:2px 0}
+.inote{width:100%;min-height:28px;resize:none;overflow:hidden;background:color-mix(in srgb,var(--blue) 18%,var(--surface));border:0;border-radius:8px;padding:5px 8px;font:inherit;font-size:.82rem;line-height:1.4;color:var(--ink)}
+
+.drop .empty{color:var(--muted);font-size:.85rem;margin:auto;text-align:center}
+.ghost{position:fixed;z-index:50;pointer-events:none;opacity:.92;box-shadow:0 8px 20px rgba(13,42,82,.3)}
+.blk.src{opacity:.35}
+.addday{flex:0 0 auto;align-self:stretch;min-width:90px;border-style:solid;color:var(--muted);background:transparent}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.exrow{margin:0 0 18px}
+.exrow button.primary{background:var(--surface);color:var(--accent-text);border-color:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+#out{display:none;width:100%;min-height:150px;margin-top:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+#prev{display:none;max-width:100%;max-height:60vh;object-fit:contain;margin-top:12px;border-radius:10px;border:1px solid var(--line)}
+#msg{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+@media (max-width:640px){#lib .blk{width:100%}.day{flex-basis:min(var(--dayw,300px),86vw)}}
+</style>
+</head>
+<body>
+<section id="viewer" hidden><div class="vwrap"><h1 id="vTitle"></h1><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div><p class="hint">這是唯讀的分享頁面，無法編輯。</p></div></section>
+<main>
+<section class="panel tripbar"><select id="tripSel" aria-label="切換行程"></select><button type="button" id="tripNew">＋ 新行程</button><button type="button" id="tripDup">複製</button><button type="button" id="tripDel">刪除</button><button type="button" id="tripShare" hidden>分享</button><span id="syncBadge" class="syncbadge" hidden></span><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定">⚙</button>
+<div class="settings" id="settings" hidden role="dialog" aria-label="顏色設定"><h2>顏色設定</h2><div id="srows"></div><div class="row"><button type="button" id="sreset">還原預設</button><button type="button" id="sclose">關閉</button></div><div class="bk" id="syncBox" hidden><h2>雲端同步</h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
+
+<div class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="分享連結"><button type="button" id="shareCopy">複製連結</button><button type="button" id="shareStop">停止分享</button><p class="hint">拿到連結的人可以查看這份行程並下載 PDF／PPT，但不能修改。你修改後會自動更新。</p></div></section>
+<section class="panel"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱" style="margin-bottom:0"></section>
+<section class="panel">
+  <h2>新增景點</h2>
+  <p class="hint">先把想去的地方加入景點庫，再拖到每天的行程。點一下景點可查看並編輯地址與備註；手機請長按景點再拖曳。</p>
+  <div class="gmrow"><textarea id="gm" class="f" rows="1" placeholder="貼上完整的 Google 地圖連結（不支援 maps.app.goo.gl 短網址）" aria-label="Google 地圖連結"></textarea><button type="button" id="manual" aria-expanded="false" aria-controls="add">手動輸入</button></div>
+  <form class="add" id="add" hidden>
+    <div class="chips full" id="cchips" role="group" aria-label="分類"></div>
+    <input class="full" type="text" id="n" placeholder="景點名稱" required aria-label="景點名稱">
+    <div class="full"><input type="text" id="ar" placeholder="區域（例如：海雲臺、西面）" aria-label="區域"><div class="chips" id="achips" style="margin-top:6px"></div></div>
+    <input class="full" type="text" id="ko" lang="ko" placeholder="韓文店名（手動輸入）" aria-label="韓文店名">
+    <input class="full" type="text" id="a" placeholder="地址" aria-label="地址">
+    <input class="full" type="text" id="nv" placeholder="Naver 地圖連結" aria-label="Naver 地圖連結">
+    <input class="full" type="text" id="hr" placeholder="營業時間（例如：10:00–22:00，週一公休）" aria-label="營業時間">
+    <textarea class="f full" id="nt" rows="2" placeholder="備註：營業時間、預約、想吃什麼…" aria-label="備註"></textarea>
+    <div class="acts"><label class="upload"><input type="file" id="f" accept="image/*"><span id="upl">＋ 圖片</span></label>
+    <button class="primary" type="submit">加入景點庫</button></div>
+    
+  </form>
+  <p id="msg" role="status"></p>
+</section>
+
+<div class="row exrow" id="exportPanel">
+  <button class="primary" id="exPpt">匯出 PPT</button>
+  <button class="primary" id="exPdf">下載 PDF</button>
+  <button class="primary" id="exImg">匯出圖片</button>
+  <button class="primary" id="exTxt">複製文字</button>
+</div>
+<button type="button" id="exClose" hidden style="margin-top:10px">收合預覽</button>
+<img id="prev" alt="行程圖片預覽">
+<textarea id="out" readonly aria-label="行程文字"></textarea>
+
+<div class="layout">
+<section class="panel side">
+  <div class="sidehead"><h2>景點庫</h2><span class="selrow"><select id="catFilter" aria-label="篩選分類"></select><select id="areaFilter" aria-label="篩選區域"></select></span></div>
+  <div id="lib" class="dz" aria-label="景點庫"></div>
+</section>
+
+<section class="panel">
+  <div class="sidehead"><h2>每日行程</h2><span class="selrow"><select id="dayW" aria-label="欄位寬度"><option value="240">欄寬：窄</option><option value="300">欄寬：標準</option><option value="380">欄寬：寬</option><option value="480">欄寬：超寬</option></select><select id="dayJump" aria-label="跳轉到某一天"></select></span></div>
+  <div class="days" id="days"></div>
+  <div class="row"><button id="reset">清除全部</button></div>
+</section>
+</div>
+
+<div class="bottom">
+<section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
+<section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
+</div>
+</main>
+
+<script>
+(function(){
+  var KEY="travel-spots-v1";
+  var s={title:"",spots:[],days:[[],[]]};
+  var $=function(i){return document.getElementById(i)};
+  var uid=function(){return Math.random().toString(36).slice(2,9)};
+  var openKey=null,justDragged=false,downloads=null;
+  var applyingRemote=false,cloudUser=null,cloudApi=null,deviceId="";
+  var themeState={ts:0,dirty:false},IDX=null,pushTimers={},pushBusy={},pushAgain={},pushedMap={},metaTimer=null,unsubs=[];
+  var viewerShare="";try{viewerShare=new URLSearchParams(location.search).get("share")||""}catch(e){}
+  var viewerMode=!!viewerShare;
+  function tkey(id){return KEY+"-t-"+id}
+  function blankTrip(title){return {title:title||"",spots:[],days:[[],[]],flights:{out:{no:"",dep:"",arr:""},back:{no:"",dep:"",arr:""}},hotelSpots:[]}}
+  function persistIdx(){if(viewerMode)return;try{localStorage.setItem(KEY+"-idx",JSON.stringify(IDX))}catch(e){}}
+  function ent(id){return IDX.list.filter(function(e){return e.id===id})[0]}
+  function loadTripData(id){try{var p=JSON.parse(localStorage.getItem(tkey(id))||"null");if(p&&Array.isArray(p.spots)&&Array.isArray(p.days))return p}catch(e){}return null}
+  (function initIdx(){
+    if(viewerMode){IDX={cur:"",uid:"",list:[],pendingDel:[]};return}
+    try{
+      var x=JSON.parse(localStorage.getItem(KEY+"-idx")||"null");
+      if(x&&Array.isArray(x.list)&&x.list.length){
+        x.list=x.list.filter(function(e){return e&&typeof e.id==="string"&&/^[A-Za-z0-9_-]+$/.test(e.id)});
+        if(x.list.length){if(!x.list.some(function(e){return e.id===x.cur}))x.cur=x.list[0].id;if(!Array.isArray(x.pendingDel))x.pendingDel=[];IDX=x}
+      }
+    }catch(e){}
+    if(!IDX){
+      var old=null;try{old=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+      var first=(old&&Array.isArray(old.spots)&&Array.isArray(old.days))?old:blankTrip("");
+      IDX={cur:"main",uid:"",pendingDel:[],list:[{id:"main",name:first.title||"",created:Date.now(),ts:0,dirty:hasData(first),ver:1,shareId:""}]};
+      try{localStorage.setItem(tkey("main"),JSON.stringify(first))}catch(e){}
+      persistIdx();
+    }
+    s=normTrip(loadTripData(IDX.cur)||blankTrip(""));
+  })();
+  var CATS=["住宿","景點","體驗","美食","購物"],newCat="",filterCat="",filterArea="";
+  function chipBtn(c,on,attr){return '<button type="button" class="chip'+(c==="美食"?' food':'')+'" '+attr+' aria-pressed="'+on+'">'+esc(c)+'</button>'}
+  function catChips(sp){
+    var list=CATS.slice();if(sp.cat&&list.indexOf(sp.cat)<0)list.push(sp.cat);
+    return list.map(function(c){return chipBtn(c,sp.cat===c,'data-setcat="'+esc(c)+'" data-sid="'+sp.id+'"')}).join("");
+  }
+  function drawChips(){$("cchips").innerHTML=CATS.map(function(c){return chipBtn(c,newCat===c,'data-newcat="'+esc(c)+'"')}).join("")}
+  function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function say(t){$("msg").textContent=t||"";if(viewerMode&&t){var v=$("vInfo");if(v)v.textContent=t}}
+  function save(){if(viewerMode)return;try{localStorage.setItem(tkey(IDX.cur),JSON.stringify(s))}catch(e){say("瀏覽器儲存空間已滿，變更可能不會保留。可以刪掉幾個景點。")}markDirty()}
+  function spot(id){return s.spots.filter(function(x){return x.id===id})[0]}
+  var ICON_N="data:image/png;base64,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",ICON_G="data:image/png;base64,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";
+  function okNaver(u){try{var x=new URL(u);if((x.protocol==="https:"||x.protocol==="http:")&&/(^|\.)naver\.(com|me)$/.test(x.hostname))return x.href}catch(e){}return ""}
+  function naverUrl(sp){return sp.naver||(sp.ko?"https://map.naver.com/p/search/"+encodeURIComponent(sp.ko):"")}
+  function mapLinks(sp){var a=[],nu=naverUrl(sp);if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
+  function iconHtml(sp){return '<span class="mlinks">'+mapLinks(sp).map(function(l){return '<a class="mi" href="'+esc(l.u)+'" target="_blank" rel="noopener" title="'+l.t+'" aria-label="'+l.t+'"><img src="'+l.i+'" alt=""></a>'}).join("")+'</span>'}
+  function mapUrl(sp){if(sp.url)return sp.url;return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(sp.addr||sp.name)}
+
+  if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
+
+  function blk(sp,inst,day,inLib,forceOpen){
+    var key=inst||sp.id,open=forceOpen||openKey===key;
+    var th=sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>';
+    var at=' data-sid="'+sp.id+'"';
+    var d=open?'<div class="d">'+
+      '<div class="chips" role="group" aria-label="分類">'+catChips(sp)+'</div>'+
+      '<input type="text" data-f="name"'+at+' value="'+esc(sp.name)+'" placeholder="景點名稱" aria-label="景點名稱">'+
+      '<input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名">'+
+      '<input type="text" data-f="addr"'+at+' value="'+esc(sp.addr)+'" placeholder="地址" aria-label="地址">'+
+      '<input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="Naver 地圖連結" aria-label="Naver 地圖連結">'+
+      '<input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" placeholder="營業時間" aria-label="營業時間">'+
+      '<input type="text" data-f="area"'+at+' value="'+esc(sp.area)+'" placeholder="區域" aria-label="區域">'+(areaList().length?'<div class="chips" role="group" aria-label="既有區域">'+areaChips(sp)+'</div>':'')+'<textarea class="f" data-f="note"'+at+' rows="3" placeholder="備註" aria-label="備註">'+esc(sp.note)+'</textarea>'+
+      '<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+(sp.img?'<button data-rmimg="'+sp.id+'">移除圖片</button>':'')+iconHtml(sp)+
+      '<button type="button" data-card="'+sp.id+'">下載圖卡</button>'+(day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
+    return '<div class="blk'+(open?' open':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+
+      th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko" lang="ko">'+esc(sp.ko)+'</div>':'')+d+'</div></div>';
+  }
+
+  function render(){
+    $("title").value=s.title||"";
+    var shown=s.spots.filter(function(sp){return (!filterCat||(filterCat==="__none"?!sp.cat:sp.cat===filterCat))&&(!filterArea||(filterArea==="__none"?!sp.area:sp.area===filterArea))});
+    $("lib").innerHTML=shown.length?shown.map(function(sp){return blk(sp,null,null,true)}).join(""):'<p class="hint" style="margin:8px">'+(s.spots.length?'沒有符合篩選條件的景點。':'還沒有景點。在上方輸入名稱、地址和圖片後加入。')+'</p>';
+    drawFilter();drawJump();renderHotels();
+    $("days").innerHTML=s.days.map(function(d,i){
+      var items=d.map(function(it){var sp=spot(it.sid);return sp?'<div class="slot"><input type="time" class="itime" data-time="'+it.uid+'" value="'+esc(it.time||"")+'" aria-label="時間">'+blk(sp,it.uid,i,false)+'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note||"")+'</textarea></div>':""}).join("");
+      return '<div class="day"><header><b>第 '+(i+1)+' 天</b><span>'+d.length+' 站</span>'+(s.days.length>1?'<button data-delday="'+i+'" aria-label="刪除第 '+(i+1)+' 天">✕</button>':'')+'</header>'+
+        '<div class="drop dz" data-day="'+i+'">'+(items||'<div class="empty">拖曳景點到這裡</div>')+'</div></div>';
+    }).join("")+'<button class="addday" id="addday">＋ 新增一天</button>';
+    growNotes();
+  }
+
+  $("title").oninput=function(){s.title=this.value;var e=ent(IDX.cur);if(e)e.name=s.title;save();drawTripSel()};
+
+  var img="";
+  $("f").onchange=function(){
+    var file=this.files&&this.files[0];if(!file)return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      var im=new Image();
+      im.onload=function(){
+        var m=240,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");
+        c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+        c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+        img=c.toDataURL("image/jpeg",0.72);
+        $("upl").innerHTML='<img src="'+img+'" alt=""> 已選圖片';
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(file);
+  };
+  $("add").onsubmit=function(e){
+    e.preventDefault();
+    var n=$("n").value.trim();if(!n)return;
+    s.spots.unshift({id:uid(),cat:newCat,name:n,addr:$("a").value.trim(),note:$("nt").value.trim(),ko:$("ko").value.trim(),hours:$("hr").value.trim(),naver:okNaver($("nv").value.trim()),area:$("ar").value.trim(),img:img,url:okUrl(pendingUrl)});
+    img="";pendingUrl="";$("add").reset();newCat="";drawChips();$("upl").textContent="＋ 圖片";
+    save();filterCat="";filterArea="";openKey=s.spots[0].id;render();$("lib").parentNode.scrollTop=0;$("n").focus();
+  };
+
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("button");
+    if(t){
+      if(t.dataset.del){
+        var id=t.dataset.del;
+        s.spots=s.spots.filter(function(x){return x.id!==id});
+        s.days=s.days.map(function(d){return d.filter(function(it){return it.sid!==id})});
+        s.hotelSpots=(s.hotelSpots||[]).filter(function(it){return it.sid!==id});
+        openKey=null;
+      }else if(t.dataset.delday!==undefined){s.days.splice(Number(t.dataset.delday),1)}
+      else if(t.id==="addday"){s.days.push([])}
+      else return;
+      save();render();return;
+    }
+    if(e.target.closest("a")||e.target.closest(".grip")||e.target.closest(".d"))return;
+    var b=e.target.closest(".blk");
+    if(b&&!justDragged){openKey=openKey===b.dataset.key?null:b.dataset.key;render()}
+  });
+  document.addEventListener("keydown",function(e){
+    if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("blk")){
+      e.preventDefault();var k=e.target.dataset.key;openKey=openKey===k?null:k;render();
+    }
+  });
+  function parseMaps(t){
+    var u;try{u=new URL(t)}catch(e){return null}
+    if(u.protocol!=="https:"&&u.protocol!=="http:")return null;
+    var h=u.hostname;
+    if(h==="maps.app.goo.gl"||h==="goo.gl")return {short:true};
+    if(!/(^|\.)google\./.test(h))return null;
+    var name="",m=u.pathname.match(/\/maps\/place\/([^\/]+)/);
+    if(m){try{name=decodeURIComponent(m[1].replace(/\+/g," "))}catch(e){name=m[1].replace(/\+/g," ")}}
+    if(!name){var q=u.searchParams.get("q")||u.searchParams.get("query");if(q&&!/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(q))name=q}
+    return name?{name:name.trim(),url:u.href}:{empty:true};
+  }
+  var pendingUrl="";
+  function openManual(){var f=$("add");if(f.hidden){f.hidden=false;$("manual").setAttribute("aria-expanded","true");$("manual").textContent="收合"}}
+  function addFromLink(name,addr,url){
+    var sp={id:uid(),cat:"",name:name,addr:addr,note:"",img:"",url:okUrl(url)};
+    s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
+    save();render();$("lib").parentNode.scrollTop=0;say("已加入「"+name+"」，可在下方展開補上分類、區域和備註。");
+  }
+  function fromLink(){
+    var raw=$("gm").value.trim();if(!raw)return;
+    var um=raw.match(/https?:\/\/\S+/),v=um?um[0]:raw,pre=um?raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean):[];
+    var r=parseMaps(v);
+    var nv0=okNaver(v);
+    if(!r&&nv0){
+      if(pre.length){var nm0=pre[0];var spn={id:uid(),cat:"",name:nm0,ko:/[\uAC00-\uD7A3]/.test(nm0)?nm0:"",addr:pre[1]||"",hours:"",area:"",note:"",img:"",url:"",naver:nv0};s.spots.unshift(spn);openKey=spn.id;filterCat="";filterArea="";$("gm").value="";save();render();$("lib").parentNode.scrollTop=0;say("已加入「"+nm0+"」，可在下方展開補上分類、區域和備註。");return}
+      $("gm").value="";openManual();$("nv").value=nv0;$("n").focus();say("已保留 Naver 連結，請輸入名稱後按「加入景點庫」。");return
+    }
+    if(!r){say("這不是 Google 或 Naver 地圖連結。");return}
+    if(r.short){
+      if(pre.length){addFromLink(pre[0],pre[1]||"",v);return}
+      pendingUrl=v;$("gm").value="";openManual();$("n").focus();
+      say("這是短網址，無法自動讀出名稱。已先保留這個連結，請在下方輸入名稱，按「加入景點庫」就會連同定位一起存起來。");return
+    }
+    if(r.empty){if(pre.length){addFromLink(pre[0],pre[1]||"",v);return}say("連結裡找不到景點名稱。請改貼包含 /maps/place/ 的完整連結，或手動輸入。");return}
+    var sp={id:uid(),cat:"",name:r.name,addr:"",note:"",img:"",url:r.url};
+    s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
+    save();render();$("lib").parentNode.scrollTop=0;say("已加入「"+r.name+"」，可在下方展開補上分類、地址和備註。");
+  }
+  function shrink(file,cb){
+    var rd=new FileReader();
+    rd.onload=function(){var im=new Image();im.onload=function(){var m=240,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.72))};im.src=rd.result};
+    rd.readAsDataURL(file);
+  }
+  document.addEventListener("change",function(e){
+    var t=e.target;if(!t.dataset||!t.dataset.img)return;
+    var sp=spot(t.dataset.sid),f=t.files&&t.files[0];if(!sp||!f)return;
+    shrink(f,function(d){sp.img=d;save();render()});
+  });
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("button");if(!t||!t.dataset.rmimg)return;
+    var sp=spot(t.dataset.rmimg);if(sp){sp.img="";save();render()}
+  });
+  function findOpen(){
+    if(!openKey)return null;
+    var sp=spot(openKey);if(sp)return sp;
+    for(var i=0;i<s.days.length;i++)for(var j=0;j<s.days[i].length;j++)if(s.days[i][j].uid===openKey)return spot(s.days[i][j].sid);
+    return null;
+  }
+  document.addEventListener("paste",function(e){
+    var cd=e.clipboardData;if(!cd||!cd.files)return;
+    var f=null;for(var i=0;i<cd.files.length;i++){if(/^image\//.test(cd.files[i].type)){f=cd.files[i];break}}
+    if(!f||cd.getData("text/plain"))return;
+    e.preventDefault();
+    if(e.target.closest&&e.target.closest("#add")){
+      shrink(f,function(d){img=d;$("upl").innerHTML='<img src="'+d+'" alt=""> 已選圖片'});
+      say("圖片已貼上，按「加入景點庫」即可。");return;
+    }
+    var sp=findOpen();
+    if(!sp){say("請先點開一個景點再貼上圖片；或在新增表單裡貼上。");return}
+    shrink(f,function(d){sp.img=d;save();render();say("已更新「"+sp.name+"」的圖片。")});
+  });
+  var COLORS=[["--page"],["--surface"],["--bg"],["--ink"],["--blue"],["--on-blue"],["--tag-bg"],["--tag-ink"],["--tag-food"],["--hit"]];
+  var DEF={"--page":"#afc3d0","--surface":"#ffffff","--bg":"#ffffff","--ink":"#0D2626","--blue":"#afc3d0","--on-blue":"#ffffff","--tag-bg":"#afc3d0","--tag-ink":"#ffffff","--hit":"#3691c9","--tag-food":"#e8b08c"};
+  var GROUPS=[[["--page","--blue","--tag-bg"],"主色"],[["--bg"],"內部區塊背景"],[["--surface"],"面板背景"],[["--ink"],"深色文字"],[["--on-blue","--tag-ink"],"淺色文字（按鈕、分類標籤）"],[["--tag-food"],"美食標籤背景"],[["--hit"],"選取與拖曳提示"]];
+  var theme={};
+  try{theme=JSON.parse(localStorage.getItem(KEY+"-theme")||"{}")||{}}catch(e){theme={}}
+  function th(k,d){return theme[k]||DEF[k]||d}
+  function lum(h){var n=parseInt(h.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)/255}
+  function applyTheme(){
+    var st=document.documentElement.style;
+    COLORS.map(function(c){return c[0]}).concat(["--accent-text","--on-blue"]).forEach(function(k){st.removeProperty(k)});
+    Object.keys(theme).forEach(function(k){st.setProperty(k,theme[k])});
+    if(theme["--blue"]){if(!theme["--on-blue"])st.setProperty("--on-blue",lum(theme["--blue"])>0.55?"#0D2626":"#fff")}
+  }
+  function saveTheme(){
+    if(viewerMode)return;
+    try{localStorage.setItem(KEY+"-theme",JSON.stringify(theme))}catch(e){}
+    if(applyingRemote)return;
+    themeState.ts=Date.now();themeState.dirty=true;persistThemeState();scheduleMeta();
+    var e=ent(IDX.cur);if(e&&e.shareId)markDirty();
+  }
+  function buildSettings(){
+    var cs=getComputedStyle(document.documentElement);
+    $("srows").innerHTML=GROUPS.map(function(c,gi){
+      var v=(theme[c[0][0]]||cs.getPropertyValue(c[0][0])).trim();
+      if(/^#[0-9a-f]{3}$/i.test(v))v="#"+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];
+      if(!/^#[0-9a-f]{6}$/i.test(v))v="#000000";
+      return '<label class="srow"><span>'+c[1]+'</span><input type="color" data-g="'+gi+'" value="'+v+'"></label>';
+    }).join("");
+  }
+  $("srows").addEventListener("input",function(e){var gi=e.target.dataset.g;if(gi===undefined)return;GROUPS[Number(gi)][0].forEach(function(k){theme[k]=e.target.value});applyTheme();saveTheme()});
+  function toggleSettings(open){
+    var p=$("settings");if(open===undefined)open=p.hidden;
+    if(open)buildSettings();
+    p.hidden=!open;$("gear").setAttribute("aria-expanded",String(open));
+  }
+  $("gear").onclick=function(){toggleSettings()};
+  $("sclose").onclick=function(){toggleSettings(false)};
+  $("sreset").onclick=function(){theme={};saveTheme();applyTheme();buildSettings()};
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")toggleSettings(false)});
+  document.addEventListener("click",function(e){if(!$("settings").hidden&&!e.target.closest("#settings,#gear"))toggleSettings(false)});
+  applyTheme();
+  function bmsg(t){$("bkMsg").textContent=t||""}
+  function okUrl(u){try{var x=new URL(u);if((x.protocol==="https:"||x.protocol==="http:")&&(/(^|\.)google\./.test(x.hostname)||x.hostname==="maps.app.goo.gl"))return x.href}catch(e){}return ""}
+  function str(v){return typeof v==="string"?v:""}
+  var IDRE=/^[A-Za-z0-9_-]+$/,IMGRE=/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/;
+  function cleanData(d){
+    var ids={},spots=[];
+    d.spots.forEach(function(x){
+      if(!x||typeof x.id!=="string"||!IDRE.test(x.id)||!str(x.name))return;
+      ids[x.id]=1;
+      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url))});
+    });
+    var days=d.days.map(function(day){
+      return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){return {uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)}});
+    });
+    if(!days.length)days=[[]];
+    var fl={};["out","back"].forEach(function(k){var l=(d.flights&&d.flights[k])||{};fl[k]={no:str(l.no),dep:str(l.dep),arr:str(l.arr)}});
+    var ht=Array.isArray(d.hotelSpots)?d.hotelSpots.filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){return {uid:it.uid,sid:it.sid,note:str(it.note)}}):undefined;
+    var lg=(!ht&&Array.isArray(d.hotels))?d.hotels.map(function(h){return {name:str(h&&h.name),addr:str(h&&h.addr)}}):undefined;
+    return {title:str(d.title),spots:spots,days:days,flights:fl,hotelSpots:ht,hotels:lg};
+  }
+  function cleanTheme(t){var o={};if(t&&typeof t==="object")COLORS.forEach(function(c){var v=t[c[0]];if(typeof v==="string"&&/^#[0-9a-f]{6}$/i.test(v))o[c[0]]=v});return o}
+  function showBk(j){var t=$("bkText");t.hidden=false;t.value=j;t.focus();t.select();bmsg("無法直接下載，已把備份內容顯示出來。請全選複製，貼到記事本存成 .json 檔。")}
+  $("bkSave").onclick=async function(){
+    var json=JSON.stringify({app:"travel-spots",version:1,exportedAt:new Date().toISOString(),data:s,theme:theme});
+    var d=new Date(),ds=d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
+    var name="旅遊行程備份-"+ds+".json",blob=new Blob([json],{type:"application/json"});
+    $("bkText").hidden=true;
+    if(downloads){
+      try{await downloads.save({filename:name,data:blob});bmsg("備份已下載。");return}
+      catch(err){if(err&&err.code==="declined"){bmsg("已取消備份。");return}}
+      showBk(json);return;
+    }
+    try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();bmsg("備份已下載。")}catch(e){showBk(json)}
+  };
+  $("bkLoad").onclick=function(){$("bkFile").click()};
+  $("bkFile").onchange=function(){
+    var inp=this,f=inp.files&&inp.files[0];if(!f)return;
+    f.text().then(function(t){
+      inp.value="";
+      var o;try{o=JSON.parse(t)}catch(e){bmsg("這不是有效的備份檔。");return}
+      var d=o&&o.data?o.data:o;
+      if(!d||!Array.isArray(d.spots)||!Array.isArray(d.days)){bmsg("備份檔的內容不完整，無法還原。");return}
+      var ns=cleanData(d);
+      if(!confirm("備份內有 "+ns.spots.length+" 個景點、"+ns.days.length+" 天行程。還原會取代目前的所有內容，確定嗎？"))return;
+      s=ns;theme=cleanTheme(o.theme);openKey=null;
+      saveTheme();applyTheme();ensureTrip();save();render();renderTrip();
+      toggleSettings(false);say("已還原 "+ns.spots.length+" 個景點。");
+    }).catch(function(){inp.value="";bmsg("讀取檔案失敗。")});
+  };
+  function ensureTrip(){
+    var f=s.flights;
+    if(!f||typeof f!=="object")f=s.flights={};
+    ["out","back"].forEach(function(k){
+      var l=f[k];if(!l||typeof l!=="object")l=f[k]={};
+      ["no","dep","arr"].forEach(function(p){if(typeof l[p]!=="string")l[p]=""});
+    });
+    if(!Array.isArray(s.hotelSpots)){
+      s.hotelSpots=[];
+      (Array.isArray(s.hotels)?s.hotels:[]).forEach(function(h){
+        if(h&&(h.name||h.addr)){var id=uid();s.spots.push({id:id,cat:"住宿",name:h.name||h.addr,ko:"",addr:h.addr||"",hours:"",note:"",img:"",url:""});s.hotelSpots.push({uid:uid(),sid:id})}
+      });
+    }
+    delete s.hotels;
+  }
+  function renderLegs(){
+    $("legs").innerHTML=[["out","去程"],["back","回程"]].map(function(L){
+      var l=s.flights[L[0]];
+      return '<div class="leg"><h3>'+L[1]+'</h3>'+
+        '<label class="fld">班機號碼<input type="text" data-fl="'+L[0]+'.no" value="'+esc(l.no)+'" placeholder="例如：BR198"></label>'+
+        '<label class="fld">出發時間<input type="datetime-local" data-fl="'+L[0]+'.dep" value="'+esc(l.dep)+'"></label>'+
+        '<label class="fld">抵達時間<input type="datetime-local" data-fl="'+L[0]+'.arr" value="'+esc(l.arr)+'"></label></div>';
+    }).join("");
+  }
+  function renderHotels(){
+    $("hlist").innerHTML=s.hotelSpots.map(function(it){
+      var sp=spot(it.sid);
+      return sp?'<div class="slot">'+blk(sp,it.uid,"h",false,false)+'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note||"")+'</textarea></div>':"";
+    }).join("")||'<div class="empty">把住宿景點拖曳到這裡</div>';
+    growNotes();
+  }
+  function renderTrip(){ensureTrip();renderLegs();renderHotels()}
+  document.addEventListener("input",function(e){
+    var t=e.target,a=t.dataset&&t.dataset.fl,b=t.dataset&&t.dataset.ht;
+    if(a){var p=a.split(".");s.flights[p[0]][p[1]]=t.value;save()}
+    
+    else if(t.dataset&&(t.dataset.time||t.dataset.inote)){
+      var itm=findItem(t.dataset.time||t.dataset.inote);
+      if(itm){if(t.dataset.time)itm.time=t.value;else itm.note=t.value;save()}
+      if(t.classList.contains("inote"))autogrow(t);
+    }
+  });
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("button");if(!t||!t.dataset.rmh)return;
+    s.hotelSpots=s.hotelSpots.filter(function(it){return it.uid!==t.dataset.rmh});
+    save();render();
+  });
+  function drawFilter(){
+    var sel=$("catFilter"),cats=CATS.slice();
+    s.spots.forEach(function(sp){if(sp.cat&&cats.indexOf(sp.cat)<0)cats.push(sp.cat)});
+    if(filterCat&&filterCat!=="__none"&&cats.indexOf(filterCat)<0)filterCat="";
+    sel.innerHTML='<option value="">全部分類</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join("")+'<option value="__none">未分類</option>';
+    sel.value=filterCat;
+    var as=$("areaFilter"),areas=areaList();
+    if(filterArea&&filterArea!=="__none"&&areas.indexOf(filterArea)<0)filterArea="";
+    as.innerHTML='<option value="">全部區域</option>'+areas.map(function(a){return '<option value="'+esc(a)+'">'+esc(a)+'</option>'}).join("")+'<option value="__none">未分區</option>';
+    as.value=filterArea;
+    drawAreaChips();
+  }
+  function areaList(){var m={};s.spots.forEach(function(sp){if(sp.area)m[sp.area]=1});return Object.keys(m).sort(function(a,b){return a.localeCompare(b,"zh-Hant")})}
+  function areaChips(sp){return areaList().map(function(a){return chipBtn(a,sp.area===a,'data-setarea="'+esc(a)+'" data-sid="'+sp.id+'"')}).join("")}
+  function drawAreaChips(){
+    var cur=$("ar").value.trim();
+    $("achips").innerHTML=areaList().map(function(a){return chipBtn(a,cur===a,'data-newarea="'+esc(a)+'"')}).join("");
+  }
+  $("ar").addEventListener("input",drawAreaChips);
+  $("areaFilter").onchange=function(){filterArea=this.value;render()};
+  $("catFilter").onchange=function(){filterCat=this.value;render()};
+  var SERIF='"Noto Serif TC","Songti TC","PMingLiU","SimSun",serif';
+  async function saveBlob(blob,filename){
+    if(downloads){
+      try{await downloads.save({filename:filename,data:blob});return "ok"}
+      catch(err){return err&&err.code==="declined"?"cancel":"fail"}
+    }
+    try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();return "ok"}catch(e){return "fail"}
+  }
+  async function buildCard(sp){
+    var F=SERIF;
+    try{
+      var ft=sp.name+(sp.cat||"")+(sp.ko||"")+(sp.addr||"")+(sp.hours||"")+(sp.note||"")+"韓文店名地址營業時間備註0123456789:";
+      await document.fonts.load('700 19px "Noto Serif TC"',ft);await document.fonts.load('400 14px "Noto Serif TC"',ft);
+    }catch(e){}
+    var im=sp.img?await loadImg(sp.img):null;
+    var K=2,W=380,out=16,pad=20,ts=64,CW=W-out*2,TW=CW-pad*2,NW=CW-pad-(pad+ts+14);
+    var mc=document.createElement("canvas").getContext("2d");
+    mc.font="700 19px "+F;var nl=wrap(mc,sp.name,NW,2);
+    var headH=Math.max(ts,(sp.cat?26:0)+nl.length*26);
+    mc.font="400 14px "+F;
+    var blocks=[["區域",sp.area],["韓文店名",sp.ko],["地址",sp.addr],["營業時間",sp.hours],["備註",sp.note]].filter(function(f){return f[1]}).map(function(f){return {l:f[0],lines:wrap(mc,f[1],TW,f[0]==="備註"?8:4)}});
+    var bodyH=blocks.reduce(function(a,b){return a+20+b.lines.length*21+10},0);
+    var CH=pad+headH+(blocks.length?20+bodyH-10:0)+pad,H=CH+out*2;
+    var cv=document.createElement("canvas");cv.width=W*K;cv.height=H*K;
+    var c=cv.getContext("2d");c.scale(K,K);c.textBaseline="middle";
+    c.fillStyle=th("--page","#afc3d0");c.fillRect(0,0,W,H);
+    c.fillStyle=th("--surface","#ffffff");rr(c,out,out,CW,CH,16);c.fill();
+    var accent=mixHex(th("--blue","#025373"),th("--ink","#0D2626"),0.6),ink=th("--ink","#0D2626");
+    var tx=out+pad,ty=out+pad;
+    c.save();rr(c,tx,ty,ts,ts,12);c.clip();
+    if(im){var q=Math.max(ts/im.width,ts/im.height),w=im.width*q,h=im.height*q;c.drawImage(im,tx+(ts-w)/2,ty+(ts-h)/2,w,h)}
+    else{c.fillStyle="#e6eef3";c.fillRect(tx,ty,ts,ts);c.fillStyle=accent;c.beginPath();c.arc(tx+ts/2,ty+ts/2,6,0,7);c.fill()}
+    c.restore();
+    var nx=tx+ts+14,ny=ty;
+    if(sp.cat){
+      c.font="700 12px "+F;var ct=fit(c,sp.cat,NW-14),tw=c.measureText(ct).width+14;
+      c.fillStyle=sp.cat==="美食"?th("--tag-food","#e8b08c"):th("--tag-bg","#afc3d0");rr(c,nx,ny,tw,20,6);c.fill();
+      c.fillStyle=th("--tag-ink","#ffffff");c.fillText(ct,nx+7,ny+11);ny+=26;
+    }
+    c.fillStyle=ink;c.font="700 19px "+F;
+    nl.forEach(function(l,i){c.fillText(l,nx,ny+13+i*26)});
+    var y=ty+headH;
+    if(blocks.length){
+      y+=10;c.globalAlpha=.25;c.fillStyle=accent;c.fillRect(tx,y,TW,1);c.globalAlpha=1;y+=10;
+      blocks.forEach(function(b){
+        c.font="700 12px "+F;c.fillStyle=accent;c.fillText(b.l,tx,y+8);y+=20;
+        c.font="400 14px "+F;c.fillStyle=ink;
+        b.lines.forEach(function(l){c.fillText(l,tx,y+10);y+=21});
+        y+=10;
+      });
+    }
+    return new Promise(function(res){cv.toBlob(res,"image/png")});
+  }
+  document.addEventListener("click",async function(e){
+    var t=e.target.closest("button");if(!t||!t.dataset.card)return;
+    var sp=spot(t.dataset.card);if(!sp)return;
+    var old=t.textContent;t.textContent="產生中…";t.disabled=true;
+    var blob=await buildCard(sp),r=blob?await saveBlob(blob,((sp.name||"景點").replace(/[\\\/:*?"<>|]/g,""))+".png"):"fail";
+    t.disabled=false;t.textContent=r==="ok"?"已下載":(r==="cancel"?old:"下載失敗，請再試一次");
+    setTimeout(function(){if(t.isConnected)t.textContent=old},2500);
+  });
+  function hx(c){return String(c).replace("#","").toUpperCase()}
+  function wlen(t){var n=0;for(var i=0;i<t.length;i++)n+=t.charCodeAt(i)>255?1:0.55;return n}
+  function trunc(t,max){
+    t=String(t||"");if(wlen(t)<=max)return t;
+    var o="",n=0;
+    for(var i=0;i<t.length;i++){var w=t.charCodeAt(i)>255?1:0.55;if(n+w>max-1)break;o+=t[i];n+=w}
+    return o+"…";
+  }
+  function squareData(src,size){
+    return loadImg(src).then(function(im){
+      if(!im)return null;
+      var cv=document.createElement("canvas");cv.width=cv.height=size;
+      var c=cv.getContext("2d"),q=Math.max(size/im.width,size/im.height),w=im.width*q,h=im.height*q;
+      c.drawImage(im,(size-w)/2,(size-h)/2,w,h);
+      return cv.toDataURL("image/jpeg",0.85).replace(/^data:/,"");
+    });
+  }
+  function fmtDT(v){return v?v.replace("T"," ").replace(/-/g,"/"):"—"}
+  async function buildPpt(){
+    var P=new PptxGenJS();P.layout="LAYOUT_WIDE";
+    var FACE="PMingLiU";
+    ensureTrip();
+    var ink=th("--ink"),surface=th("--surface"),mainC=th("--blue"),pageC=th("--page");
+    var C={ink:hx(ink),surface:hx(surface),bg:hx(th("--bg")),main:hx(mainC),page:hx(pageC),
+      tag:hx(th("--tag-bg")),tagInk:hx(th("--tag-ink")),food:hx(th("--tag-food")),
+      accent:hx(mixHex(mainC,ink,0.6)),muted:hx(mixHex(ink,surface,0.45)),line:hx(mixHex(surface,ink,0.14)),
+      pageInk:lum(pageC)>0.55?"0D2626":"FFFFFF"};
+    var need={};
+    s.days.forEach(function(d){d.forEach(function(it){need[it.sid]=1})});
+    s.hotelSpots.forEach(function(it){need[it.sid]=1});
+    var imgs={};
+    await Promise.all(Object.keys(need).map(function(id){
+      var sp=spot(id);if(!sp||!sp.img)return null;
+      return squareData(sp.img,240).then(function(d){imgs[id]=d});
+    }));
+    var n=s.days.length,cnt=s.days.reduce(function(a,d){return a+d.length},0);
+
+    /* 1. title */
+    var s1=P.addSlide();s1.background={color:C.page};
+    s1.addText(s.title||"旅遊行程",{x:0.9,y:2.2,w:11.5,h:1.5,fontFace:FACE,fontSize:44,bold:true,color:C.pageInk,valign:"bottom",margin:0,isTextBox:true,fit:"shrink"});
+    s1.addShape(P.ShapeType.rect,{x:0.9,y:3.9,w:1.6,h:0.06,fill:{color:C.pageInk}});
+    var d1=(s.flights.out.dep||"").slice(0,10).replace(/-/g,"/"),d2=(s.flights.back.arr||s.flights.back.dep||"").slice(0,10).replace(/-/g,"/");
+    var range=d1&&d2?d1+" – "+d2:(d1||d2);
+    s1.addText([range,n+" 天",cnt+" 個行程"].filter(Boolean).join("   ·   "),{x:0.9,y:4.15,w:11.5,h:0.6,fontFace:FACE,fontSize:20,color:C.pageInk,margin:0,isTextBox:true,valign:"top"});
+
+    /* 2. flights + hotels */
+    var s2=P.addSlide();s2.background={color:C.surface};
+    s2.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
+    s2.addText("機票及飯店資訊",{x:0.7,y:0.4,w:9,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
+    s2.addShape(P.ShapeType.roundRect,{x:0.7,y:1.4,w:5.7,h:5.5,rectRadius:0.12,fill:{color:C.bg},line:{color:C.line,width:0.75}});
+    s2.addShape(P.ShapeType.roundRect,{x:6.75,y:1.4,w:5.9,h:5.5,rectRadius:0.12,fill:{color:C.bg},line:{color:C.line,width:0.75}});
+    s2.addText("機票",{x:1.0,y:1.55,w:5,h:0.45,fontFace:FACE,fontSize:18,bold:true,color:C.accent,margin:0,isTextBox:true});
+    [["out","去程"],["back","回程"]].forEach(function(L,i){
+      var l=s.flights[L[0]],y=2.15+i*2.35;
+      s2.addText([
+        {text:L[1],options:{fontSize:13,bold:true,color:C.muted,breakLine:true}},
+        {text:l.no||"（未填班機號碼）",options:{fontSize:26,bold:true,color:C.ink,breakLine:true}},
+        {text:"出發　"+fmtDT(l.dep),options:{fontSize:15,color:C.ink,breakLine:true}},
+        {text:"抵達　"+fmtDT(l.arr),options:{fontSize:15,color:C.ink}}
+      ],{x:1.0,y:y,w:5.1,h:2.15,fontFace:FACE,margin:0,valign:"top",isTextBox:true});
+    });
+    s2.addText("飯店",{x:7.05,y:1.55,w:5,h:0.45,fontFace:FACE,fontSize:18,bold:true,color:C.accent,margin:0,isTextBox:true});
+    var hs=s.hotelSpots.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+    if(!hs.length){
+      s2.addText("（尚未加入飯店）",{x:7.05,y:2.2,w:5.3,h:0.5,fontFace:FACE,fontSize:15,color:C.muted,margin:0,isTextBox:true});
+    }else{
+      var bh=Math.min(2.3,4.6/hs.length),k=hs.length>3?0.8:1;
+      hs.forEach(function(x,i){
+        var hl=mapLinks(x.sp),hiw=hl.length*0.28;
+        hl.forEach(function(l,j){s2.addImage({data:l.i.replace(/^data:/,""),x:7.05+5.3-hiw+j*0.28,y:2.15+i*bh+0.02,w:0.22,h:0.22,hyperlink:{url:l.u,tooltip:l.t}})});
+        var runs=[{text:trunc(x.sp.name,Math.max(6,Math.floor((5.3-hiw)/(20*k/72)))),options:{fontSize:Math.round(20*k),bold:true,color:C.ink,breakLine:true}}];
+        if(x.sp.ko)runs.push({text:trunc(x.sp.ko,34),options:{fontSize:Math.round(12*k),color:C.muted,breakLine:true}});
+        if(x.sp.addr)runs.push({text:trunc(x.sp.addr,60),options:{fontSize:Math.round(13*k),color:C.ink,breakLine:true}});
+        if(x.it.note)runs.push({text:trunc(x.it.note.replace(/\n/g," "),110),options:{fontSize:Math.round(13*k),color:C.ink}});
+        else runs[runs.length-1].options.breakLine=false;
+        s2.addText(runs,{x:7.05,y:2.15+i*bh,w:5.3,h:bh-0.1,fontFace:FACE,margin:0,valign:"top",isTextBox:true});
+      });
+    }
+
+    /* 3. one slide per day */
+    s.days.forEach(function(d,di){
+      var sl=P.addSlide();sl.background={color:C.surface};
+      sl.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
+      var items=d.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+      sl.addText("第 "+(di+1)+" 天",{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
+      sl.addText("共 "+items.length+" 個行程",{x:9.6,y:0.4,w:3.1,h:0.7,fontFace:FACE,fontSize:14,color:C.muted,align:"right",margin:0,isTextBox:true,valign:"middle"});
+      if(!items.length){
+        sl.addText("（這天還沒有行程）",{x:0.7,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
+        return;
+      }
+      var m=items.length,cols=Math.min(3,Math.max(1,Math.ceil(m/7))),per=Math.ceil(m/cols),gapX=0.25,gapY=0.1;
+      var cw=(12.0-gapX*(cols-1))/cols,rowH=Math.min(1.0,(5.8-gapY*(per-1))/per);
+      items.forEach(function(x,i){
+        var col=Math.floor(i/per),row=i%per,cx=0.7+col*(cw+gapX),ry=1.3+row*(rowH+gapY),sp=x.sp,it=x.it;
+        sl.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.08,fill:{color:C.bg},line:{color:C.line,width:0.75}});
+        var sz=rowH-0.16,ix=cx+0.08,iy=ry+0.08;
+        if(imgs[sp.id])sl.addImage({data:imgs[sp.id],x:ix,y:iy,w:sz,h:sz});
+        else sl.addShape(P.ShapeType.roundRect,{x:ix,y:iy,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
+        var tx=ix+sz+0.14,tw=cw-(tx-cx)-0.1,cur=tx;
+        if(it.time){sl.addText(it.time,{x:cur,y:ry+0.08,w:0.62,h:0.24,fontFace:FACE,fontSize:11,bold:true,color:C.ink,margin:0,valign:"middle",isTextBox:true});cur+=0.66}
+        if(sp.cat){
+          var tgw=Math.max(0.5,wlen(sp.cat)*0.15+0.24);
+          sl.addText(sp.cat,{shape:P.ShapeType.roundRect,rectRadius:0.05,x:cur,y:ry+0.08,w:tgw,h:0.24,fill:{color:sp.cat==="美食"?C.food:C.tag},fontFace:FACE,fontSize:9,bold:true,color:C.tagInk,align:"center",valign:"middle",margin:0});
+          cur+=tgw+0.08;
+        }
+        if(sp.area&&tx+tw-cur>0.4)sl.addText(trunc(sp.area,(tx+tw-cur)/0.125),{x:cur,y:ry+0.08,w:tx+tw-cur,h:0.24,fontFace:FACE,fontSize:9,color:C.muted,margin:0,valign:"middle",isTextBox:true});
+        var lk=mapLinks(sp),isz=0.22,iw=lk.length*(isz+0.06),twN=tw-iw-0.04;
+        lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.06),y:ry+0.47-isz/2,w:isz,h:isz,hyperlink:{url:l.u,tooltip:l.t}})});
+        var maxN=Math.floor(twN/(14/72)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:14,bold:true,color:C.ink}}];
+        var rest=maxN-wlen(trunc(sp.name,maxN))-1;
+        if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
+        sl.addText(nruns,{x:tx,y:ry+0.34,w:twN,h:0.26,fontFace:FACE,margin:0,valign:"middle",isTextBox:true});
+        if(it.note){
+          var nh=Math.max(0.17,rowH-0.62),lines=nh>=0.34?2:1;
+          sl.addText(trunc(it.note.replace(/\n/g," "),lines*tw/(10/72)),{x:tx,y:ry+0.6,w:tw,h:nh,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"top",isTextBox:true});
+        }
+      });
+    });
+
+    /* 4. food list by area */
+    var s4=P.addSlide();s4.background={color:C.surface};
+    s4.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
+    var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
+    s4.addText("美食清單",{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
+    s4.addText("依區域分類・共 "+foods.length+" 間",{x:8.2,y:0.4,w:4.5,h:0.7,fontFace:FACE,fontSize:14,color:C.muted,align:"right",margin:0,isTextBox:true,valign:"middle"});
+    if(!foods.length){
+      s4.addText("（景點庫裡還沒有美食景點）",{x:0.7,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
+    }else{
+      var groups={};foods.forEach(function(sp){var k=sp.area||"";(groups[k]=groups[k]||[]).push(sp)});
+      var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return a.localeCompare(b,"zh-Hant")});
+      var lines=[];
+      keys.forEach(function(k){
+        lines.push({h:true,t:(k||"未分區")+"（"+groups[k].length+"）"});
+        groups[k].sort(function(a,b){return a.name.localeCompare(b.name,"zh-Hant")}).forEach(function(sp){lines.push({h:false,t:sp.name,ko:sp.ko})});
+      });
+      var nc=Math.min(4,Math.max(1,Math.ceil(lines.length/13))),per2=Math.ceil(lines.length/nc),colsArr=[[]];
+      lines.forEach(function(ln,i){
+        var c=colsArr[colsArr.length-1];
+        var next=lines[i+1];
+        if(c.length>=per2||(ln.h&&c.length>=per2-1&&next)){ if(colsArr.length<nc){colsArr.push([]);c=colsArr[colsArr.length-1]} }
+        c.push(ln);
+      });
+      var maxL=Math.max.apply(null,colsArr.map(function(c){return c.length})),fs=Math.max(9,Math.min(16,Math.floor(5.5*72/(maxL*1.55))));
+      var gx=0.3,cw2=(12.0-gx*(colsArr.length-1))/colsArr.length,maxC=Math.floor(cw2/(fs/72*0.95));
+      colsArr.forEach(function(c,ci){
+        var runs=c.map(function(ln,i){
+          var o={fontSize:ln.h?fs+1:fs,bold:ln.h,color:ln.h?C.accent:C.ink,breakLine:i<c.length-1};
+          if(ln.h&&i>0)o.paraSpaceBefore=8;
+          return {text:ln.h?ln.t:trunc(ln.t+(ln.ko?"（"+ln.ko+"）":""),maxC),options:o};
+        });
+        s4.addText(runs,{x:0.7+ci*(cw2+gx),y:1.4,w:cw2,h:5.6,fontFace:FACE,margin:0,valign:"top",isTextBox:true});
+      });
+    }
+    return P.write({outputType:"blob"});
+  }
+  $("exPpt").onclick=async function(){
+    var btn=this;
+    if(typeof PptxGenJS==="undefined"){say("簡報元件載入失敗，請確認網路連線後重新整理頁面。");return}
+    var old=btn.textContent;btn.disabled=true;btn.textContent="產生中…";
+    try{
+      var blob=await buildPpt();
+      var r=await saveBlob(blob,((s.title||"旅遊行程").replace(/[\\\/:*?"<>|]/g,""))+".pptx");
+      say(r==="ok"?"PPT 已匯出。":(r==="cancel"?"已取消匯出。":"PPT 匯出失敗，請再試一次。"));
+    }catch(err){say("產生 PPT 時發生錯誤。");try{console.error(err)}catch(e){}}
+    btn.disabled=false;btn.textContent=old;
+  };
+
+  function pdfFile(pages,PWpt,PHpt){
+    var enc=new TextEncoder(),chunks=[],offs=[],len=0;
+    function push(x){var u=typeof x==="string"?enc.encode(x):x;chunks.push(u);len+=u.length}
+    function obj(n,fn){offs[n]=len;push(n+" 0 obj\n");fn();push("\nendobj\n")}
+    var n=pages.length,kids=[];
+    for(var i=0;i<n;i++)kids.push((3+3*i)+" 0 R");
+    push("%PDF-1.4\n");
+    obj(1,function(){push("<< /Type /Catalog /Pages 2 0 R >>")});
+    obj(2,function(){push("<< /Type /Pages /Kids ["+kids.join(" ")+"] /Count "+n+" >>")});
+    pages.forEach(function(pg,i){
+      var po=3+3*i,co=4+3*i,io=5+3*i,lks=(pg.links||[]).filter(function(l){return /^https?:\/\/[\x21-\x7e]+$/.test(l.url)}),cs="q "+PWpt+" 0 0 "+PHpt+" 0 0 cm /Im0 Do Q";
+      obj(po,function(){push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+PWpt+" "+PHpt+"] /Resources << /XObject << /Im0 "+io+" 0 R >> >> /Contents "+co+" 0 R"+(lks.length?" /Annots ["+lks.map(function(l){return "<< /Type /Annot /Subtype /Link /Rect ["+[l.x1,l.y1,l.x2,l.y2].map(function(v){return v.toFixed(2)}).join(" ")+"] /Border [0 0 0] /A << /S /URI /URI ("+l.url.replace(/[\\()]/g,function(c){return "\\"+c})+") >> >>"}).join(" ")+"]":"")+" >>")});
+      obj(co,function(){push("<< /Length "+cs.length+" >>\nstream\n"+cs+"\nendstream")});
+      obj(io,function(){push("<< /Type /XObject /Subtype /Image /Width "+pg.w+" /Height "+pg.h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+pg.data.length+" >>\nstream\n");push(pg.data);push("\nendstream")});
+    });
+    var xr=len,total=2+3*n;
+    var x="xref\n0 "+(total+1)+"\n0000000000 65535 f \n";
+    for(var k=1;k<=total;k++)x+=("0000000000"+offs[k]).slice(-10)+" 00000 n \n";
+    push(x+"trailer\n<< /Size "+(total+1)+" /Root 1 0 R >>\nstartxref\n"+xr+"\n%%EOF");
+    return new Blob(chunks,{type:"application/pdf"});
+  }
+  async function buildPdf(){
+    var F=SERIF,P=120,K=1.5,PW=1600,PH=900;
+    function pt(n){return n*P/72}
+    ensureTrip();
+    var ink=th("--ink"),surface=th("--surface"),bgc=th("--bg"),mainC=th("--blue"),pageC=th("--page");
+    var C={ink:ink,surface:surface,bg:bgc,main:mainC,page:pageC,tag:th("--tag-bg"),tagInk:th("--tag-ink"),food:th("--tag-food"),
+      accent:mixHex(mainC,ink,0.6),muted:mixHex(ink,surface,0.45),line:mixHex(surface,ink,0.14),pageInk:lum(pageC)>0.55?"#0D2626":"#ffffff"};
+    try{
+      var ft="旅遊行程機票及飯店資訊去程回程出發抵達第天共個行程美食清單依區域分類間未分區尚未加入飯店0123456789:/— "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.addr||"")+(x.area||"")}).join("");
+      s.days.forEach(function(d){d.forEach(function(it){ft+=(it.note||"")+(it.time||"")})});
+      s.hotelSpots.forEach(function(it){ft+=it.note||""});
+      ft+=s.flights.out.no+s.flights.back.no;
+      await document.fonts.load('700 20px "Noto Serif TC"',ft);await document.fonts.load('500 15px "Noto Serif TC"',ft);await document.fonts.load('400 15px "Noto Serif TC"',ft);
+    }catch(e){}
+    var need={};
+    s.days.forEach(function(d){d.forEach(function(it){need[it.sid]=1})});
+    var imgs={};
+    await Promise.all(Object.keys(need).map(function(id){var sp=spot(id);if(!sp||!sp.img)return null;return loadImg(sp.img).then(function(im){imgs[id]=im})}));
+    var pages=[];
+    function newPage(bg){
+      var cv=document.createElement("canvas");cv.width=PW*K;cv.height=PH*K;
+      var c=cv.getContext("2d");c.scale(K,K);c.textBaseline="middle";c.fillStyle=bg;c.fillRect(0,0,PW,PH);
+      cv.__links=[];pages.push(cv);c.__cv=cv;return c;
+    }
+    var gI=await loadImg(ICON_G),nI=await loadImg(ICON_N);
+    function iconW(sp,isz){return mapLinks(sp).length*(isz+0.07*P)}
+    function icons(c,sp,right,cy,isz){
+      var lk=mapLinks(sp),x=right-lk.length*(isz+0.07*P)+0.07*P;
+      lk.forEach(function(l,j){
+        var im=l.i===ICON_N?nI:gI,ix=x+j*(isz+0.07*P);
+        if(im)c.drawImage(im,ix,cy-isz/2,isz,isz);
+        c.__cv.__links.push({x:ix,y:cy-isz/2,w:isz,h:isz,url:l.u});
+      });
+    }
+    function T(c,t,x,y,size,weight,color,align){c.font=weight+" "+pt(size)+"px "+F;c.fillStyle=color;c.textAlign=align||"left";c.fillText(t,x,y);c.textAlign="left"}
+    function box(c,x,y,w,h,r,fill,stroke){rr(c,x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke()}}
+    function frame(title,right){
+      var c=newPage(C.surface);
+      c.fillStyle=C.main;c.fillRect(0,0,0.28*P,PH);
+      T(c,title,0.7*P,0.75*P,30,"700",C.accent);
+      if(right)T(c,right,12.7*P,0.75*P,14,"400",C.muted,"right");
+      return c;
+    }
+    var n=s.days.length,cnt=s.days.reduce(function(a,d){return a+d.length},0);
+
+    /* 1 title */
+    var c=newPage(C.page);
+    c.font="700 "+pt(44)+"px "+F;
+    var tl=wrap(c,s.title||"旅遊行程",11.5*P,2),lh=pt(44)*1.25,y0=3.2*P-(tl.length-1)*lh;
+    tl.forEach(function(l,i){T(c,l,0.9*P,y0+i*lh,44,"700",C.pageInk)});
+    c.fillStyle=C.pageInk;c.fillRect(0.9*P,3.9*P,1.6*P,0.06*P);
+    var d1=(s.flights.out.dep||"").slice(0,10).replace(/-/g,"/"),d2=(s.flights.back.arr||s.flights.back.dep||"").slice(0,10).replace(/-/g,"/");
+    var range=d1&&d2?d1+" – "+d2:(d1||d2);
+    T(c,[range,n+" 天",cnt+" 個行程"].filter(Boolean).join("   ·   "),0.9*P,4.45*P,20,"400",C.pageInk);
+
+    /* 2 flights + hotels */
+    c=frame("機票及飯店資訊");
+    box(c,0.7*P,1.4*P,5.7*P,5.5*P,0.12*P,C.bg,C.line);
+    box(c,6.75*P,1.4*P,5.9*P,5.5*P,0.12*P,C.bg,C.line);
+    T(c,"機票",1.0*P,1.78*P,18,"700",C.accent);
+    [["out","去程"],["back","回程"]].forEach(function(L,i){
+      var l=s.flights[L[0]],y=2.15*P+i*2.35*P;
+      T(c,L[1],1.0*P,y+0.15*P,13,"700",C.muted);
+      T(c,l.no||"（未填班機號碼）",1.0*P,y+0.62*P,26,"700",C.ink);
+      T(c,"出發　"+fmtDT(l.dep),1.0*P,y+1.2*P,15,"400",C.ink);
+      T(c,"抵達　"+fmtDT(l.arr),1.0*P,y+1.6*P,15,"400",C.ink);
+    });
+    T(c,"飯店",7.05*P,1.78*P,18,"700",C.accent);
+    var hs=s.hotelSpots.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+    if(!hs.length)T(c,"（尚未加入飯店）",7.05*P,2.45*P,15,"400",C.muted);
+    else{
+      var bh=Math.min(2.3,4.6/hs.length)*P,k=hs.length>3?0.8:1,hy=2.15*P;
+      hs.forEach(function(x,i){
+        var y=hy+i*bh,yy=y+0.2*P*k;
+        var hz=0.22*P,hw=iconW(x.sp,hz);
+        icons(c,x.sp,12.35*P,yy,hz);
+        T(c,fit((c.font="700 "+pt(20*k)+"px "+F,c),x.sp.name,5.3*P-hw),7.05*P,yy,20*k,"700",C.ink);yy+=0.34*P*k;
+        if(x.sp.ko){T(c,fit((c.font="400 "+pt(12*k)+"px "+F,c),x.sp.ko,5.3*P),7.05*P,yy,12*k,"400",C.muted);yy+=0.28*P*k}
+        c.font="400 "+pt(13*k)+"px "+F;
+        var al=x.sp.addr?wrap(c,x.sp.addr,5.3*P,2):[];
+        al.forEach(function(l){T(c,l,7.05*P,yy,13*k,"400",C.ink);yy+=0.26*P*k});
+        var nl=x.it.note?wrap(c,x.it.note,5.3*P,3):[];
+        nl.forEach(function(l){T(c,l,7.05*P,yy,13*k,"400",C.ink);yy+=0.26*P*k});
+      });
+    }
+
+    /* 3 days */
+    s.days.forEach(function(d,di){
+      var items=d.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+      var c=frame("第 "+(di+1)+" 天","共 "+items.length+" 個行程");
+      if(!items.length){T(c,"（這天還沒有行程）",0.7*P,1.75*P,16,"400",C.muted);return}
+      var m=items.length,cols=Math.min(3,Math.max(1,Math.ceil(m/7))),per=Math.ceil(m/cols),gx=0.25,gy=0.1;
+      var cw=(12.0-gx*(cols-1))/cols,rowH=Math.min(1.0,(5.8-gy*(per-1))/per);
+      items.forEach(function(x,i){
+        var col=Math.floor(i/per),row=i%per,cx=(0.7+col*(cw+gx))*P,ry=(1.3+row*(rowH+gy))*P,sp=x.sp,it=x.it;
+        var w=cw*P,h=rowH*P;
+        box(c,cx,ry,w,h,0.08*P,C.bg,C.line);
+        var sz=h-0.16*P,ix=cx+0.08*P,iy=ry+0.08*P,im=imgs[sp.id];
+        c.save();rr(c,ix,iy,sz,sz,0.06*P);c.clip();
+        if(im){var q=Math.max(sz/im.width,sz/im.height),iw=im.width*q,ih=im.height*q;c.drawImage(im,ix+(sz-iw)/2,iy+(sz-ih)/2,iw,ih)}
+        else{c.fillStyle=C.line;c.fillRect(ix,iy,sz,sz)}
+        c.restore();
+        var tx=ix+sz+0.14*P,tw=cx+w-tx-0.1*P,cur=tx,ly=ry+0.2*P;
+        if(it.time){c.font="700 "+pt(11)+"px "+F;var tmw=c.measureText(it.time).width;T(c,it.time,cur,ly,11,"700",C.ink);cur+=tmw+0.1*P}
+        if(sp.cat){
+          c.font="700 "+pt(9)+"px "+F;var cw2=c.measureText(sp.cat).width+0.24*P;
+          box(c,cur,ly-0.12*P,cw2,0.24*P,0.05*P,sp.cat==="美食"?C.food:C.tag);
+          T(c,sp.cat,cur+0.12*P,ly,9,"700",C.tagInk);cur+=cw2+0.08*P;
+        }
+        if(sp.area&&tx+tw-cur>0.4*P){c.font="400 "+pt(9)+"px "+F;T(c,fit(c,sp.area,tx+tw-cur),cur,ly,9,"400",C.muted)}
+        var dz=0.22*P,dw2=iconW(sp,dz);
+        icons(c,sp,cx+w-0.1*P,ry+0.47*P,dz);
+        c.font="700 "+pt(14)+"px "+F;
+        var nm=fit(c,sp.name,tw-dw2),nw=c.measureText(nm).width,ny=ry+0.47*P;
+        T(c,nm,tx,ny,14,"700",C.ink);
+        if(sp.ko&&tw-dw2-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sp.ko,tw-dw2-nw-0.12*P),tx+nw+0.12*P,ny,10,"400",C.muted)}
+        if(it.note){
+          var nh=Math.max(0.17,rowH-0.62),lines=nh>=0.34?2:1;
+          c.font="400 "+pt(10)+"px "+F;
+          wrap(c,it.note,tw,lines).forEach(function(l,j){T(c,l,tx,ry+0.7*P+j*0.17*P,10,"400",C.muted)});
+        }
+      });
+    });
+
+    /* 4 food by area */
+    var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
+    c=frame("美食清單","依區域分類・共 "+foods.length+" 間");
+    if(!foods.length)T(c,"（景點庫裡還沒有美食景點）",0.7*P,1.75*P,16,"400",C.muted);
+    else{
+      var groups={};foods.forEach(function(sp){var k=sp.area||"";(groups[k]=groups[k]||[]).push(sp)});
+      var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return a.localeCompare(b,"zh-Hant")});
+      var lines=[];
+      keys.forEach(function(k){
+        lines.push({h:true,t:(k||"未分區")+"（"+groups[k].length+"）"});
+        groups[k].sort(function(a,b){return a.name.localeCompare(b.name,"zh-Hant")}).forEach(function(sp){lines.push({h:false,t:sp.name+(sp.ko?"（"+sp.ko+"）":"")})});
+      });
+      var nc=Math.min(4,Math.max(1,Math.ceil(lines.length/13))),per2=Math.ceil(lines.length/nc),colsArr=[[]];
+      lines.forEach(function(ln,i){
+        var cc=colsArr[colsArr.length-1],next=lines[i+1];
+        if(cc.length>=per2||(ln.h&&cc.length>=per2-1&&next)){if(colsArr.length<nc){colsArr.push([]);cc=colsArr[colsArr.length-1]}}
+        cc.push(ln);
+      });
+      var maxL=Math.max.apply(null,colsArr.map(function(x){return x.length})),fs=Math.max(9,Math.min(16,Math.floor(5.5*72/(maxL*1.55))));
+      var gx2=0.3,cw3=(12.0-gx2*(colsArr.length-1))/colsArr.length,step=pt(fs)*1.45;
+      colsArr.forEach(function(col,ci){
+        var x=(0.7+ci*(cw3+gx2))*P,y=1.55*P;
+        col.forEach(function(ln,i){
+          if(ln.h&&i>0)y+=pt(8);
+          c.font=(ln.h?"700 ":"400 ")+pt(ln.h?fs+1:fs)+"px "+F;
+          T(c,fit(c,ln.t,cw3*P),x,y,ln.h?fs+1:fs,ln.h?"700":"400",ln.h?C.accent:C.ink);
+          y+=step;
+        });
+      });
+    }
+    var out=pages.map(function(cv){
+      var b64=cv.toDataURL("image/jpeg",0.92).split(",")[1],bin=atob(b64),u=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+      return {data:u,w:cv.width,h:cv.height,links:cv.__links.map(function(l){return {x1:l.x*0.6,y1:540-(l.y+l.h)*0.6,x2:(l.x+l.w)*0.6,y2:540-l.y*0.6,url:l.url}})};
+    });
+    return pdfFile(out,960,540);
+  }
+  $("exPdf").onclick=async function(){
+    var btn=this,old=btn.textContent;btn.disabled=true;btn.textContent="產生中…";
+    try{
+      var blob=await buildPdf();
+      var r=await saveBlob(blob,((s.title||"旅遊行程").replace(/[\\\/:*?"<>|]/g,""))+".pdf");
+      say(r==="ok"?"PDF 已匯出。":(r==="cancel"?"已取消匯出。":"PDF 匯出失敗，請再試一次。"));
+    }catch(err){say("產生 PDF 時發生錯誤。");try{console.error(err)}catch(e){}}
+    btn.disabled=false;btn.textContent=old;
+  };
+  function findItem(u){for(var i=0;i<s.days.length;i++)for(var j=0;j<s.days[i].length;j++)if(s.days[i][j].uid===u)return s.days[i][j];for(var k=0;k<s.hotelSpots.length;k++)if(s.hotelSpots[k].uid===u)return s.hotelSpots[k];return null}
+  function autogrow(t){t.style.height="auto";t.style.height=Math.max(t.scrollHeight,28)+"px"}
+  function growNotes(){[].forEach.call(document.querySelectorAll(".inote"),autogrow)}
+  function drawJump(){
+    var sel=$("dayJump");if(!sel)return;
+    sel.innerHTML='<option value="">跳到某一天</option>'+s.days.map(function(d,i){return '<option value="'+i+'">第 '+(i+1)+' 天（'+d.length+' 站）</option>'}).join("");
+    sel.value="";
+  }
+  $("dayJump").onchange=function(){
+    var v=this.value;this.value="";if(v==="")return;
+    var el=document.querySelectorAll("#days .day")[Number(v)];
+    if(el)el.scrollIntoView({behavior:"smooth",inline:"start",block:"nearest"});
+  };
+  function applyDayW(v){document.documentElement.style.setProperty("--dayw",v+"px")}
+  var dw="300";try{dw=localStorage.getItem(KEY+"-dayw")||"300"}catch(e){}
+  if(["240","300","380","480"].indexOf(dw)<0)dw="300";
+  applyDayW(dw);$("dayW").value=dw;
+  $("dayW").onchange=function(){dw=this.value;applyDayW(dw);try{localStorage.setItem(KEY+"-dayw",dw)}catch(e){}};
+  function mixHex(a,b,t){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16);function ch(sh){return Math.round((x>>sh&255)*(1-t)+(y>>sh&255)*t)}return "#"+[16,8,0].map(function(sh){return ("0"+ch(sh).toString(16)).slice(-2)}).join("")}
+  function wrap(c,t,w,max){
+    var lines=[],ps=String(t).split("\n");
+    ps.forEach(function(para){
+      var cur="";
+      for(var i=0;i<para.length;i++){var ch=para[i];if(c.measureText(cur+ch).width>w&&cur){lines.push(cur);cur=ch}else cur+=ch}
+      lines.push(cur);
+    });
+    if(lines.length>max){lines=lines.slice(0,max);var l=lines[max-1];while(l.length>1&&c.measureText(l+"…").width>w)l=l.slice(0,-1);lines[max-1]=l+"…"}
+    return lines;
+  }
+  renderTrip();
+  $("manual").onclick=function(){
+    var f=$("add"),opening=f.hidden;
+    f.hidden=!opening;this.setAttribute("aria-expanded",String(opening));
+    this.textContent=opening?"收合":"手動輸入";
+    if(opening)$("n").focus();
+  };
+  $("gm").addEventListener("paste",function(){setTimeout(fromLink,0)});
+  $("gm").addEventListener("change",fromLink);
+  $("gm").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();fromLink()}});
+  document.addEventListener("input",function(e){
+    var f=e.target.dataset&&e.target.dataset.f;if(!f)return;
+    var sp=spot(e.target.dataset.sid);if(!sp)return;
+    sp[f]=f==="naver"?okNaver(e.target.value.trim()):e.target.value;save();
+  });
+  $("reset").onclick=function(){
+    if(!confirm("確定要清除所有景點和行程嗎？"))return;
+    s={title:"",spots:[],days:[[],[]]};ensureTrip();openKey=null;save();renderTrip();$("out").style.display="none";$("prev").style.display="none";$("exClose").hidden=true;render();
+  };
+
+  function textOut(){
+    var L=[s.title||"旅遊行程"];ensureTrip();var fx=[];[["out","去程"],["back","回程"]].forEach(function(z){var l=s.flights[z[0]];if(l.no||l.dep||l.arr)fx.push(z[1]+"："+(l.no||"")+" "+(l.dep?l.dep.replace("T"," "):"")+(l.arr?" → "+l.arr.replace("T"," "):""))});s.hotelSpots.forEach(function(it){var h=spot(it.sid);if(h)fx.push("飯店："+h.name+(h.addr?"（"+h.addr+"）":"")+(it.note?" ｜ "+it.note.replace(/\n/g," "):""))});if(fx.length){L.push("");L=L.concat(fx)}
+    s.days.forEach(function(d,i){
+      L.push("","【第 "+(i+1)+" 天】");
+      if(!d.length)L.push("（尚無行程）");
+      d.forEach(function(it,j){var sp=spot(it.sid);if(sp)L.push((j+1)+". "+(it.time?it.time+" ":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(it.note?"｜備註："+it.note.replace(/\n/g," "):""))});
+    });
+    return L.join("\n");
+  }
+  $("exTxt").onclick=function(){
+    var txt=textOut(),o=$("out");
+    function fallback(){o.value=txt;o.style.display="block";$("exClose").hidden=false;o.focus();o.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}say(ok?"已複製行程文字。":"無法自動複製，請在下方文字框全選後複製。")}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){say("已複製行程文字。")},fallback)}else fallback();
+  };
+
+  /* image export */
+  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+  function loadImg(src){return new Promise(function(res){var i=new Image();i.onload=function(){res(i)};i.onerror=function(){res(null)};i.src=src})}
+  function fit(c,t,max){if(c.measureText(t).width<=max)return t;while(t.length>1&&c.measureText(t+"…").width>max)t=t.slice(0,-1);return t+"…"}
+
+  async function buildPng(){
+    var F='"Noto Serif TC","Songti TC","PMingLiU","SimSun",serif';
+    try{
+      var ftxt="旅遊行程第天個景點0123456789:"+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")}).join("");
+      s.days.forEach(function(d){d.forEach(function(it){ftxt+=(it.note||"")+(it.time||"")})});
+      await document.fonts.load('700 20px "Noto Serif TC"',ftxt);await document.fonts.load('500 15px "Noto Serif TC"',ftxt);await document.fonts.load('400 15px "Noto Serif TC"',ftxt);
+    }catch(e){}
+    var imgs={};
+    for(var i=0;i<s.spots.length;i++){if(s.spots[i].img)imgs[s.spots[i].id]=await loadImg(s.spots[i].img)}
+    var K=2,pad=32,gap=16,colW=260,headH=96,dayH=48,rowGap=8,TW=176;
+    var mc=document.createElement("canvas").getContext("2d");mc.font="400 12px "+F;
+    var cols=s.days.map(function(d){
+      var rows=[],h=0;
+      d.forEach(function(it){
+        var sp=spot(it.sid);if(!sp)return;
+        var nl=it.note?wrap(mc,it.note,TW,3):[],top=(it.time||sp.cat)?20:0,rh=Math.max(54,8+top+24+nl.length*16+8);
+        rows.push({it:it,sp:sp,nl:nl,top:top,rh:rh});h+=rh+rowGap;
+      });
+      return {rows:rows,h:h};
+    });
+    var n=s.days.length,W=Math.max(pad*2+n*colW+(n-1)*gap,480);
+    var bodyH=Math.max.apply(null,cols.map(function(x){return x.h}).concat([48]));
+    var boxH=dayH+bodyH+4,H=headH+16+boxH+pad;
+    var cv=document.createElement("canvas");cv.width=W*K;cv.height=H*K;
+    var c=cv.getContext("2d");c.scale(K,K);
+    var pg=th("--page","#afc3d0"),pageInk=lum(pg)>0.55?"#0D2626":"#ffffff";
+    c.fillStyle=pg;c.fillRect(0,0,W,H);
+    c.fillStyle=th("--surface","#ffffff");rr(c,pad,8,W-pad*2,headH-4,14);c.fill();
+    c.fillStyle=th("--ink","#0D2626");c.textBaseline="middle";
+    c.font="700 28px "+F;c.fillText(fit(c,s.title||"旅遊行程",W-pad*2-32),pad+16,headH/2-8);
+    var cnt=s.days.reduce(function(a,d){return a+d.length},0);
+    c.font="400 15px "+F;c.globalAlpha=.75;c.fillText(n+" 天・"+cnt+" 個景點",pad+16,headH/2+22);c.globalAlpha=1;
+    var accent=mixHex(th("--blue","#025373"),th("--ink","#0D2626"),0.6);
+    cols.forEach(function(col,i){
+      var x=pad+i*(colW+gap),y=headH+16,acc=0;
+      c.fillStyle=th("--surface","#ffffff");rr(c,x,y,colW,boxH,14);c.fill();
+      c.fillStyle=accent;c.font="700 17px "+F;c.fillText("第 "+(i+1)+" 天",x+16,y+dayH/2);
+      col.rows.forEach(function(r){
+        var sp=r.sp,ry=y+dayH+acc;acc+=r.rh+rowGap;
+        c.fillStyle=th("--bg","#ffffff");rr(c,x+10,ry,colW-20,r.rh,10);c.fill();
+        var tx=x+18,ty=ry+8,ts=38,im=imgs[sp.id];
+        c.save();rr(c,tx,ty,ts,ts,7);c.clip();
+        if(im){var q=Math.max(ts/im.width,ts/im.height),w=im.width*q,h=im.height*q;c.drawImage(im,tx+(ts-w)/2,ty+(ts-h)/2,w,h)}
+        else{c.fillStyle="#e6eef3";c.fillRect(tx,ty,ts,ts);c.fillStyle=accent;c.beginPath();c.arc(tx+ts/2,ty+ts/2,5,0,7);c.fill()}
+        c.restore();
+        var nx=tx+ts+10,lx=nx;
+        if(r.it.time){c.font="700 12px "+F;c.fillStyle=th("--ink","#0D2626");c.fillText(r.it.time,lx,ry+17);lx+=c.measureText(r.it.time).width+8}
+        if(sp.cat){c.font="700 11px "+F;var ct=fit(c,sp.cat,70),tw=c.measureText(ct).width+12;c.fillStyle=(sp.cat==="美食"?th("--tag-food","#e8b08c"):th("--tag-bg","#afc3d0"));rr(c,lx,ry+8,tw,18,5);c.fill();c.fillStyle=th("--tag-ink","#ffffff");c.fillText(ct,lx+6,ry+18)}
+        c.fillStyle=th("--ink","#0D2626");c.font="500 15px "+F;
+        var ny=ry+8+r.top+11;if(!r.top&&!r.nl.length)ny=ty+ts/2;
+        c.fillText(fit(c,sp.name,TW),nx,ny);
+        if(r.nl.length){c.font="400 12px "+F;c.globalAlpha=.7;r.nl.forEach(function(l,k){c.fillText(l,nx,ry+8+r.top+24+k*16+8)});c.globalAlpha=1}
+      });
+    });
+    return new Promise(function(res){cv.toBlob(res,"image/png")});
+  }
+
+  $("exImg").onclick=async function(){
+    if(!s.days.some(function(d){return d.length})){say("先把景點拖進行程，再匯出圖片。");return}
+    say("正在產生圖片…");
+    var blob=await buildPng();
+    if(!blob){say("產生圖片失敗，請再試一次。");return}
+    var fn=(s.title||"旅遊行程").replace(/[\\\/:*?"<>|]/g,"")+".png";
+    if(!downloads){var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);say("圖片已匯出。");return}
+    try{await downloads.save({filename:fn,data:blob});say("圖片已匯出。")}
+    catch(err){say(err&&err.code==="declined"?"已取消匯出。":"無法儲存圖片。")}
+  };
+
+  /* drag */
+  function listFor(k){return k==="h"?s.hotelSpots:s.days[Number(k)]}
+  var drag=null,pend=null;
+  function startDrag(b,x,y){
+    var rc=b.getBoundingClientRect(),g=b.cloneNode(true);
+    g.className+=" ghost";g.style.width=rc.width+"px";g.style.left=rc.left+"px";g.style.top=rc.top+"px";
+    document.body.appendChild(g);
+    drag={el:b,ghost:g,dx:x-rc.left,dy:y-rc.top,x0:x,y0:y,moved:false,sid:b.dataset.sid,uid:b.dataset.uid||null,day:b.dataset.day===undefined?null:b.dataset.day,zone:null,idx:0};
+  }
+  document.addEventListener("pointerdown",function(e){
+    var b=e.target.closest(".blk");
+    if(!b||e.target.closest("button")||e.target.closest("a")||e.target.closest(".d"))return;
+    if(e.pointerType==="touch"){var px=e.clientX,py=e.clientY;pend={x:px,y:py,timer:setTimeout(function(){pend=null;startDrag(b,px,py);try{if(navigator.vibrate)navigator.vibrate(15)}catch(_){}},350)};return}
+    if(e.button>0)return;
+    e.preventDefault();
+    var rc=b.getBoundingClientRect(),g=b.cloneNode(true);
+    g.className+=" ghost";g.style.width=rc.width+"px";g.style.left=rc.left+"px";g.style.top=rc.top+"px";
+    document.body.appendChild(g);
+    drag={el:b,ghost:g,dx:e.clientX-rc.left,dy:e.clientY-rc.top,x0:e.clientX,y0:e.clientY,moved:false,sid:b.dataset.sid,uid:b.dataset.uid||null,day:b.dataset.day===undefined?null:b.dataset.day,zone:null,idx:0};
+  });
+  window.addEventListener("pointermove",function(e){
+    if(pend&&Math.abs(e.clientX-pend.x)+Math.abs(e.clientY-pend.y)>8){clearTimeout(pend.timer);pend=null}
+    if(!drag)return;
+    if(!drag.moved){
+      if(Math.abs(e.clientX-drag.x0)+Math.abs(e.clientY-drag.y0)<5)return;
+      drag.moved=true;drag.el.classList.add("src");
+    }
+    drag.ghost.style.left=(e.clientX-drag.dx)+"px";drag.ghost.style.top=(e.clientY-drag.dy)+"px";
+    var el=document.elementFromPoint(e.clientX,e.clientY),z=el&&el.closest(".dz");
+    document.querySelectorAll(".dz.hit").forEach(function(n){n.classList.remove("hit")});
+    drag.zone=z;
+    if(z){
+      z.classList.add("hit");
+      if(z.dataset.day!==undefined){
+        var kids=[].slice.call(z.querySelectorAll(".blk")).filter(function(k){return k!==drag.el}),i=0;
+        for(;i<kids.length;i++){var r=kids[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2)break}
+        drag.idx=i;
+      }
+    }
+  });
+  function end(){
+    if(pend){clearTimeout(pend.timer);pend=null}
+    if(!drag)return;
+    var d=drag;drag=null;
+    d.ghost.remove();d.el.classList.remove("src");
+    document.querySelectorAll(".dz.hit").forEach(function(n){n.classList.remove("hit")});
+    if(!d.moved)return;
+    justDragged=true;setTimeout(function(){justDragged=false},60);
+    var z=d.zone;if(!z)return;
+    var changed=false;
+    if(z.dataset.day!==undefined){
+      var toL=listFor(z.dataset.day),item;
+      if(d.uid!==null){
+        var from=listFor(d.day),k=from.map(function(x){return x.uid}).indexOf(d.uid);
+        item=from.splice(k,1)[0];
+      }else item={uid:uid(),sid:d.sid,time:"",note:""};
+      toL.splice(Math.min(d.idx,toL.length),0,item);changed=true;
+    }else if(d.uid!==null){
+      var fr=listFor(d.day);fr.splice(fr.map(function(x){return x.uid}).indexOf(d.uid),1);changed=true;
+    }
+    if(changed){save();render()}
+  }
+  window.addEventListener("pointerup",end);
+  window.addEventListener("pointercancel",end);
+  window.addEventListener("touchmove",function(e){if(drag)e.preventDefault()},{passive:false});
+  document.addEventListener("contextmenu",function(e){if(drag||pend)e.preventDefault()});
+
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("button");if(!t)return;
+    if(t.dataset.newcat!==undefined){newCat=newCat===t.dataset.newcat?"":t.dataset.newcat;drawChips();return}
+    if(t.dataset.newarea!==undefined){var ai=$("ar");ai.value=ai.value.trim()===t.dataset.newarea?"":t.dataset.newarea;drawAreaChips();return}
+    if(t.dataset.setarea!==undefined){var sp2=spot(t.dataset.sid);if(sp2){sp2.area=sp2.area===t.dataset.setarea?"":t.dataset.setarea;save();render()}return}
+    if(t.dataset.setcat!==undefined){var sp=spot(t.dataset.sid);if(sp){sp.cat=sp.cat===t.dataset.setcat?"":t.dataset.setcat;save();render()}}
+  });
+  /* ---- trips, cloud sync, sharing ---- */
+  try{themeState=JSON.parse(localStorage.getItem(KEY+"-themestate")||"null")||{ts:0,dirty:false};if(typeof themeState.ts!=="number")themeState={ts:0,dirty:false}}catch(e){themeState={ts:0,dirty:false}}
+  try{deviceId=localStorage.getItem(KEY+"-dev")||"";if(!deviceId){deviceId=uid()+uid();if(!viewerMode)localStorage.setItem(KEY+"-dev",deviceId)}}catch(e){deviceId=uid()+uid()}
+  function persistThemeState(){if(viewerMode)return;try{localStorage.setItem(KEY+"-themestate",JSON.stringify(themeState))}catch(e){}}
+  function jclone(x){return JSON.parse(JSON.stringify(x))}
+  function normTrip(o){
+    if(!o.flights||typeof o.flights!=="object")o.flights={};
+    ["out","back"].forEach(function(k){var l=o.flights[k];if(!l||typeof l!=="object")l=o.flights[k]={};["no","dep","arr"].forEach(function(p){if(typeof l[p]!=="string")l[p]=""})});
+    if(!Array.isArray(o.hotelSpots)&&!Array.isArray(o.hotels))o.hotelSpots=[];
+    if(!Array.isArray(o.days)||!o.days.length)o.days=[[]];
+    return o;
+  }
+  function tripData(id){return id===IDX.cur?s:loadTripData(id)}
+  function hasData(d){return !!d&&(d.spots.length>0||d.days.some(function(x){return x.length>0})||!!d.title||(Array.isArray(d.hotelSpots)&&d.hotelSpots.length>0))}
+  function markDirty(){
+    if(applyingRemote||viewerMode)return;
+    var e=ent(IDX.cur);if(!e)return;
+    e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();schedulePush(IDX.cur);
+  }
+  function setBadge(t){var b=$("syncBadge");if(!b)return;b.textContent=t?"☁ "+t:"";b.hidden=!t}
+  function refreshBadge(){if(!cloudUser)return;setBadge(IDX.list.some(function(e){return e.dirty})?"待同步…":"已同步")}
+  function schedulePush(id){if(!cloudUser||!cloudApi)return;clearTimeout(pushTimers[id]);pushTimers[id]=setTimeout(function(){pushTrip(id)},2000);setBadge("待同步…")}
+
+  /* trip list UI */
+  function drawTripSel(){
+    var sel=$("tripSel");if(!sel)return;
+    var list=IDX.list.slice().sort(function(a,b){return (a.created||0)-(b.created||0)});
+    sel.innerHTML=list.map(function(e){return '<option value="'+esc(e.id)+'">'+esc(e.id===IDX.cur?(s.title||"（未命名行程）"):(e.name||"（未命名行程）"))+'</option>'}).join("");
+    sel.value=IDX.cur;
+  }
+  function loadCur(){
+    s=normTrip(loadTripData(IDX.cur)||blankTrip(""));
+    ensureTrip();openKey=null;filterCat="";filterArea="";
+    $("out").style.display="none";$("prev").style.display="none";$("exClose").hidden=true;
+    render();renderTrip();drawTripSel();updateShareUI();
+  }
+  function switchTrip(id){if(viewerMode||id===IDX.cur||!ent(id))return;IDX.cur=id;persistIdx();loadCur()}
+  function newTripEntry(data,dirty){
+    var id=uid()+uid();
+    IDX.list.push({id:id,name:data.title||"",created:Date.now(),ts:0,dirty:!!dirty,ver:dirty?1:0,shareId:""});
+    try{localStorage.setItem(tkey(id),JSON.stringify(data))}catch(e){say("瀏覽器儲存空間已滿，無法新增行程。")}
+    return id;
+  }
+  function removeLocalTrip(id){
+    IDX.list=IDX.list.filter(function(e){return e.id!==id});
+    try{localStorage.removeItem(tkey(id))}catch(e){}
+    delete pushedMap[id];
+    if(!IDX.list.length)newTripEntry(blankTrip(""),false);
+    var wasCur=IDX.cur===id;
+    if(wasCur)IDX.cur=IDX.list[0].id;
+    persistIdx();
+    if(wasCur)loadCur();else drawTripSel();
+  }
+  async function flushPendingDel(){
+    if(!cloudUser||!cloudApi||!IDX.pendingDel||!IDX.pendingDel.length)return;
+    var list=IDX.pendingDel.slice();
+    for(var i=0;i<list.length;i++){
+      var it=list[i];
+      try{await cloudApi.deleteTrip(cloudUser.uid,it.id,it.sid);IDX.pendingDel=IDX.pendingDel.filter(function(x){return x.id!==it.id})}catch(e){}
+    }
+    persistIdx();
+  }
+  $("tripSel").onchange=function(){switchTrip(this.value)};
+  $("tripNew").onclick=function(){
+    var id=newTripEntry(blankTrip(""),false);persistIdx();switchTrip(id);$("title").focus();
+  };
+  $("exClose").onclick=function(){$("out").style.display="none";$("prev").style.display="none";this.hidden=true};
+  $("tripDup").onclick=function(){
+    var d=normTrip(jclone(s));d.title=(s.title||"行程")+" 複製";
+    var id=newTripEntry(d,true);persistIdx();switchTrip(id);schedulePush(id);
+  };
+  $("tripDel").onclick=function(){
+    var e=ent(IDX.cur);if(!e)return;
+    if(!confirm("確定要刪除「"+(s.title||"這個行程")+"」嗎？"+(cloudUser?"\n雲端上的這份行程也會一併刪除，分享連結會失效。":"")+"\n此動作無法復原。"))return;
+    if(e.ts||e.shareId){IDX.pendingDel=(IDX.pendingDel||[]).concat([{id:e.id,sid:e.shareId||""}])}
+    removeLocalTrip(e.id);
+    flushPendingDel();
+  };
+
+  /* push / pull */
+  async function pushTrip(id){
+    if(!cloudUser||!cloudApi||viewerMode)return;
+    if(pushBusy[id]){pushAgain[id]=true;return}
+    var e=ent(id),d=tripData(id);if(!e||!d)return;
+    clearTimeout(pushTimers[id]);
+    pushBusy[id]=true;pushAgain[id]=false;
+    var ver=e.ver||0,ts=Date.now();
+    setBadge("同步中…");
+    try{
+      if(id===IDX.cur)ensureTrip();else normTrip(d);
+      var pm=pushedMap[id],cur={},changed=[],removed=[],keep=null;
+      d.spots.forEach(function(sp){var j=JSON.stringify(sp);cur[sp.id]=j;if(!pm||pm[sp.id]!==j)changed.push(JSON.parse(j))});
+      if(pm){Object.keys(pm).forEach(function(k){if(!(k in cur))removed.push(k)})}else keep=Object.keys(cur);
+      var base={title:d.title||"",days:d.days.map(function(x){return {items:jclone(x)}}),hotelSpots:jclone(d.hotelSpots||[]),flights:jclone(d.flights),spotOrder:d.spots.map(function(x){return x.id}),updatedAt:ts};
+      var trip=Object.assign({},base,{created:e.created||ts,shareId:e.shareId||"",device:deviceId});
+      var share=null;
+      if(e.shareId)share={id:e.shareId,doc:Object.assign({},base,{owner:cloudUser.uid,theme:jclone(theme)}),all:(e.shareFull||keep)?d.spots.map(jclone):null};
+      await cloudApi.pushTrip(cloudUser.uid,id,trip,changed,removed,keep,share);
+      pushedMap[id]=cur;e.ts=ts;e.name=d.title||"";
+      if((e.ver||0)===ver)e.dirty=false;
+      e.shareFull=false;persistIdx();
+    }catch(err){
+      pushBusy[id]=false;
+      setBadge("同步失敗，稍後重試");
+      try{console.error(err)}catch(_){}
+      pushTimers[id]=setTimeout(function(){pushTrip(id)},15000);
+      return;
+    }
+    pushBusy[id]=false;
+    if(pushAgain[id]||e.dirty)schedulePush(id);else refreshBadge();
+  }
+  function scheduleMeta(){if(!cloudUser||!cloudApi)return;clearTimeout(metaTimer);metaTimer=setTimeout(pushMeta,2000)}
+  async function pushMeta(){
+    if(!cloudUser||!cloudApi)return;
+    try{await cloudApi.setMeta(cloudUser.uid,{theme:jclone(theme),themeTs:themeState.ts||Date.now()});themeState.dirty=false;persistThemeState()}
+    catch(e){clearTimeout(metaTimer);metaTimer=setTimeout(pushMeta,15000)}
+  }
+  function buildFromRemote(remote){
+    var t=remote.trip,byId={},ordered=[];
+    remote.spots.forEach(function(x){byId[x.id]=x});
+    (t.spotOrder||[]).forEach(function(id){if(byId[id]){ordered.push(byId[id]);delete byId[id]}});
+    Object.keys(byId).forEach(function(id){ordered.push(byId[id])});
+    return normTrip(cleanData({title:t.title,spots:ordered,days:(t.days||[]).map(function(x){return (x&&x.items)||[]}),flights:t.flights,hotelSpots:t.hotelSpots}));
+  }
+  function applyRemoteTrip(id,remote){
+    applyingRemote=true;
+    try{
+      var t=remote.trip,data=buildFromRemote(remote),e=ent(id),prev=tripData(id);
+      if(prev&&hasData(prev)){try{localStorage.setItem(KEY+"-prev",JSON.stringify({id:id,data:prev}))}catch(_){}}
+      if(!e){e={id:id,name:"",created:t.created||Date.now(),ts:0,dirty:false,shareId:""};IDX.list.push(e)}
+      e.name=data.title||"";e.ts=t.updatedAt||0;e.dirty=false;e.ver=(e.ver||0);e.shareId=(typeof t.shareId==="string"&&/^[A-Za-z0-9_-]{16,64}$/.test(t.shareId))?t.shareId:"";
+      if(typeof t.created==="number")e.created=t.created;
+      try{localStorage.setItem(tkey(id),JSON.stringify(data))}catch(_){}
+      var pm={};data.spots.forEach(function(sp){pm[sp.id]=JSON.stringify(sp)});pushedMap[id]=pm;
+      persistIdx();
+      if(id===IDX.cur){s=data;openKey=null;ensureTrip();render();renderTrip()}
+      drawTripSel();updateShareUI();
+    }finally{applyingRemote=false}
+  }
+  function syncErr(e){
+    var c=e&&e.code||"";
+    if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return "";
+    if(c==="auth/popup-blocked")return "瀏覽器擋住了登入視窗，請允許彈出視窗後再試一次。";
+    if(c==="auth/unauthorized-domain")return "這個網址還沒加入 Firebase 的「已授權網域」，請到 Firebase 的 Authentication 設定新增。";
+    if(c==="auth/operation-not-allowed")return "Firebase 尚未啟用 Google 登入。";
+    if(c==="unavailable"||c==="firestore/unavailable")return "連不到 Firestore 資料庫。請確認 Firebase 已建立 Firestore Database、網路正常，且沒有被廣告攔截或隱私外掛擋住 firestore.googleapis.com。";
+    if(c==="permission-denied"||c==="firestore/permission-denied")return "Firestore 規則不允許存取，請確認規則設定。";
+    return "發生錯誤："+(c||(e&&e.message)||"未知");
+  }
+  function showSyncInfo(t){var el=$("syncInfo");if(el&&t)el.textContent=t}
+  function nameOf(id,fallback){var e=ent(id);return (e&&e.name)||fallback||"（未命名行程）"}
+  async function startSync(){
+    var u=cloudUser.uid;
+    if(IDX.uid&&IDX.uid!==u){IDX.list.forEach(function(e){e.ts=0;e.dirty=true;e.ver=(e.ver||0)+1;e.shareId="";e.shareFull=false});IDX.pendingDel=[];pushedMap={}}
+    IDX.uid=u;persistIdx();
+    setBadge("同步中…");
+    try{
+      await flushPendingDel();
+      var meta=(await cloudApi.pullMeta(u))||{};
+      var deleted=Array.isArray(meta.deleted)?meta.deleted:[];
+      var ctrips=await cloudApi.listTrips(u);
+      /* import data from the earlier single-trip layout on a fresh device */
+      if(!ctrips.length&&!IDX.list.some(function(e){return hasData(tripData(e.id))})){
+        var lg=await cloudApi.pullLegacy(u);
+        if(lg&&(lg.spots.length||lg.trip.title)){
+          var cid=IDX.cur,ce=ent(cid);
+          applyRemoteTrip(cid,{trip:Object.assign({},lg.trip,{updatedAt:0,shareId:""}),spots:lg.spots});
+          ce=ent(cid);ce.dirty=true;ce.ver=(ce.ver||0)+1;persistIdx();
+        }
+      }
+      /* theme */
+      if((meta.themeTs||0)>themeState.ts&&meta.theme){
+        theme=cleanTheme(meta.theme);
+        applyingRemote=true;try{saveTheme();applyTheme()}finally{applyingRemote=false}
+        themeState.ts=meta.themeTs;themeState.dirty=false;persistThemeState();
+      }else if(themeState.ts>(meta.themeTs||0)){pushMeta()}
+      /* trips deleted on another device */
+      IDX.list.map(function(e){return e.id}).forEach(function(id){if(deleted.indexOf(id)>=0&&ent(id))removeLocalTrip(id)});
+      var cmap={};ctrips.forEach(function(c){if(deleted.indexOf(c.id)<0)cmap[c.id]=c});
+      var ids=Object.keys(cmap);
+      for(var i=0;i<ids.length;i++){
+        var id=ids[i],c=cmap[id],e=ent(id),rts=c.updatedAt||0;
+        if(!e){var r0=await cloudApi.pullTrip(u,id);if(r0)applyRemoteTrip(id,r0);continue}
+        if(e.ts===rts){if(e.dirty)await pushTrip(id)}
+        else if(rts<e.ts){e.dirty=true;persistIdx();await pushTrip(id)}
+        else if(!e.dirty&&e.ts!==0){var r1=await cloudApi.pullTrip(u,id);if(r1)applyRemoteTrip(id,r1)}
+        else{
+          var useCloud=confirm("「"+nameOf(id,c.title)+"」在雲端和這台裝置上有不同的內容。\n\n按「確定」：使用雲端的版本（這台裝置的會被取代，但會暫存一份）。\n按「取消」：用這台裝置的版本覆蓋雲端。");
+          if(useCloud){var r2=await cloudApi.pullTrip(u,id);if(r2)applyRemoteTrip(id,r2)}
+          else{e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();await pushTrip(id)}
+        }
+      }
+      /* trips that only exist on this device */
+      var locals=IDX.list.map(function(e){return e.id});
+      for(var j=0;j<locals.length;j++){
+        var lid=locals[j];
+        if(cmap[lid]||deleted.indexOf(lid)>=0)continue;
+        var ld=tripData(lid);
+        if(!ld||!hasData(ld))continue;
+        var le=ent(lid);le.dirty=true;le.ver=(le.ver||0)+1;persistIdx();
+        await pushTrip(lid);
+      }
+      /* make sure every shared trip still has its public copy */
+      for(var q=0;q<IDX.list.length;q++){
+        var se=IDX.list[q];
+        if(!se.shareId)continue;
+        try{if(!(await cloudApi.getShare(se.shareId))){se.shareFull=true;se.dirty=true;se.ver=(se.ver||0)+1;persistIdx();await pushTrip(se.id)}}catch(err){}
+      }
+      drawTripSel();updateShareUI();refreshBadge();
+      stopListen();
+      unsubs.push(cloudApi.listenTrips(u,onTripChanges));
+    }catch(e){setBadge("同步失敗");showSyncInfo(syncErr(e)||"同步失敗，請稍後再試。");try{console.error(e)}catch(_){}}
+  }
+  async function onTripChanges(changes){
+    if(!cloudUser)return;
+    for(var i=0;i<changes.length;i++){
+      var ch=changes[i];
+      try{
+        if(ch.type==="removed"){var e0=ent(ch.id);if(e0&&!e0.dirty&&e0.ts)removeLocalTrip(ch.id);continue}
+        var t=ch.data;if(!t||t.device===deviceId)continue;
+        var e=ent(ch.id);
+        if(e&&((t.updatedAt||0)<=e.ts||e.dirty))continue;
+        var remote=await cloudApi.pullTrip(cloudUser.uid,ch.id);
+        if(remote){var cur=ent(ch.id);if(!cur||(!cur.dirty&&(remote.trip.updatedAt||0)>cur.ts)){applyRemoteTrip(ch.id,remote);setBadge("已同步（已更新）")}}
+      }catch(err){}
+    }
+  }
+  function stopListen(){unsubs.forEach(function(f){try{f()}catch(e){}});unsubs=[]}
+  function stopSync(){Object.keys(pushTimers).forEach(function(k){clearTimeout(pushTimers[k])});clearTimeout(metaTimer);stopListen()}
+
+  /* sharing (read-only link) */
+  function rand24(){var a=new Uint8Array(18);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+  function shareLink(sid){return location.origin+location.pathname+"?share="+encodeURIComponent(sid)}
+  function updateShareUI(){
+    var e=ent(IDX.cur),on=!!(cloudUser&&e&&e.shareId);
+    $("tripShare").hidden=!cloudUser;
+    $("tripShare").textContent=on?"分享中":"分享";
+    $("sharebox").hidden=!on;
+    if(on)$("shareUrl").value=shareLink(e.shareId);
+  }
+  $("tripShare").onclick=async function(){
+    if(!cloudUser)return;
+    var e=ent(IDX.cur);if(!e)return;
+    if(e.shareId){$("sharebox").hidden=false;$("shareUrl").focus();$("shareUrl").select();return}
+    e.shareId=rand24();e.shareFull=true;e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();
+    $("tripShare").textContent="建立中…";
+    await pushTrip(IDX.cur);
+    var ok=false;
+    if(!e.shareFull){try{ok=!!(await cloudApi.getShare(e.shareId))}catch(err){}}
+    if(!ok){e.shareId="";e.shareFull=false;e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();updateShareUI();say("建立分享連結失敗，請確認 Firestore 規則已更新並按「發布」，然後再試一次。");return}
+    updateShareUI();
+  };
+  $("shareCopy").onclick=function(){
+    var inp=$("shareUrl"),btn=this;inp.select();
+    var done=function(){btn.textContent="已複製";setTimeout(function(){btn.textContent="複製連結"},1800)};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(inp.value).then(done,function(){try{document.execCommand("copy");done()}catch(e){}})}
+    else{try{document.execCommand("copy");done()}catch(e){}}
+  };
+  $("shareStop").onclick=async function(){
+    var e=ent(IDX.cur);if(!e||!e.shareId||!cloudUser)return;
+    if(!confirm("停止分享後，已經發出去的連結會立刻失效。確定嗎？"))return;
+    try{await cloudApi.unshare(e.shareId)}catch(err){showSyncInfo(syncErr(err));return}
+    e.shareId="";e.shareFull=false;e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();updateShareUI();pushTrip(IDX.cur);
+  };
+
+  /* read-only viewer (?share=ID) */
+  function vitem(sp,it){
+    var th=sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>';
+    var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
+    return '<div class="vitem">'+th+'<div class="vbd">'+(it&&it.time?'<b class="vtime">'+esc(it.time)+'</b>':'')+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
+  }
+  function renderViewer(){
+    ensureTrip();
+    $("vTitle").textContent=s.title||"旅遊行程";
+    document.title=(s.title||"旅遊行程")+"（分享）";
+    var h="";
+    var legs=[["out","去程"],["back","回程"]].map(function(L){var l=s.flights[L[0]];if(!(l.no||l.dep||l.arr))return "";return '<div class="vcard"><b>'+L[1]+'</b>　'+esc(l.no||"")+'<br><small>'+esc(fmtDT(l.dep))+'　→　'+esc(fmtDT(l.arr))+'</small></div>'}).join("");
+    if(legs)h+='<h2>班機</h2><div class="vrow">'+legs+'</div>';
+    var hs=s.hotelSpots.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+    if(hs.length)h+='<h2>飯店</h2><div class="vlist">'+hs.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>';
+    s.days.forEach(function(d,i){
+      var its=d.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
+      h+='<h2>第 '+(i+1)+' 天</h2>'+(its.length?'<div class="vlist">'+its.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>':'<p class="hint">（尚無行程）</p>');
+    });
+    $("vBody").innerHTML=h;
+  }
+  function vFail(m){$("vTitle").textContent="找不到這份行程";$("vInfo").textContent=m||"連結可能已被停止分享，或網址不正確。";$("vBody").innerHTML="";$("vPdf").hidden=true;$("vPpt").hidden=true}
+  function initViewer(){
+    if(!/^[A-Za-z0-9_-]{16,64}$/.test(viewerShare)){vFail();return}
+    cloudApi.getShare(viewerShare).then(function(r){
+      if(!r){vFail();return}
+      s=buildFromRemote(r);theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();
+    }).catch(function(err){vFail("無法載入（"+((err&&err.code)||"錯誤")+"），請稍後再試。")});
+  }
+  $("vPdf").onclick=function(){$("exPdf").click()};
+  $("vPpt").onclick=function(){$("exPpt").click()};
+
+  /* sign-in UI + startup */
+  function renderSyncUI(){
+    $("syncBox").hidden=false;
+    var u=cloudUser;
+    $("syncIn").hidden=!!u;$("syncOut").hidden=!u;
+    $("syncInfo").textContent=u?("已登入："+(u.email||u.displayName||"")+"。所有行程會自動同步到登入同一帳號的其他裝置。"):"登入後，行程會自動同步到你的其他裝置。未登入時，資料只存在這台裝置。";
+    if(!u)setBadge("未登入");
+  }
+  function initCloud(){
+    if(cloudApi||!window.cloud)return;
+    cloudApi=window.cloud;
+    if(viewerMode){initViewer();return}
+    $("syncIn").onclick=async function(){try{await cloudApi.signIn()}catch(e){showSyncInfo(syncErr(e))}};
+    $("syncOut").onclick=async function(){try{await cloudApi.signOut()}catch(e){}};
+    cloudApi.onAuth(function(user){
+      cloudUser=user;renderSyncUI();updateShareUI();
+      if(user)startSync();else stopSync();
+    });
+    document.addEventListener("visibilitychange",function(){if(document.hidden&&cloudUser)IDX.list.forEach(function(e){if(e.dirty)pushTrip(e.id)})});
+    window.addEventListener("online",function(){if(cloudUser)IDX.list.forEach(function(e){if(e.dirty)schedulePush(e.id)})});
+  }
+  if(viewerMode){
+    document.body.classList.add("viewer");$("viewer").hidden=false;$("vTitle").textContent="載入中…";
+    setTimeout(function(){if(!cloudApi)vFail("無法連線到雲端。")},10000);
+  }
+  window.addEventListener("cloud-ready",initCloud);
+  if(window.cloud)initCloud();
+  drawChips();
+  if(viewerMode){applyTheme()}else{drawTripSel();updateShareUI();render()}
+})();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { initializeFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, writeBatch, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
+  authDomain: "hthsieh-7b870.firebaseapp.com",
+  projectId: "hthsieh-7b870",
+  storageBucket: "hthsieh-7b870.firebasestorage.app",
+  messagingSenderId: "537319375553",
+  appId: "1:537319375553:web:4fabfc4ee2259776048a40"
+};
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+  const metaRef = (uid) => doc(db, "users", uid, "meta", "main");
+  const tripsCol = (uid) => collection(db, "users", uid, "trips");
+  const tripRef = (uid, id) => doc(db, "users", uid, "trips", id);
+  const tSpots = (uid, id) => collection(db, "users", uid, "trips", id, "spots");
+  const tSpot = (uid, id, sid) => doc(db, "users", uid, "trips", id, "spots", sid);
+  const shareRef = (sid) => doc(db, "shares", sid);
+  const sSpots = (sid) => collection(db, "shares", sid, "spots");
+  const sSpot = (sid, id) => doc(db, "shares", sid, "spots", id);
+
+  async function runOps(ops) {
+    for (let i = 0; i < ops.length; i += 450) {
+      const b = writeBatch(db);
+      ops.slice(i, i + 450).forEach((f) => f(b));
+      await b.commit();
+    }
+  }
+  async function clearCol(col) {
+    const qs = await getDocs(col);
+    await runOps(qs.docs.map((d) => (b) => b.delete(d.ref)));
+  }
+
+  window.cloud = {
+    onAuth(cb) { return onAuthStateChanged(auth, (u) => cb(u ? { uid: u.uid, email: u.email, displayName: u.displayName } : null)); },
+    signIn() { return signInWithPopup(auth, new GoogleAuthProvider()); },
+    signOut() { return signOut(auth); },
+    async pullMeta(uid) { const m = await getDoc(metaRef(uid)); return m.exists() ? m.data() : null; },
+    async setMeta(uid, data) { await setDoc(metaRef(uid), data, { merge: true }); },
+    async listTrips(uid) { const qs = await getDocs(tripsCol(uid)); return qs.docs.map((d) => ({ ...d.data(), id: d.id })); },
+    async pullTrip(uid, id) {
+      const t = await getDoc(tripRef(uid, id));
+      if (!t.exists()) return null;
+      const qs = await getDocs(tSpots(uid, id));
+      return { trip: t.data(), spots: qs.docs.map((d) => ({ ...d.data(), id: d.id })) };
+    },
+    async pullLegacy(uid) {
+      const t = await getDoc(doc(db, "users", uid, "trip", "main"));
+      if (!t.exists()) return null;
+      const qs = await getDocs(collection(db, "users", uid, "spots"));
+      return { trip: t.data(), spots: qs.docs.map((d) => ({ ...d.data(), id: d.id })) };
+    },
+    async pushTrip(uid, id, trip, changed, removed, keep, share) {
+      if (share) {
+        await setDoc(shareRef(share.id), share.doc);
+      }
+      const ops = [];
+      changed.forEach((sp) => ops.push((b) => b.set(tSpot(uid, id, sp.id), sp)));
+      removed.forEach((sid) => ops.push((b) => b.delete(tSpot(uid, id, sid))));
+      if (keep) {
+        const qs = await getDocs(tSpots(uid, id));
+        const ks = new Set(keep);
+        qs.docs.forEach((d) => { if (!ks.has(d.id)) ops.push((b) => b.delete(d.ref)); });
+      }
+      if (share) {
+        if (share.all) {
+          const qs = await getDocs(sSpots(share.id));
+          const ks = new Set(share.all.map((x) => x.id));
+          qs.docs.forEach((d) => { if (!ks.has(d.id)) ops.push((b) => b.delete(d.ref)); });
+          share.all.forEach((sp) => ops.push((b) => b.set(sSpot(share.id, sp.id), sp)));
+        } else {
+          changed.forEach((sp) => ops.push((b) => b.set(sSpot(share.id, sp.id), sp)));
+          removed.forEach((sid) => ops.push((b) => b.delete(sSpot(share.id, sid))));
+        }
+      }
+      await runOps(ops);
+      await setDoc(tripRef(uid, id), trip);
+    },
+    async deleteTrip(uid, id, sid) {
+      await setDoc(metaRef(uid), { deleted: arrayUnion(id) }, { merge: true });
+      if (sid) { try { await this.unshare(sid); } catch (e) {} }
+      await clearCol(tSpots(uid, id));
+      await deleteDoc(tripRef(uid, id));
+    },
+    async unshare(sid) {
+      await clearCol(sSpots(sid));
+      await deleteDoc(shareRef(sid));
+    },
+    async getShare(sid) {
+      const t = await getDoc(shareRef(sid));
+      if (!t.exists()) return null;
+      const qs = await getDocs(sSpots(sid));
+      return { trip: t.data(), spots: qs.docs.map((d) => ({ ...d.data(), id: d.id })) };
+    },
+    listenTrips(uid, cb) {
+      return onSnapshot(tripsCol(uid), (snap) => cb(snap.docChanges().map((c) => ({ type: c.type, id: c.doc.id, data: c.doc.data() }))), () => {});
+    }
+  };
+  window.dispatchEvent(new Event("cloud-ready"));
+} catch (e) {
+  console.error("Firebase init failed", e);
+}
+</script>
+</body>
+</html>
