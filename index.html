@@ -379,8 +379,8 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
       '<label class="lf"><span>Naver 地圖連結</span><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" aria-label="Naver 地圖連結"></label>'+
-      '<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+(sp.img?'<button data-rmimg="'+sp.id+'">移除圖片</button>':'')+iconHtml(sp)+
-      (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
+      '<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+iconHtml(sp)+
+      (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
     return '<div class="blk'+(open?' open':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
       th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko" lang="ko">'+esc(sp.ko)+'</div>':'')+d+'</div></div>';
   }
@@ -502,8 +502,9 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     shrink(f,function(d){sp.img=d;save();render()});
   });
   document.addEventListener("click",function(e){
-    var t=e.target.closest("button");if(!t||!t.dataset.rmimg)return;
-    var sp=spot(t.dataset.rmimg);if(sp){sp.img="";save();render()}
+    var t=e.target.closest("button");if(!t||!t.dataset.rmstop)return;
+    s.days.forEach(function(dl){for(var i=dl.length-1;i>=0;i--)if(dl[i].uid===t.dataset.rmstop)dl.splice(i,1)});
+    openKey=null;save();render();
   });
   function findOpen(){
     if(!openKey)return null;
