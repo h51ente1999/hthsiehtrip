@@ -595,9 +595,9 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     var K=2,W=380,out=16,pad=20,ts=64,CW=W-out*2,TW=CW-pad*2,NW=CW-pad-(pad+ts+14);
     var mc=document.createElement("canvas").getContext("2d");
     mc.font="700 19px "+F;var nl=wrap(mc,sp.name,NW,2);
-    var headH=Math.max(ts,(sp.cat?26:0)+nl.length*26);
+    var headH=Math.max(ts,(sp.cat?26:0)+nl.length*26+(sp.ko?24:0));
     mc.font="400 14px "+F;
-    var blocks=[["區域",sp.area],["韓文店名",sp.ko],["地址",sp.addr],["營業時間",sp.hours],["備註",sp.note]].filter(function(f){return f[1]}).map(function(f){return {l:f[0],lines:wrap(mc,f[1],TW,f[0]==="備註"?8:4)}});
+    var blocks=[["區域",sp.area],["地址",sp.addr],["營業時間",sp.hours],["備註",sp.note]].filter(function(f){return f[1]}).map(function(f){return {l:f[0],lines:wrap(mc,f[1],TW,f[0]==="備註"?8:4)}});
     var bodyH=blocks.reduce(function(a,b){return a+20+b.lines.length*21+10},0);
     var CH=pad+headH+(blocks.length?20+bodyH-10:0)+pad,H=CH+out*2;
     var cv=document.createElement("canvas");cv.width=W*K;cv.height=H*K;
@@ -618,6 +618,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     }
     c.fillStyle=ink;c.font="700 19px "+F;
     nl.forEach(function(l,i){c.fillText(l,nx,ny+13+i*26)});
+    if(sp.ko){c.font="400 15px "+F;c.fillStyle=accent;c.fillText(fit(c,sp.ko,NW),nx,ny+13+(nl.length-1)*26+24)}
     var y=ty+headH;
     if(blocks.length){
       y+=10;c.globalAlpha=.25;c.fillStyle=accent;c.fillRect(tx,y,TW,1);c.globalAlpha=1;y+=10;
@@ -1050,7 +1051,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     s.days.forEach(function(d,i){
       L.push("","【第 "+(i+1)+" 天】");
       if(!d.length)L.push("（尚無行程）");
-      d.forEach(function(it,j){var sp=spot(it.sid);if(sp)L.push((j+1)+". "+(it.time?it.time+" ":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(it.note?"｜備註："+it.note.replace(/\n/g," "):""))});
+      d.forEach(function(it,j){var sp=spot(it.sid);if(sp)L.push((j+1)+". "+(it.time?it.time+" ":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(sp.naver?" Naver："+sp.naver:"")+(it.note?"｜備註："+it.note.replace(/\n/g," "):""))});
     });
     return L.join("\n");
   }
