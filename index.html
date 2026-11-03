@@ -64,13 +64,17 @@ p.hint.top{opacity:.75}
 .tripbar .sharebox .hint{flex-basis:100%;margin:0}
 body.viewer main{display:none}
 #viewer{max-width:760px;margin:0 auto;padding:20px 16px 48px}
-#viewer h1{margin:0 0 6px}#viewer h2{margin:22px 0 8px;font-size:1.1rem}
+#viewer h1,#viewer h2{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 16px}
+#viewer h1{margin:0 0 10px}#viewer h2{margin:22px 0 8px;font-size:1.1rem}
+#viewer button.primary{background:var(--surface);color:var(--accent-text);border-color:var(--surface)}
+.vth{background:var(--blue-soft)!important}
+#vInfo:not(:empty),#vBody p.hint{background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:10px}
 #viewer .row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .vlist{display:grid;gap:8px}.vrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
 .vcard,.vitem{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px}
 .vitem{display:flex;gap:12px}.vth{width:84px;height:84px;object-fit:cover;border-radius:8px;background:var(--bg);flex:none}
 .vbd{min-width:0;flex:1}.vbd .n{font-weight:700}.vsub{font-size:.9rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
-.vnote{font-size:.9rem;margin-top:4px;white-space:pre-wrap}.vtime{margin-right:6px}
+.vnote{font-size:.9rem;margin-top:4px;white-space:pre-wrap}.vside{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}.vtime{font-size:1.05rem;line-height:1.2}
 .vtags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px}.vtag{background:var(--tag-bg);color:var(--tag-ink);font-weight:700;font-size:.75rem;padding:1px 8px;border-radius:6px}.vtag.food{background:var(--tag-food)}
 .vbd a{font-size:.85rem;color:var(--hit)}
 .syncbadge{font-size:.8rem;color:var(--muted);white-space:nowrap}
@@ -1485,9 +1489,9 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 
   /* read-only viewer (?share=ID) */
   function vitem(sp,it){
-    var th=sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>';
+    var th='<div class="vside">'+(sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>')+(it&&it.time?'<b class="vtime">'+esc(it.time)+'</b>':'')+'</div>';
     var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
-    return '<div class="vitem">'+th+'<div class="vbd">'+(it&&it.time?'<b class="vtime">'+esc(it.time)+'</b>':'')+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
+    return '<div class="vitem">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
   function renderViewer(){
     ensureTrip();
