@@ -706,7 +706,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
       var bh=Math.min(2.3,4.6/hs.length),k=hs.length>3?0.8:1;
       hs.forEach(function(x,i){
         var hl=mapLinks(x.sp),hiw=hl.length*0.28;
-        hl.forEach(function(l,j){s2.addImage({data:l.i.replace(/^data:/,""),x:7.05+5.3-hiw+j*0.28,y:2.15+i*bh+0.02,w:0.22,h:0.22,hyperlink:{url:l.u,tooltip:l.t}})});
+        hl.forEach(function(l,j){s2.addImage({data:l.i.replace(/^data:/,""),x:7.05+5.3-hiw+j*0.28,y:2.15+i*bh+0.02,w:0.22,h:0.22,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
         var runs=[{text:trunc(x.sp.name,Math.max(6,Math.floor((5.3-hiw)/(20*k/72)))),options:{fontSize:Math.round(20*k),bold:true,color:C.ink,breakLine:true}}];
         if(x.sp.ko)runs.push({text:trunc(x.sp.ko,34),options:{fontSize:Math.round(12*k),color:C.muted,breakLine:true}});
         if(x.sp.addr)runs.push({text:trunc(x.sp.addr,60),options:{fontSize:Math.round(13*k),color:C.ink,breakLine:true}});
@@ -744,7 +744,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
         }
         if(sp.area&&tx+tw-cur>0.4)sl.addText(trunc(sp.area,(tx+tw-cur)/0.125),{x:cur,y:ry+0.08,w:tx+tw-cur,h:0.24,fontFace:FACE,fontSize:9,color:C.muted,margin:0,valign:"middle",isTextBox:true});
         var lk=mapLinks(sp),isz=0.22,iw=lk.length*(isz+0.06),twN=tw-iw-0.04;
-        lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.06),y:ry+0.47-isz/2,w:isz,h:isz,hyperlink:{url:l.u,tooltip:l.t}})});
+        lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.06),y:ry+0.47-isz/2,w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
         var maxN=Math.floor(twN/(14/72)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:14,bold:true,color:C.ink}}];
         var rest=maxN-wlen(trunc(sp.name,maxN))-1;
         if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
