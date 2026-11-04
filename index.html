@@ -228,7 +228,8 @@ button,input,select,textarea{font-family:inherit}
 #viewer .vhead h1{background:none!important;color:#fff!important;padding:0!important;margin:0 0 8px!important;font-size:1.7rem}
 #vMeta{display:flex;gap:6px;flex-wrap:wrap}.vchip{background:rgba(255,255,255,.2);border-radius:999px;padding:3px 12px;font-size:.85rem}
 #viewer #vCd{background:#fff;color:var(--blue);border-radius:16px;padding:8px 14px;white-space:normal;text-align:center;align-self:flex-start;font-size:.95rem}
-#vTabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 6px;background:var(--page);scrollbar-width:none}
+#vTabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 6px;background:transparent;scrollbar-width:none;transition:background .2s,box-shadow .2s}
+#vTabs.stuck{background:color-mix(in srgb,var(--page) 82%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:0 0 16px 16px;box-shadow:0 6px 14px color-mix(in srgb,var(--blue) 18%,transparent);padding:8px 10px}
 #vTabs[hidden]{display:none}#vTabs::-webkit-scrollbar{display:none}
 .vtab{flex:none;border:0;border-radius:999px;padding:5px 14px;background:rgba(255,255,255,.7);color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer}.vtab.on{background:var(--blue);color:var(--on-blue,#fff)}
 #viewer h2.vday small.vdt{margin-left:10px;font-weight:400;font-size:.85rem;opacity:.65}.vcnt{display:flex;align-items:center;font-size:.85rem;font-weight:400;opacity:.8;gap:6px}
@@ -1951,6 +1952,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var hs=document.querySelectorAll("#vBody .vday"),cur=-1,y=window.innerHeight*0.3;
     [].forEach.call(hs,function(h,i){if(h.getBoundingClientRect().top<=y)cur=i});
     [].forEach.call(document.querySelectorAll("#vTabs .vtab"),function(b,i){b.classList.toggle("on",i===Math.max(cur,0))});
+    var tb=$("vTabs");if(tb)tb.classList.toggle("stuck",tb.getBoundingClientRect().top<=1&&(window.pageYOffset||0)>10);
   }
   window.addEventListener("scroll",function(){if(viewerMode)vSpy()},{passive:true});
   $("vTabs").addEventListener("click",function(e){
