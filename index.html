@@ -117,7 +117,7 @@ body.viewer main{display:none}
 .vbd{min-width:0;flex:1}.vbd .n{font-weight:700}.vsub{font-size:.9rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
 .vnote{font-size:.9rem;margin-top:4px;white-space:pre-wrap}.vside{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}.vtime{font-size:1.05rem;line-height:1.2;text-align:center}.vtime.vfix{color:var(--accent-text)}
 .vgo{margin:0 0 0 14px;padding-left:10px;border-left:2px solid var(--line);color:var(--ink);background:var(--surface);border-radius:0 8px 8px 0;font-size:.85rem;width:fit-content;padding-right:10px}
-.vkids{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-top:8px;font-size:1rem}.vkids b{font-size:.85rem;color:var(--muted);margin-bottom:-2px}.vkids span{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:8px;border-left:4px solid var(--tag-bg);padding:6px 12px 6px 6px;font-weight:600;overflow-wrap:anywhere}.vkids span img,.vkids span i{flex:0 0 52px;width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--blue-soft)}
+.vkids{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-top:8px;font-size:1rem}.vkids b{font-size:.85rem;color:var(--muted);margin-bottom:-2px}.vkids>span{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:8px;border-left:4px solid var(--tag-bg);padding:6px 12px 6px 6px;font-weight:600;overflow-wrap:anywhere}.vkids .mlinks{margin-left:auto;flex:none}.vkids>span>img,.vkids>span>i{flex:0 0 52px;width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--blue-soft)}
 .vtags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px}.vtag{background:var(--tag-bg);color:var(--tag-ink);font-weight:700;font-size:.75rem;padding:1px 8px;border-radius:6px}.vtag.food{background:var(--tag-food)}
 .vbd a{font-size:.85rem;color:var(--hit)}
 .syncbadge{font-size:.8rem;color:var(--muted);white-space:nowrap}
@@ -907,12 +907,14 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
         if(hasK){
           var ky=ry+Math.min(0.62,rowH-0.2),kz=0.17,kcur=tx,kend=tx+tw;
           kds.forEach(function(k){
-            var room=kend-kcur-kz-0.06;if(room<0.35)return;
+            var lk2=mapLinks(k),isz2=0.15,iw2=lk2.length*(isz2+0.04);
+            var room=kend-kcur-kz-0.06-iw2-0.04;if(room<0.35)return;
             var nm=trunc(k.name,Math.max(1,Math.floor(room/(10/72)))),nw=wlen(nm)*(10/72)+0.04;
             if(imgs[k.id])sl.addImage({data:imgs[k.id],x:kcur,y:ky,w:kz,h:kz});
             else sl.addShape(P.ShapeType.roundRect,{x:kcur,y:ky,w:kz,h:kz,rectRadius:0.03,fill:{color:C.line}});
             sl.addText(nm,{x:kcur+kz+0.05,y:ky-0.02,w:nw,h:kz+0.04,fontFace:FACE,fontSize:10,color:C.ink,margin:0,valign:"middle",isTextBox:true});
-            kcur+=kz+0.05+nw+0.12;
+            lk2.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:kcur+kz+0.05+nw+0.04+j*(isz2+0.04),y:ky+kz/2-isz2/2,w:isz2,h:isz2,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
+            kcur+=kz+0.05+nw+0.04+iw2+0.1;
           });
           if(nlt&&kend-kcur>0.7)sl.addText(trunc(nlt,(kend-kcur)/(10/72)),{x:kcur,y:ky-0.02,w:kend-kcur,h:kz+0.04,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"middle",isTextBox:true});
         }else if(nlt){
@@ -1114,14 +1116,16 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
           var kz=0.17*P,ky=ry+Math.min(0.62,rowH-0.2)*P,kcur=tx,kend=tx+tw;
           c.font="400 "+pt(10)+"px "+F;
           kds.forEach(function(k){
-            var room=kend-kcur-kz-0.06*P;if(room<0.35*P)return;
+            var isz2=0.15*P,iw2=iconW(k,isz2),room=kend-kcur-kz-0.06*P-iw2-0.04*P;if(room<0.35*P)return;
             var nm2=fit(c,k.name,room),nw2=c.measureText(nm2).width,km=imgs[k.id];
             c.save();rr(c,kcur,ky,kz,kz,0.03*P);c.clip();
             if(km){var qq=Math.max(kz/km.width,kz/km.height),kw=km.width*qq,kh=km.height*qq;c.drawImage(km,kcur+(kz-kw)/2,ky+(kz-kh)/2,kw,kh)}
             else{c.fillStyle=C.line;c.fillRect(kcur,ky,kz,kz)}
             c.restore();
             T(c,nm2,kcur+kz+0.05*P,ky+kz/2,10,"400",C.ink);
-            kcur+=kz+0.05*P+nw2+0.12*P;
+            var ix0=kcur+kz+0.05*P+nw2+0.04*P;
+            icons(c,k,ix0+iw2-0.07*P,ky+kz/2,isz2);
+            kcur=ix0+iw2+0.1*P;
           });
           if(nlt&&kend-kcur>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,nlt,kend-kcur),kcur,ky+kz/2,10,"400",C.muted)}
         }else if(nlt){
@@ -1714,7 +1718,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     var th='<div class="vside">'+(sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>')+(rg?'<b class="vtime'+(it&&it.fixed?' vfix':'')+'">'+esc(rg)+'</b>':'')+'</div>';
     var kn=it?kidNames(it):[];
     var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
-    return '<div class="vitem">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
+    return '<div class="vitem">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
   function renderViewer(){
     ensureTrip();
