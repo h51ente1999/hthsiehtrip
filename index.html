@@ -194,6 +194,10 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 .haddr{background:color-mix(in srgb,var(--blue) 18%,var(--surface));border-radius:8px;padding:6px 8px;font-size:.82rem;line-height:1.45;color:var(--ink);user-select:text;-webkit-user-select:text;word-break:break-all;margin-top:2px}.haddr.none{opacity:.5}.inote{width:100%;min-height:28px;resize:none;overflow:hidden;background:color-mix(in srgb,var(--blue) 18%,var(--surface));border:0;border-radius:8px;padding:5px 8px;font:inherit;font-size:.82rem;line-height:1.4;color:var(--ink)}
 
 .drop .empty{color:var(--muted);font-size:.85rem;margin:auto;text-align:center}
+@keyframes sbspin{to{transform:rotate(-360deg)}}
+.sbi{display:block}.sbi.spin{animation:sbspin 1s linear infinite}.syncbadge{display:inline-flex;align-items:center}
+#shareStop{padding:3px 10px;font-size:.78rem;line-height:1.4;width:auto;flex:0 0 auto;border-radius:999px}
+#dropLine{position:fixed;z-index:49;height:4px;border-radius:2px;background:var(--hit);pointer-events:none;display:none;box-shadow:0 0 0 2px var(--blue-soft)}
 .ghost{position:fixed;z-index:50;pointer-events:none;opacity:.92;box-shadow:0 8px 20px rgba(13,42,82,.3)}
 .blk.src{opacity:.35}
 .addday{flex:0 0 auto;align-self:stretch;min-width:90px;border-style:solid;color:var(--muted);background:transparent}
@@ -210,7 +214,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 <section id="viewer" hidden><div class="vwrap"><div class="vhead"><h1 id="vTitle"></h1><div id="vCd" hidden></div></div><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div></div></section>
 <main>
 <section class="panel tripbar"><select id="tripSel" aria-label="切換行程"></select><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><span id="syncBadge" class="syncbadge" hidden></span><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定">⚙</button>
-<div class="settings" id="settings" hidden role="dialog" aria-label="顏色設定"><h2>顏色設定</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><button type="button" id="srToggle" class="srt" aria-expanded="false" aria-controls="srows">細項調整　▾</button><div id="srows" hidden></div><div class="row"><button type="button" id="sreset">還原預設</button><button type="button" id="sclose">關閉</button></div><div class="bk" id="syncBox" hidden><h2>雲端同步</h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row" id="shareStopRow" hidden><button type="button" id="shareStop">停止分享目前的行程（連結會失效）</button></div><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
+<div class="settings" id="settings" hidden role="dialog" aria-label="顏色設定"><h2>顏色設定</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><button type="button" id="srToggle" class="srt" aria-expanded="false" aria-controls="srows">細項調整　▾</button><div id="srows" hidden></div><div class="row"><button type="button" id="sreset">還原預設</button><button type="button" id="sclose">關閉</button></div><div class="bk" id="syncBox" hidden><h2>雲端同步</h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row" id="shareStopRow" hidden><button type="button" id="shareStop" title="停止後，已發出的連結會失效">停止分享此行程</button></div><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
 
 </section>
 <div class="namerow"><section class="panel"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱" style="margin-bottom:0"></section><section class="panel cdbox" id="cd" hidden></section></div>
@@ -1447,17 +1451,25 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     if(z){
       z.classList.add("hit");
       if(z.dataset.day!==undefined){
-        var kids=[].slice.call(z.querySelectorAll(".blk")).filter(function(k){return k!==drag.el}),i=0;
+        var kids=[].slice.call(z.children).filter(function(k){return k.classList.contains("slot")&&!k.contains(drag.el)}),i=0;
         for(;i<kids.length;i++){var r=kids[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2)break}
         drag.idx=i;
-      }
-    }
+        var zr=z.getBoundingClientRect(),ty;
+        if(!kids.length)ty=zr.top+6;
+        else if(i<kids.length)ty=kids[i].getBoundingClientRect().top-4;
+        else ty=kids[kids.length-1].getBoundingClientRect().bottom+4;
+        showLine(zr.left+4,ty,zr.width-8);
+      }else hideLine();
+    }else hideLine();
   });
+  function dropLine(){var l=document.getElementById("dropLine");if(!l){l=document.createElement("div");l.id="dropLine";document.body.appendChild(l)}return l}
+  function showLine(x,y,w){var l=dropLine();l.style.display="block";l.style.left=x+"px";l.style.top=(y-2)+"px";l.style.width=w+"px"}
+  function hideLine(){var l=document.getElementById("dropLine");if(l)l.style.display="none"}
   function end(){
     if(pend){clearTimeout(pend.timer);pend=null}
     if(!drag)return;
     var d=drag;drag=null;
-    d.ghost.remove();d.el.classList.remove("src");document.body.classList.remove("dragging");
+    d.ghost.remove();d.el.classList.remove("src");document.body.classList.remove("dragging");hideLine();
     document.querySelectorAll(".dz.hit").forEach(function(n){n.classList.remove("hit")});
     if(!d.moved)return;
     justDragged=true;setTimeout(function(){justDragged=false},60);
@@ -1523,7 +1535,16 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     var e=ent(IDX.cur);if(!e)return;
     e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();schedulePush(IDX.cur);
   }
-  function setBadge(t){var b=$("syncBadge");if(!b)return;b.textContent=t?"☁ "+t:"";b.hidden=!t}
+  var BI={sync:'<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',
+    ok:'%s<path d="m9 12.5 2.2 2.2L15.5 10.5"/>',bad:'%s<path d="M12 10v3M12 15.8h.01"/>',off:'%s<path d="M4 4l16 16"/>'};
+  function setBadge(t){
+    var b=$("syncBadge");if(!b)return;
+    if(!t){b.innerHTML="";b.hidden=true;return}
+    var k=/同步中|待同步/.test(t)?"sync":/已同步/.test(t)?"ok":/失敗/.test(t)?"bad":"off";
+    var p=BI[k].replace("%s",'<path d="M18 18a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/>');
+    b.innerHTML='<svg class="sbi'+(k==="sync"?" spin":"")+'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+    b.title=t;b.setAttribute("aria-label",t);b.hidden=false;
+  }
   function refreshBadge(){if(!cloudUser)return;setBadge(IDX.list.some(function(e){return e.dirty})?"待同步…":"已同步")}
   function schedulePush(id){if(!cloudUser||!cloudApi)return;clearTimeout(pushTimers[id]);pushTimers[id]=setTimeout(function(){pushTrip(id)},2000);setBadge("待同步…")}
 
