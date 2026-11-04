@@ -952,11 +952,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     s1.addText([range,n+" 天",cnt+" 個行程"].filter(Boolean).join("   ·   "),{x:0.9,y:4.15,w:cvW,h:1.2,fontFace:FACE,fontSize:cvIds.length?16:20,color:C.pageInk,margin:0,isTextBox:true,valign:"top"});
 
     /* 2. flights + hotels */
-    var s2=P.addSlide();s2.background={color:C.surface};
+    var s2=P.addSlide();s2.background={color:C.bg};
     s2.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
     s2.addText("機票及飯店資訊",{x:0.7,y:0.4,w:9,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
-    s2.addShape(P.ShapeType.roundRect,{x:0.7,y:1.4,w:5.7,h:5.5,rectRadius:0.12,fill:{color:C.bg},line:{color:C.line,width:0.75}});
-    s2.addShape(P.ShapeType.roundRect,{x:6.75,y:1.4,w:5.9,h:5.5,rectRadius:0.12,fill:{color:C.bg},line:{color:C.line,width:0.75}});
+    s2.addShape(P.ShapeType.roundRect,{x:0.7,y:1.4,w:5.7,h:5.5,rectRadius:0.12,fill:{color:C.surface},line:{color:C.cardLine,width:0.5}});
+    s2.addShape(P.ShapeType.roundRect,{x:6.75,y:1.4,w:5.9,h:5.5,rectRadius:0.12,fill:{color:C.surface},line:{color:C.cardLine,width:0.5}});
     s2.addText("機票",{x:1.0,y:1.55,w:5,h:0.45,fontFace:FACE,fontSize:18,bold:true,color:C.accent,margin:0,isTextBox:true});
     [["out","去程"],["back","回程"]].forEach(function(L,i){
       var l=s.flights[L[0]],y=2.15+i*2.35;
@@ -1067,17 +1067,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
     var fpages=foods.length?foodPages(foods):[[[],[]]];
     fpages.forEach(function(fp,pi){
-      var s4=P.addSlide();s4.background={color:C.surface};
-      s4.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
-      s4.addText("美食清單",{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
-      s4.addText("依區域分類・共 "+foods.length+" 間"+(fpages.length>1?"・第 "+(pi+1)+"/"+fpages.length+" 頁":""),{x:7.2,y:0.4,w:5.5,h:0.7,fontFace:FACE,fontSize:14,color:C.muted,align:"right",margin:0,isTextBox:true,valign:"middle"});
+      var s4=P.addSlide();s4.background={color:C.bg};
+      s4.addShape(P.ShapeType.rect,{x:0,y:0,w:2.1,h:7.5,fill:{color:C.main}});
+      s4.addText("FOOD",{x:0.3,y:0.55,w:1.6,h:0.3,fontFace:FACE,fontSize:12,color:C.onMain,charSpacing:4,margin:0,isTextBox:true});
+      s4.addText(String(foods.length),{x:0.3,y:0.85,w:1.6,h:0.95,fontFace:FACE,fontSize:54,bold:true,color:C.onMain,margin:0,isTextBox:true,valign:"middle"});
+      s4.addText("美食清單",{x:0.3,y:1.85,w:1.75,h:0.35,fontFace:FACE,fontSize:12,bold:true,color:C.onMain,margin:0,isTextBox:true,valign:"top"});
+      s4.addText([{text:"依區域分類",options:{fontSize:11,bold:true,breakLine:fpages.length>1}}].concat(fpages.length>1?[{text:"第 "+(pi+1)+" / "+fpages.length+" 頁",options:{fontSize:11}}]:[]),{x:0.3,y:6.0,w:1.65,h:1.0,fontFace:FACE,color:C.onMain,margin:0,isTextBox:true,valign:"bottom",paraSpaceAfter:4});
       if(!foods.length){
-        s4.addText("（景點庫裡還沒有美食景點）",{x:0.7,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
+        s4.addText("（景點庫裡還沒有美食景點）",{x:2.5,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
         return;
       }
-      var gapX=0.3,cw=(12.0-gapX)/2,rowH=0.8;
+      var gapX=0.3,cw=(10.6-gapX)/2,rowH=0.8;
       fp.forEach(function(col,ci){
-        var cx=0.7+ci*(cw+gapX),y=1.3;
+        var cx=2.4+ci*(cw+gapX),y=1.3;
         col.forEach(function(e){
           y=1.3+e.y;
           if(e.h){
@@ -1086,8 +1088,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
             return;
           }
           var sp=e.sp,ry=y;
-          s4.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.08,fill:{color:C.bg},line:{color:C.line,width:0.75}});
-          var sz=rowH-0.16,ix=cx+0.08,iy=ry+0.08;
+          s4.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.12,fill:{color:C.surface},line:{color:C.cardLine,width:0.5}});
+          s4.addShape(P.ShapeType.roundRect,{x:cx,y:ry+0.06,w:0.07,h:rowH-0.12,rectRadius:0.035,fill:{color:C.food}});
+          var sz=rowH-0.16,ix=cx+0.16,iy=ry+0.08;
           if(imgs[sp.id])s4.addImage({data:imgs[sp.id],x:ix,y:iy,w:sz,h:sz});
           else s4.addShape(P.ShapeType.roundRect,{x:ix,y:iy,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
           var tx=ix+sz+0.14,tw=cw-(tx-cx)-0.1;
@@ -1198,8 +1201,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
     /* 2 flights + hotels */
     c=frame("機票及飯店資訊");
-    box(c,0.7*P,1.4*P,5.7*P,5.5*P,0.12*P,C.bg,C.line);
-    box(c,6.75*P,1.4*P,5.9*P,5.5*P,0.12*P,C.bg,C.line);
+    c.fillStyle=C.bg;c.fillRect(0.28*P,0,PW,PH);
+    box(c,0.7*P,1.4*P,5.7*P,5.5*P,0.12*P,C.surface,C.cardLine);
+    box(c,6.75*P,1.4*P,5.9*P,5.5*P,0.12*P,C.surface,C.cardLine);
+    T(c,"機票及飯店資訊",0.7*P,0.75*P,30,"700",C.accent);
     T(c,"機票",1.0*P,1.78*P,18,"700",C.accent);
     [["out","去程"],["back","回程"]].forEach(function(L,i){
       var l=s.flights[L[0]],y=2.15*P+i*2.35*P;
@@ -1317,11 +1322,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
     var fpages=foods.length?foodPages(foods):[[[],[]]];
     fpages.forEach(function(fp,pi){
-      var c=frame("美食清單","依區域分類・共 "+foods.length+" 間"+(fpages.length>1?"・第 "+(pi+1)+"/"+fpages.length+" 頁":""));
-      if(!foods.length){T(c,"（景點庫裡還沒有美食景點）",0.7*P,1.75*P,16,"400",C.muted);return}
-      var gx=0.3,cw=(12.0-gx)/2,rowH=0.8;
+      var c=newPage(C.bg);
+      c.fillStyle=C.main;c.fillRect(0,0,2.1*P,PH);
+      T(c,"FOOD",0.3*P,0.7*P,12,"400",C.onMain);
+      T(c,String(foods.length),0.3*P,1.33*P,54,"700",C.onMain);
+      T(c,"美食清單",0.3*P,2.0*P,12,"700",C.onMain);
+      T(c,"依區域分類",0.3*P,(fpages.length>1?6.55:6.9)*P,11,"700",C.onMain);
+      if(fpages.length>1)T(c,"第 "+(pi+1)+" / "+fpages.length+" 頁",0.3*P,6.9*P,11,"400",C.onMain);
+      if(!foods.length){T(c,"（景點庫裡還沒有美食景點）",2.5*P,1.75*P,16,"400",C.muted);return}
+      var gx=0.3,cw=(10.6-gx)/2,rowH=0.8;
       fp.forEach(function(col,ci){
-        var cx=(0.7+ci*(cw+gx))*P,y=1.3*P;
+        var cx=(2.4+ci*(cw+gx))*P,y=1.3*P;
         col.forEach(function(e){
           y=(1.3+e.y)*P;
           if(e.h){
@@ -1330,9 +1341,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
             return;
           }
           var sp=e.sp,ry=y,w=cw*P,h=rowH*P;
-          box(c,cx,ry,w,h,0.08*P,C.bg,C.line);
-          var sz=h-0.16*P,ix=cx+0.08*P,iy=ry+0.08*P,im=imgs[sp.id];
-          c.save();rr(c,ix,iy,sz,sz,0.06*P);c.clip();
+          box(c,cx,ry,w,h,0.12*P,C.surface,C.cardLine);
+          c.save();rr(c,cx,ry,w,h,0.12*P);c.clip();c.fillStyle=C.food;c.fillRect(cx,ry,0.07*P,h);c.restore();
+          var sz=h-0.16*P,ix=cx+0.16*P,iy=ry+0.08*P,im=imgs[sp.id];
+          c.save();rr(c,ix,iy,sz,sz,0.08*P);c.clip();
           if(im){var q=Math.max(sz/im.width,sz/im.height),iw=im.width*q,ih=im.height*q;c.drawImage(im,ix+(sz-iw)/2,iy+(sz-ih)/2,iw,ih)}
           else{c.fillStyle=C.line;c.fillRect(ix,iy,sz,sz)}
           c.restore();
