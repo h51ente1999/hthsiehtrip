@@ -806,6 +806,26 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
       return cv.toDataURL("image/jpeg",0.85).replace(/^data:/,"");
     });
   }
+  function dayPlan(items){
+    var tw=4.71,CONN=0.26,CAP=5.85,pages=[[[],[]]],pi=0,ci=0,used=0;
+    items.forEach(function(x,i){
+      x.idx=i;
+      var kds=kidList(x.it),rows=0,cur=0;
+      kds.forEach(function(k){
+        var w=0.17+0.05+wlen(k.name)*(10/72)*1.1+0.04+mapLinks(k).length*0.19+0.1;
+        if(cur>0&&cur+w>tw){cur=0}
+        if(cur===0)rows++;
+        cur+=w;
+      });
+      var nlt=noteLine(x.it,x.r,true,true);
+      x.kr=rows;x.nl=nlt?Math.ceil(wlen(nlt)*(10/72)*1.1/tw):0;
+      x.h=Math.max(0.9,0.6+rows*0.22+x.nl*0.17+0.06);
+      var need=CONN+x.h;
+      if(used+need>CAP&&used>0){ci++;used=0;if(ci>1){ci=0;pages.push([[],[]]);pi++}}
+      pages[pi][ci].push(x);used+=need;
+    });
+    return pages;
+  }
   function foodPages(foods){
     var groups={};foods.forEach(function(sp){var k=sp.area||"";(groups[k]=groups[k]||[]).push(sp)});
     var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return a.localeCompare(b,"zh-Hant")});
@@ -883,67 +903,67 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
       });
     }
 
-    /* 3. days: 2 columns x 5 stops per slide, drive time as its own connector, continues on next slide */
+    /* 3. days: 2 columns, card height follows content, drive time as own connector, continues on next slide */
     s.days.forEach(function(d,di){
       var items=validItems(d).map(function(it){return {it:it,sp:spot(it.sid)}}),crr=calcDay(validItems(d));items.forEach(function(x,q){x.r=crr[q]});
-      var PERP=15,np=Math.max(1,Math.ceil(items.length/PERP));
-      for(var pg=0;pg<np;pg++){
+      var plan=dayPlan(items),np=plan.length;
+      plan.forEach(function(pcols,pg){
         var sl=P.addSlide();sl.background={color:C.surface};
         sl.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
-        sl.addText("第 "+(di+1)+" 天"+(pg>0?"（續）":""),{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
+        sl.addText("第 "+(di+1)+" 天",{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
         sl.addText("共 "+items.length+" 個行程"+(np>1?"・第 "+(pg+1)+"/"+np+" 頁":""),{x:8.2,y:0.4,w:4.5,h:0.7,fontFace:FACE,fontSize:14,color:C.muted,align:"right",margin:0,isTextBox:true,valign:"middle"});
         if(!items.length){
           sl.addText("（這天還沒有行程）",{x:0.7,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
-          continue;
+          return;
         }
-        var chunk=items.slice(pg*PERP,pg*PERP+PERP),gapX=0.25,cw=(12.0-gapX*2)/3,rowH=0.9,CONN=0.26;
-        chunk.forEach(function(x,i){
-          var col=Math.floor(i/5),row=i%5,cx=0.7+col*(cw+gapX),slotY=1.3+row*(rowH+CONN),ry=slotY+CONN,sp=x.sp,it=x.it;
-          var gi=pg*PERP+i;
-          if(gi>0&&x.r.drive>0){
-            var lx=cx+0.08+(rowH-0.16)/2;
-            sl.addShape(P.ShapeType.rect,{x:lx-0.01,y:slotY+0.02,w:0.02,h:CONN-0.04,fill:{color:C.muted}});
-            sl.addText("車程 "+x.r.drive+" 分",{x:lx+0.14,y:slotY,w:2.5,h:CONN,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"middle",isTextBox:true});
-          }
-          sl.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.08,fill:{color:C.bg},line:{color:C.line,width:0.75}});
-          var sz=rowH-0.16,ix=cx+0.08,iy=ry+0.08;
-          if(imgs[sp.id])sl.addImage({data:imgs[sp.id],x:ix,y:iy,w:sz,h:sz});
-          else sl.addShape(P.ShapeType.roundRect,{x:ix,y:iy,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
-          var tx=ix+sz+0.14,tw=cw-(tx-cx)-0.1,cur=tx;
-          var rg=rangeStr(x.r,"–");
-          if(rg){var rw=Math.max(0.62,rg.length*0.085+0.1);sl.addText(rg,{x:cur,y:ry+0.07,w:rw,h:0.24,fontFace:FACE,fontSize:11,bold:true,color:it.fixed?C.accent:C.ink,margin:0,valign:"middle",isTextBox:true});cur+=rw+0.04}
-          if(sp.cat){
-            var tgw=Math.max(0.5,wlen(sp.cat)*0.15+0.24);
-            sl.addText(sp.cat,{shape:P.ShapeType.roundRect,rectRadius:0.05,x:cur,y:ry+0.07,w:tgw,h:0.24,fill:{color:sp.cat==="美食"?C.food:C.tag},fontFace:FACE,fontSize:9,bold:true,color:C.tagInk,align:"center",valign:"middle",margin:0});
-            cur+=tgw+0.08;
-          }
-          if(sp.area&&tx+tw-cur>0.4)sl.addText(trunc(sp.area,(tx+tw-cur)/0.125),{x:cur,y:ry+0.07,w:tx+tw-cur,h:0.24,fontFace:FACE,fontSize:9,color:C.muted,margin:0,valign:"middle",isTextBox:true});
-          var lk=mapLinks(sp),isz=0.22,iw=lk.length*(isz+0.06),twN=tw-iw-0.04;
-          lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.06),y:ry+0.46-isz/2,w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
-          var kds=kidList(it),hasK=kds.length>0;
-          var maxN=Math.floor(twN/(12/72*0.92)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:12,bold:true,color:C.ink}}];
-          var rest=maxN-wlen(trunc(sp.name,maxN))-1;
-          if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
-          sl.addText(nruns,{x:tx,y:ry+0.33,w:twN,h:0.26,fontFace:FACE,margin:0,valign:"middle",isTextBox:true});
-          var nlt=noteLine(it,x.r,true,true);
-          if(hasK){
-            var ky=ry+0.65,kz=0.17,kcur=tx,kend=tx+tw;
-            kds.forEach(function(k){
+        var gapX=0.3,cw=(12.0-gapX)/2,CONN=0.26;
+        pcols.forEach(function(col,ci){
+          var cx=0.7+ci*(cw+gapX),y=1.3;
+          col.forEach(function(x){
+            var slotY=y,ry=y+CONN,rowH=x.h,sp=x.sp,it=x.it;y=ry+rowH;
+            if(x.idx>0&&x.r.drive>0){
+              var lx=cx+0.08+0.37;
+              sl.addShape(P.ShapeType.rect,{x:lx-0.01,y:slotY+0.02,w:0.02,h:CONN-0.04,fill:{color:C.muted}});
+              sl.addText("車程 "+x.r.drive+" 分",{x:lx+0.14,y:slotY,w:2.5,h:CONN,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"middle",isTextBox:true});
+            }
+            sl.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.08,fill:{color:C.bg},line:{color:C.line,width:0.75}});
+            var sz=0.74,ix=cx+0.08,iy=ry+0.08;
+            if(imgs[sp.id])sl.addImage({data:imgs[sp.id],x:ix,y:iy,w:sz,h:sz});
+            else sl.addShape(P.ShapeType.roundRect,{x:ix,y:iy,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
+            var tx=ix+sz+0.14,tw=cw-(tx-cx)-0.1,cur=tx;
+            var rg=rangeStr(x.r,"–");
+            if(rg){var rw=Math.max(0.62,rg.length*0.085+0.1);sl.addText(rg,{x:cur,y:ry+0.07,w:rw,h:0.24,fontFace:FACE,fontSize:11,bold:true,color:it.fixed?C.accent:C.ink,margin:0,valign:"middle",isTextBox:true});cur+=rw+0.04}
+            if(sp.cat){
+              var tgw=Math.max(0.5,wlen(sp.cat)*0.15+0.24);
+              sl.addText(sp.cat,{shape:P.ShapeType.roundRect,rectRadius:0.05,x:cur,y:ry+0.07,w:tgw,h:0.24,fill:{color:sp.cat==="美食"?C.food:C.tag},fontFace:FACE,fontSize:9,bold:true,color:C.tagInk,align:"center",valign:"middle",margin:0});
+              cur+=tgw+0.08;
+            }
+            if(sp.area&&tx+tw-cur>0.4)sl.addText(trunc(sp.area,(tx+tw-cur)/0.125),{x:cur,y:ry+0.07,w:tx+tw-cur,h:0.24,fontFace:FACE,fontSize:9,color:C.muted,margin:0,valign:"middle",isTextBox:true});
+            var lk=mapLinks(sp),isz=0.22,iw=lk.length*(isz+0.06),twN=tw-iw-0.04;
+            lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.06),y:ry+0.45-isz/2,w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
+            var maxN=Math.floor(twN/(14/72*0.95)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:14,bold:true,color:C.ink}}];
+            var rest=maxN-wlen(trunc(sp.name,maxN))-1;
+            if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
+            sl.addText(nruns,{x:tx,y:ry+0.32,w:twN,h:0.28,fontFace:FACE,margin:0,valign:"middle",isTextBox:true});
+            var ky=ry+0.62,kz=0.17,kcur=tx,kend=tx+tw;
+            kidList(it).forEach(function(k){
               var lk2=mapLinks(k),isz2=0.15,iw2=lk2.length*(isz2+0.04);
-              var room=kend-kcur-kz-0.06-iw2-0.04;if(room<0.35)return;
-              var nm=trunc(k.name,Math.max(1,Math.floor(room/(10/72)))),nw=wlen(nm)*(10/72)+0.04;
+              var nm=k.name,nw=wlen(nm)*(10/72)*1.1+0.04,wid=kz+0.05+nw+0.04+iw2+0.1;
+              if(kcur>tx&&kcur+wid>kend){kcur=tx;ky+=0.22}
               if(imgs[k.id])sl.addImage({data:imgs[k.id],x:kcur,y:ky,w:kz,h:kz});
               else sl.addShape(P.ShapeType.roundRect,{x:kcur,y:ky,w:kz,h:kz,rectRadius:0.03,fill:{color:C.line}});
               sl.addText(nm,{x:kcur+kz+0.05,y:ky-0.02,w:nw,h:kz+0.04,wrap:false,fontFace:FACE,fontSize:10,color:C.ink,margin:0,valign:"middle",isTextBox:true});
               lk2.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:kcur+kz+0.05+nw+0.04+j*(isz2+0.04),y:ky+kz/2-isz2/2,w:isz2,h:isz2,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
-              kcur+=kz+0.05+nw+0.04+iw2+0.1;
+              kcur+=wid;
             });
-            if(nlt&&kend-kcur>0.7)sl.addText(trunc(nlt,(kend-kcur)/(10/72)),{x:kcur,y:ky-0.02,w:kend-kcur,h:kz+0.04,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"middle",isTextBox:true});
-          }else if(nlt){
-            sl.addText(trunc(nlt,2*tw/(10/72*1.1)),{x:tx,y:ry+0.62,w:tw,h:0.27,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"top",isTextBox:true});
-          }
+            var nlt=noteLine(it,x.r,true,true);
+            if(nlt){
+              var ny2=ry+0.6+x.kr*0.22;
+              sl.addText(nlt,{x:tx,y:ny2,w:tw,h:x.nl*0.17+0.04,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"top",isTextBox:true});
+            }
+          });
         });
-      }
+      });
     });
 
     /* 4. food list: image + name + map links, grouped by area, multi-slide */
@@ -952,7 +972,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     fpages.forEach(function(fp,pi){
       var s4=P.addSlide();s4.background={color:C.surface};
       s4.addShape(P.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:C.main}});
-      s4.addText("美食清單"+(pi>0?"（續）":""),{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
+      s4.addText("美食清單",{x:0.7,y:0.4,w:6,h:0.7,fontFace:FACE,fontSize:30,bold:true,color:C.accent,margin:0,isTextBox:true,valign:"middle"});
       s4.addText("依區域分類・共 "+foods.length+" 間"+(fpages.length>1?"・第 "+(pi+1)+"/"+fpages.length+" 頁":""),{x:7.2,y:0.4,w:5.5,h:0.7,fontFace:FACE,fontSize:14,color:C.muted,align:"right",margin:0,isTextBox:true,valign:"middle"});
       if(!foods.length){
         s4.addText("（景點庫裡還沒有美食景點）",{x:0.7,y:1.5,w:8,h:0.5,fontFace:FACE,fontSize:16,color:C.muted,margin:0,isTextBox:true});
@@ -1107,74 +1127,74 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
       });
     }
 
-    /* 3 days: 2 columns x 5 stops per page, drive time as own connector, continues on next page */
+    /* 3 days: 2 columns, card height follows content, drive time as own connector, continues on next page */
     s.days.forEach(function(d,di){
       var items=validItems(d).map(function(it){return {it:it,sp:spot(it.sid)}}),crr=calcDay(validItems(d));items.forEach(function(x,q){x.r=crr[q]});
-      var PERP=15,np=Math.max(1,Math.ceil(items.length/PERP));
-      for(var pg=0;pg<np;pg++){
-        var c=frame("第 "+(di+1)+" 天"+(pg>0?"（續）":""),"共 "+items.length+" 個行程"+(np>1?"・第 "+(pg+1)+"/"+np+" 頁":""));
-        if(!items.length){T(c,"（這天還沒有行程）",0.7*P,1.75*P,16,"400",C.muted);continue}
-        var chunk=items.slice(pg*PERP,pg*PERP+PERP),gx=0.25,cw=(12.0-gx*2)/3,rowH=0.9,CONN=0.26;
-        chunk.forEach(function(x,i){
-          var col=Math.floor(i/5),row=i%5,cx=(0.7+col*(cw+gx))*P,slotY=(1.3+row*(rowH+CONN))*P,ry=slotY+CONN*P,sp=x.sp,it=x.it,gi=pg*PERP+i;
-          var w=cw*P,h=rowH*P;
-          if(gi>0&&x.r.drive>0){
-            var lx=cx+0.08*P+(h-0.16*P)/2;
-            c.fillStyle=C.muted;c.fillRect(lx-1,slotY+0.03*P,2,CONN*P-0.06*P);
-            T(c,"車程 "+x.r.drive+" 分",lx+0.14*P,slotY+CONN*P/2,10,"400",C.muted);
-          }
-          box(c,cx,ry,w,h,0.08*P,C.bg,C.line);
-          var sz=h-0.16*P,ix=cx+0.08*P,iy=ry+0.08*P,im=imgs[sp.id];
-          c.save();rr(c,ix,iy,sz,sz,0.06*P);c.clip();
-          if(im){var q=Math.max(sz/im.width,sz/im.height),iw=im.width*q,ih=im.height*q;c.drawImage(im,ix+(sz-iw)/2,iy+(sz-ih)/2,iw,ih)}
-          else{c.fillStyle=C.line;c.fillRect(ix,iy,sz,sz)}
-          c.restore();
-          var tx=ix+sz+0.14*P,tw=cx+w-tx-0.1*P,cur=tx,ly=ry+0.19*P;
-          var rg=rangeStr(x.r,"–");
-          if(rg){c.font="700 "+pt(11)+"px "+F;var tmw=c.measureText(rg).width;T(c,rg,cur,ly,11,"700",it.fixed?C.accent:C.ink);cur+=tmw+0.1*P}
-          if(sp.cat){
-            c.font="700 "+pt(9)+"px "+F;var cw2=c.measureText(sp.cat).width+0.24*P;
-            box(c,cur,ly-0.12*P,cw2,0.24*P,0.05*P,sp.cat==="美食"?C.food:C.tag);
-            T(c,sp.cat,cur+0.12*P,ly,9,"700",C.tagInk);cur+=cw2+0.08*P;
-          }
-          if(sp.area&&tx+tw-cur>0.4*P){c.font="400 "+pt(9)+"px "+F;T(c,fit(c,sp.area,tx+tw-cur),cur,ly,9,"400",C.muted)}
-          var dz=0.22*P,dw2=iconW(sp,dz);
-          icons(c,sp,cx+w-0.1*P,ry+0.46*P,dz);
-          var kds=kidList(it),hasK=kds.length>0;
-          c.font="700 "+pt(12)+"px "+F;
-          var nm=fit(c,sp.name,tw-dw2),nw=c.measureText(nm).width,ny=ry+0.46*P;
-          T(c,nm,tx,ny,12,"700",C.ink);
-          if(sp.ko&&tw-dw2-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sp.ko,tw-dw2-nw-0.12*P),tx+nw+0.12*P,ny,10,"400",C.muted)}
-          var nlt=noteLine(it,x.r,true,true);
-          if(hasK){
-            var kz=0.17*P,ky=ry+0.65*P,kcur=tx,kend=tx+tw;
+      var plan=dayPlan(items),np=plan.length;
+      plan.forEach(function(pcols,pg){
+        var c=frame("第 "+(di+1)+" 天","共 "+items.length+" 個行程"+(np>1?"・第 "+(pg+1)+"/"+np+" 頁":""));
+        if(!items.length){T(c,"（這天還沒有行程）",0.7*P,1.75*P,16,"400",C.muted);return}
+        var gx=0.3,cw=(12.0-gx)/2,CONN=0.26;
+        pcols.forEach(function(col,ci){
+          var cx=(0.7+ci*(cw+gx))*P,y=1.3*P;
+          col.forEach(function(x){
+            var slotY=y,ry=y+CONN*P,sp=x.sp,it=x.it,w=cw*P,h=x.h*P;y=ry+h;
+            if(x.idx>0&&x.r.drive>0){
+              var lx=cx+0.08*P+0.37*P;
+              c.fillStyle=C.muted;c.fillRect(lx-1,slotY+0.03*P,2,CONN*P-0.06*P);
+              T(c,"車程 "+x.r.drive+" 分",lx+0.14*P,slotY+CONN*P/2,10,"400",C.muted);
+            }
+            box(c,cx,ry,w,h,0.08*P,C.bg,C.line);
+            var sz=0.74*P,ix=cx+0.08*P,iy=ry+0.08*P,im=imgs[sp.id];
+            c.save();rr(c,ix,iy,sz,sz,0.06*P);c.clip();
+            if(im){var q=Math.max(sz/im.width,sz/im.height),iw=im.width*q,ih=im.height*q;c.drawImage(im,ix+(sz-iw)/2,iy+(sz-ih)/2,iw,ih)}
+            else{c.fillStyle=C.line;c.fillRect(ix,iy,sz,sz)}
+            c.restore();
+            var tx=ix+sz+0.14*P,tw=cx+w-tx-0.1*P,cur=tx,ly=ry+0.19*P;
+            var rg=rangeStr(x.r,"–");
+            if(rg){c.font="700 "+pt(11)+"px "+F;var tmw=c.measureText(rg).width;T(c,rg,cur,ly,11,"700",it.fixed?C.accent:C.ink);cur+=tmw+0.1*P}
+            if(sp.cat){
+              c.font="700 "+pt(9)+"px "+F;var cw2=c.measureText(sp.cat).width+0.24*P;
+              box(c,cur,ly-0.12*P,cw2,0.24*P,0.05*P,sp.cat==="美食"?C.food:C.tag);
+              T(c,sp.cat,cur+0.12*P,ly,9,"700",C.tagInk);cur+=cw2+0.08*P;
+            }
+            if(sp.area&&tx+tw-cur>0.4*P){c.font="400 "+pt(9)+"px "+F;T(c,fit(c,sp.area,tx+tw-cur),cur,ly,9,"400",C.muted)}
+            var dz=0.22*P,dw2=iconW(sp,dz);
+            icons(c,sp,cx+w-0.1*P,ry+0.45*P,dz);
+            c.font="700 "+pt(14)+"px "+F;
+            var nm=fit(c,sp.name,tw-dw2),nw=c.measureText(nm).width,ny=ry+0.46*P;
+            T(c,nm,tx,ny,14,"700",C.ink);
+            if(sp.ko&&tw-dw2-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sp.ko,tw-dw2-nw-0.12*P),tx+nw+0.12*P,ny,10,"400",C.muted)}
+            var kz=0.17*P,ky=ry+0.62*P,kcur=tx,kend=tx+tw;
             c.font="400 "+pt(10)+"px "+F;
-            kds.forEach(function(k){
-              var isz2=0.15*P,iw2=iconW(k,isz2),room=kend-kcur-kz-0.06*P-iw2-0.04*P;if(room<0.35*P)return;
-              var nm2=fit(c,k.name,room),nw2=c.measureText(nm2).width,km=imgs[k.id];
+            kidList(it).forEach(function(k){
+              var isz2=0.15*P,iw2=iconW(k,isz2),nw2=c.measureText(k.name).width,wid=kz+0.05*P+nw2+0.04*P+iw2+0.1*P;
+              if(kcur>tx&&kcur+wid>kend){kcur=tx;ky+=0.22*P}
+              var km=imgs[k.id];
               c.save();rr(c,kcur,ky,kz,kz,0.03*P);c.clip();
               if(km){var qq=Math.max(kz/km.width,kz/km.height),kw=km.width*qq,kh=km.height*qq;c.drawImage(km,kcur+(kz-kw)/2,ky+(kz-kh)/2,kw,kh)}
               else{c.fillStyle=C.line;c.fillRect(kcur,ky,kz,kz)}
               c.restore();
-              T(c,nm2,kcur+kz+0.05*P,ky+kz/2,10,"400",C.ink);
+              T(c,k.name,kcur+kz+0.05*P,ky+kz/2,10,"400",C.ink);
               var ix0=kcur+kz+0.05*P+nw2+0.04*P;
               icons(c,k,ix0+iw2-0.07*P,ky+kz/2,isz2);
-              kcur=ix0+iw2+0.1*P;
+              kcur+=wid;
             });
-            if(nlt&&kend-kcur>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,nlt,kend-kcur),kcur,ky+kz/2,10,"400",C.muted)}
-          }else if(nlt){
-            c.font="400 "+pt(10)+"px "+F;
-            wrap(c,nlt,tw,2).forEach(function(l,j){T(c,l,tx,ry+0.67*P+j*0.15*P,10,"400",C.muted)});
-          }
+            var nlt=noteLine(it,x.r,true,true);
+            if(nlt){
+              c.font="400 "+pt(10)+"px "+F;
+              wrap(c,nlt,tw,8).forEach(function(l,j){T(c,l,tx,ry+(0.6+x.kr*0.22+0.09)*P+j*0.17*P,10,"400",C.muted)});
+            }
+          });
         });
-      }
+      });
     });
 
     /* 4 food: image + name + map links, grouped by area, multi-page */
     var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
     var fpages=foods.length?foodPages(foods):[[[],[]]];
     fpages.forEach(function(fp,pi){
-      var c=frame("美食清單"+(pi>0?"（續）":""),"依區域分類・共 "+foods.length+" 間"+(fpages.length>1?"・第 "+(pi+1)+"/"+fpages.length+" 頁":""));
+      var c=frame("美食清單","依區域分類・共 "+foods.length+" 間"+(fpages.length>1?"・第 "+(pi+1)+"/"+fpages.length+" 頁":""));
       if(!foods.length){T(c,"（景點庫裡還沒有美食景點）",0.7*P,1.75*P,16,"400",C.muted);return}
       var gx=0.3,cw=(12.0-gx)/2,rowH=0.8;
       fp.forEach(function(col,ci){
