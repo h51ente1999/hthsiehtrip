@@ -106,6 +106,7 @@ p.hint.top{opacity:.75}
 body.viewer main{display:none}
 #viewer{max-width:760px;margin:0 auto;padding:20px 16px 48px}
 #viewer h1,#viewer h2{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 16px}
+#viewer h2.vday{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}.vchev{width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:-4px 4px 0 0;transition:transform .15s}.vday.collapsed .vchev{transform:rotate(-45deg);margin:0 6px 0 0}#viewer .vlist.collapsed,#viewer p.hint.collapsed{display:none}
 #viewer h1{margin:0 0 10px}#viewer h2{margin:22px 0 8px;font-size:1.1rem}
 #viewer button.primary{background:var(--surface);color:var(--accent-text);border-color:var(--surface)}
 .vth{background:var(--blue-soft)!important}
@@ -1799,6 +1800,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
     return '<div class="vitem">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
+  var vCollapsed={};
   function renderViewer(){
     ensureTrip();
     var cdx=cdText(s);$("vTitle").textContent=s.title||"旅遊行程";$("vCd").textContent=cdx;$("vCd").hidden=!cdx;
@@ -1810,10 +1812,18 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     if(hs.length)h+='<h2>飯店</h2><div class="vlist">'+hs.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>';
     s.days.forEach(function(d,i){
       var vl=validItems(d),cr=calcDay(vl);
-      h+='<h2>第 '+(i+1)+' 天</h2>'+(vl.length?'<div class="vlist">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">車程 '+cr[q].drive+' 分'+'</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint">（尚無行程）</p>');
+      var cl=vCollapsed[i]?' collapsed':'';
+      h+='<h2 class="vday'+cl+'" data-vday="'+i+'" role="button" tabindex="0" aria-expanded="'+(!vCollapsed[i])+'">第 '+(i+1)+' 天<span class="vchev" aria-hidden="true"></span></h2>'+(vl.length?'<div class="vlist'+cl+'">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">車程 '+cr[q].drive+' 分'+'</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint'+cl+'">（尚無行程）</p>');
     });
     $("vBody").innerHTML=h;
   }
+  function vToggle(h){
+    var i=h.dataset.vday,c=!vCollapsed[i];vCollapsed[i]=c;
+    h.classList.toggle("collapsed",c);h.setAttribute("aria-expanded",String(!c));
+    var n=h.nextElementSibling;if(n)n.classList.toggle("collapsed",c);
+  }
+  $("vBody").addEventListener("click",function(e){var h=e.target.closest(".vday");if(h)vToggle(h)});
+  $("vBody").addEventListener("keydown",function(e){if(e.key!=="Enter"&&e.key!==" ")return;var h=e.target.closest(".vday");if(h){e.preventDefault();vToggle(h)}});
   function vFail(m){$("vCd").hidden=true;$("vTitle").textContent="找不到這份行程";$("vInfo").textContent=m||"連結可能已被停止分享，或網址不正確。";$("vBody").innerHTML="";$("vPdf").hidden=true;$("vPpt").hidden=true}
   function initViewer(){
     if(!/^[A-Za-z0-9_-]{16,64}$/.test(viewerShare)){vFail();return}
