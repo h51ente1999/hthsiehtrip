@@ -117,7 +117,7 @@ body.viewer main{display:none}
 .vbd{min-width:0;flex:1}.vbd .n{font-weight:700}.vsub{font-size:.9rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
 .vnote{font-size:.9rem;margin-top:4px;white-space:pre-wrap}.vside{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}.vtime{font-size:1.05rem;line-height:1.2;text-align:center}.vtime.vfix{color:var(--accent-text)}
 .vgo{margin:0 0 0 14px;padding-left:10px;border-left:2px solid var(--line);color:var(--ink);background:var(--surface);border-radius:0 8px 8px 0;font-size:.85rem;width:fit-content;padding-right:10px}
-.vkids{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:4px;font-size:.85rem}.vkids b{font-size:.75rem;color:var(--muted)}.vkids{flex-direction:column;align-items:stretch;gap:4px}.vkids b{margin-bottom:-2px}.vkids span{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:6px;border-left:3px solid var(--tag-bg);padding:3px 8px 3px 4px}.vkids span img,.vkids span i{flex:0 0 24px;width:24px;height:24px;border-radius:5px;object-fit:cover;background:var(--blue-soft)}
+.vkids{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-top:8px;font-size:1rem}.vkids b{font-size:.85rem;color:var(--muted);margin-bottom:-2px}.vkids span{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:8px;border-left:4px solid var(--tag-bg);padding:6px 12px 6px 6px;font-weight:600;overflow-wrap:anywhere}.vkids span img,.vkids span i{flex:0 0 52px;width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--blue-soft)}
 .vtags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px}.vtag{background:var(--tag-bg);color:var(--tag-ink);font-weight:700;font-size:.75rem;padding:1px 8px;border-radius:6px}.vtag.food{background:var(--tag-food)}
 .vbd a{font-size:.85rem;color:var(--hit)}
 .syncbadge{font-size:.8rem;color:var(--muted);white-space:nowrap}
@@ -342,7 +342,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     var tl='<div class="tl">'+tm+'<label class="stay">停留<input type="number" min="0" step="5" inputmode="numeric" data-stay="'+it.uid+'" value="'+(numv(it.stay)==null?"":numv(it.stay))+'" aria-label="停留分鐘">分</label>'+
       '<button type="button" class="fixbtn" data-fix="'+it.uid+'" aria-pressed="'+(!!it.fixed)+'" title="固定這一站的抵達時間">固定</button></div>'+
       (late?'<div class="late">預計 '+m2t(r.arr+r.late)+' 才會到，晚了 '+r.late+' 分</div>':'');
-    var go=idx>0?'<div class="go"><label>車程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="車程分鐘">分</label></div>':'';
+    var go=idx>0?'<div class="go"><label>車程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="車程分鐘">分</label>'+'</div>':'';
     var ks=it.kids||[];
     var kz='<div class="kids dz kz'+(ks.length?' has':'')+'" data-kids="'+it.uid+'">'+(ks.length?'<div class="lab">包含（'+ks.length+'）</div>':'<div class="lab">拖曳景點到這裡，加入「內含」</div>')+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
     return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note||"")+'</textarea></div>';
@@ -1727,7 +1727,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
     if(hs.length)h+='<h2>飯店</h2><div class="vlist">'+hs.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>';
     s.days.forEach(function(d,i){
       var vl=validItems(d),cr=calcDay(vl);
-      h+='<h2>第 '+(i+1)+' 天</h2>'+(vl.length?'<div class="vlist">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">車程 '+cr[q].drive+' 分</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint">（尚無行程）</p>');
+      h+='<h2>第 '+(i+1)+' 天</h2>'+(vl.length?'<div class="vlist">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">車程 '+cr[q].drive+' 分'+'</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint">（尚無行程）</p>');
     });
     $("vBody").innerHTML=h;
   }
