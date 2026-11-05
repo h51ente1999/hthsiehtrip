@@ -722,7 +722,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     themeState.ts=Date.now();themeState.dirty=true;persistThemeState();scheduleMeta();
     var e=ent(IDX.cur);if(e&&e.shareId)markDirty();
   }
-  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}];
+  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}, {"n": "灰藍莫藍迪", "t": {"--page": "#bcc4c8", "--blue": "#667b88", "--tag-bg": "#667b88", "--bg": "#f4f1ee", "--surface": "#fbfaf8", "--ink": "#2c3338", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#b58b77", "--hit": "#b58b77"}}, {"n": "石墨×橘紅", "t": {"--page": "#d3d7da", "--blue": "#38434d", "--tag-bg": "#38434d", "--bg": "#f3f4f5", "--surface": "#ffffff", "--ink": "#15191d", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#df5b35", "--hit": "#df5b35"}}];
   function presetOn(t){var ks=COLORS.map(function(c){return c[0]}),n=Object.keys(theme).filter(function(k){return theme[k]}).length;if(!Object.keys(t).length)return n===0;return ks.every(function(k){return (theme[k]||"").toLowerCase()===(t[k]||"").toLowerCase()})&&n===Object.keys(t).length}
   function drawPresets(){
     $("presets").innerHTML=PRESETS.map(function(p,i){var t=p.t,d=function(k,f){return t[k]||DEF[k]||f};return '<button type="button" data-pre="'+i+'" aria-pressed="'+presetOn(t)+'" title="'+p.n+'"><i><s style="background:'+d("--page")+'"></s><s style="background:'+d("--surface")+'"></s><s style="background:'+d("--blue")+'"></s><s style="background:'+d("--tag-food")+'"></s></i>'+p.n+'</button>'}).join("");
@@ -1572,69 +1572,154 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
   async function buildPng(only){
     if(only===undefined)only=null;
-    var F='"Noto Serif TC","Songti TC","PMingLiU","SimSun",serif';
+    ensureTrip();
+    var F='"Huninn","Noto Serif TC","PingFang TC","Microsoft JhengHei",sans-serif';
+    var K=2;
+    var blue=th("--blue","#025373"),ink=th("--ink","#0D2626"),surface=th("--surface","#ffffff"),bgc=th("--bg","#ffffff"),pg=th("--page","#afc3d0"),
+        onB=th("--on-blue")||"#ffffff",tagBg=th("--tag-bg","#afc3d0"),tagInk=th("--tag-ink","#ffffff"),food=th("--tag-food","#e8b08c");
+    var accent=mixHex(blue,ink,0.6),muted=mixHex(ink,surface,0.45),hero2=mixHex(blue,ink,0.42),halo=mixHex(blue,bgc,0.7),areaBg=mixHex(tagBg,surface,0.55);
+    function rgba(h,a){var n=parseInt(h.slice(1),16);return "rgba("+(n>>16&255)+","+(n>>8&255)+","+(n&255)+","+a+")"}
     try{
-      var ftxt="旅遊行程第天個景點0123456789:"+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")}).join("");
+      var ftxt="旅遊行程第天個景點班機飯店去程回程路程分站週日一二三四五六0123456789:/–→ "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.area||"")}).join("");
       s.days.forEach(function(d){d.forEach(function(it){ftxt+=(it.note||"")+(it.time||"")})});
-      await document.fonts.load('700 20px "Noto Serif TC"',ftxt);await document.fonts.load('500 15px "Noto Serif TC"',ftxt);await document.fonts.load('400 15px "Noto Serif TC"',ftxt);
+      await document.fonts.load('700 20px "Huninn"',ftxt);await document.fonts.load('400 15px "Huninn"',ftxt);
+      await document.fonts.load('700 20px "Noto Serif TC"',ftxt);await document.fonts.load('400 15px "Noto Serif TC"',ftxt);
     }catch(e){}
     var imgs={};
     for(var i=0;i<s.spots.length;i++){if(s.spots[i].img)imgs[s.spots[i].id]=await loadImg(s.spots[i].img)}
-    var K=2,pad=32,gap=16,colW=only===null?260:380,headH=96,dayH=48,rowGap=8,TW=only===null?176:296;
-    var mc=document.createElement("canvas").getContext("2d");mc.font="400 12px "+F;
     var di=only===null?s.days.map(function(_,i){return i}):[only];
-    var cols=di.map(function(k){var d=s.days[k];
-      var rows=[],h=0;
-      var vl=validItems(d),cr=calcDay(vl);
+    var per=Math.min(di.length,4),colW=only===null?420:560,gap=18,pad=36;
+    var W=Math.max(pad*2+per*colW+(per-1)*gap,640);
+    var offX=Math.round((W-(per*colW+(per-1)*gap))/2);
+    var mc=document.createElement("canvas").getContext("2d");
+    var TH=72,cardW=colW-26;
+    function fl(l){return l&&(l.no||l.dep||l.arr)}
+    function fdt(v){return v?v.replace("T"," ").replace(/-/g,"/"):"—"}
+    /* ---- measure days ---- */
+    var cols=di.map(function(k){
+      var d=s.days[k],vl=validItems(d),cr=calcDay(vl),rows=[],h=0;
       vl.forEach(function(it,q){
-        var sp=spot(it.sid),rg=rangeStr(cr[q],"–"),nlt=noteLine(it,cr[q],true),kd=kidList(it);
-        var nl=nlt?wrap(mc,nlt,TW,3):[],top=(rg||sp.cat)?20:0,rh=Math.max(54,8+top+24+nl.length*16+(kd.length?kd.length*24+2:0)+8);
-        rows.push({it:it,sp:sp,nl:nl,top:top,rh:rh,rg:rg,kd:kd});h+=rh+rowGap;
+        var sp=spot(it.sid),r=cr[q],rg=rangeStr(r,"–"),kd=kidList(it),nlt=noteLine(it,r,true,true);
+        var tx=cardW-14-TH-12-14;
+        mc.font="700 17px "+F;var nm=wrap(mc,sp.name,tx,2);
+        mc.font="400 12.5px "+F;var nl=nlt?wrap(mc,nlt,tx,3):[];
+        var top=(rg||sp.cat||sp.area)?26:0,th0=top+nm.length*23+(sp.ko?19:0)+(nl.length?nl.length*17+4:0)+(kd.length?kd.length*27+4:0);
+        var ch=14+Math.max(TH,th0)+14,drive=(r.drive!=null&&r.drive>0)?r.drive:0;
+        rows.push({it:it,sp:sp,rg:rg,kd:kd,nm:nm,nl:nl,top:top,ch:ch,drive:drive,gapA:q===0?0:(drive?34:12)});
+        h+=ch+(q===0?0:(drive?34:12));
       });
-      return {rows:rows,h:h};
+      if(!vl.length)h=60;
+      return {k:k,rows:rows,h:h,cnt:vl.length};
     });
-    var n=cols.length,W=Math.max(pad*2+n*colW+(n-1)*gap,420);
-    var bodyH=Math.max.apply(null,cols.map(function(x){return x.h}).concat([48]));
-    var boxH=dayH+bodyH+4,H=headH+16+boxH+pad;
+    var rowsOfCols=[];for(var a=0;a<cols.length;a+=per)rowsOfCols.push(cols.slice(a,a+per));
+    var DAYH=52;
+    var hasFl=only===null&&(fl(s.flights.out)||fl(s.flights.back));
+    var hotels=only===null?(s.hotelSpots||[]).map(function(it){return spot(it.sid)}).filter(Boolean):[];
+    var y=pad,heroH=only===null?132:116;
+    var yHero=y;y+=heroH+22;
+    var yFl=y;if(hasFl)y+=26+78+22;
+    var yHt=y;
+    var hRows=Math.ceil(hotels.length/per);
+    if(hotels.length)y+=26+hRows*(72+10)+12;
+    var yDays=y;
+    var dayRowY=[];
+    rowsOfCols.forEach(function(rw){dayRowY.push(y);y+=DAYH+14+Math.max.apply(null,rw.map(function(c){return c.h}))+30});
+    var H=y+10+26;
     var cv=document.createElement("canvas");cv.width=W*K;cv.height=H*K;
-    var c=cv.getContext("2d");c.scale(K,K);
-    var pg=th("--page","#afc3d0"),pageInk=lum(pg)>0.55?"#0D2626":"#ffffff";
+    var c=cv.getContext("2d");c.scale(K,K);c.textBaseline="middle";
+    /* background */
     c.fillStyle=pg;c.fillRect(0,0,W,H);
-    c.fillStyle=th("--surface","#ffffff");rr(c,pad,8,W-pad*2,headH-4,14);c.fill();
-    c.fillStyle=th("--ink","#0D2626");c.textBaseline="middle";
-    c.font="700 28px "+F;c.fillText(fit(c,s.title||"旅遊行程",W-pad*2-32),pad+16,headH/2-8);
-    var cnt=di.reduce(function(a,k){return a+s.days[k].length},0);
-    c.font="400 15px "+F;c.globalAlpha=.75;c.fillText((only===null?n+" 天・":"第 "+(only+1)+" 天・")+cnt+" 個景點",pad+16,headH/2+22);c.globalAlpha=1;
-    var accent=mixHex(th("--blue","#025373"),th("--ink","#0D2626"),0.6);
-    cols.forEach(function(col,i){
-      var x=pad+i*(colW+gap),y=headH+16,acc=0;
-      c.fillStyle=th("--surface","#ffffff");rr(c,x,y,colW,boxH,14);c.fill();
-      c.fillStyle=accent;c.font="700 17px "+F;c.fillText("第 "+(di[i]+1)+" 天",x+16,y+dayH/2);
-      col.rows.forEach(function(r){
-        var sp=r.sp,ry=y+dayH+acc;acc+=r.rh+rowGap;
-        c.fillStyle=th("--bg","#ffffff");rr(c,x+10,ry,colW-20,r.rh,10);c.fill();
-        var tx=x+18,ty=ry+8,ts=38,im=imgs[sp.id];
-        c.save();rr(c,tx,ty,ts,ts,7);c.clip();
-        if(im){var q=Math.max(ts/im.width,ts/im.height),w=im.width*q,h=im.height*q;c.drawImage(im,tx+(ts-w)/2,ty+(ts-h)/2,w,h)}
-        else{c.fillStyle="#e6eef3";c.fillRect(tx,ty,ts,ts);c.fillStyle=accent;c.beginPath();c.arc(tx+ts/2,ty+ts/2,5,0,7);c.fill()}
-        c.restore();
-        var nx=tx+ts+10,lx=nx;
-        if(r.rg){c.font="700 12px "+F;c.fillStyle=r.it.fixed?accent:th("--ink","#0D2626");c.fillText(r.rg,lx,ry+17);lx+=c.measureText(r.rg).width+8}
-        if(sp.cat){c.font="700 11px "+F;var ct=fit(c,sp.cat,70),tw=c.measureText(ct).width+12;c.fillStyle=(sp.cat==="美食"?th("--tag-food","#e8b08c"):th("--tag-bg","#afc3d0"));rr(c,lx,ry+8,tw,18,5);c.fill();c.fillStyle=th("--tag-ink","#ffffff");c.fillText(ct,lx+6,ry+18)}
-        c.fillStyle=th("--ink","#0D2626");c.font="500 15px "+F;
-        var ny=ry+8+r.top+11;if(!r.top&&!r.nl.length)ny=ty+ts/2;
-        c.fillText(fit(c,sp.name,TW),nx,ny);
-        if(r.nl.length){c.font="400 12px "+F;c.globalAlpha=.7;r.nl.forEach(function(l,k){c.fillText(l,nx,ry+8+r.top+24+k*16+8)});c.globalAlpha=1}
-        r.kd.forEach(function(k,ki){
-          var ky=ry+8+r.top+24+r.nl.length*16+2+ki*24,kz=20,km=imgs[k.id];
-          c.save();rr(c,nx,ky,kz,kz,4);c.clip();
-          if(km){var qq=Math.max(kz/km.width,kz/km.height),kw=km.width*qq,kh=km.height*qq;c.drawImage(km,nx+(kz-kw)/2,ky+(kz-kh)/2,kw,kh)}
-          else{c.fillStyle="#e6eef3";c.fillRect(nx,ky,kz,kz);c.fillStyle=accent;c.beginPath();c.arc(nx+kz/2,ky+kz/2,3,0,7);c.fill()}
-          c.restore();
-          c.fillStyle=th("--ink","#0D2626");c.font="400 12px "+F;c.fillText(fit(c,k.name,TW-kz-6),nx+kz+6,ky+kz/2);
+    var g1=c.createRadialGradient(W*0.12,H*0.04,0,W*0.12,H*0.04,Math.max(W,500)*0.6);g1.addColorStop(0,rgba(blue,.22));g1.addColorStop(1,rgba(blue,0));c.fillStyle=g1;c.fillRect(0,0,W,H);
+    var g2=c.createRadialGradient(W*0.92,H*0.03,0,W*0.92,H*0.03,Math.max(W,500)*0.55);g2.addColorStop(0,rgba(food,.35));g2.addColorStop(1,rgba(food,0));c.fillStyle=g2;c.fillRect(0,0,W,H);
+    function T(t,x,yy,size,wt,col,al){c.font=wt+" "+size+"px "+F;c.fillStyle=col;c.textAlign=al||"left";c.fillText(t,x,yy);c.textAlign="left"}
+    function pill(x,yy,w,h,fill){rr(c,x,yy,w,h,h/2);c.fillStyle=fill;c.fill()}
+    function cover(im,x,yy,w,h,r){c.save();rr(c,x,yy,w,h,r);c.clip();if(im){var q=Math.max(w/im.width,h/im.height),iw=im.width*q,ih=im.height*q;c.drawImage(im,x+(w-iw)/2,yy+(h-ih)/2,iw,ih)}else{c.fillStyle=halo;c.fillRect(x,yy,w,h);c.fillStyle=accent;c.beginPath();c.arc(x+w/2,yy+h/2,Math.min(w,h)/10,0,7);c.fill()}c.restore()}
+    function shadowCard(x,yy,w,h,r,fill){c.save();c.shadowColor="rgba(30,42,74,.14)";c.shadowBlur=14;c.shadowOffsetY=4;rr(c,x,yy,w,h,r);c.fillStyle=fill;c.fill();c.restore()}
+    /* hero */
+    var hx=offX,hw=per*colW+(per-1)*gap;
+    c.save();c.shadowColor="rgba(30,42,74,.22)";c.shadowBlur=22;c.shadowOffsetY=8;
+    var hg=c.createLinearGradient(hx,yHero,hx+hw,yHero+heroH);hg.addColorStop(0,blue);hg.addColorStop(1,hero2);
+    rr(c,hx,yHero,hw,heroH,26);c.fillStyle=hg;c.fill();c.restore();
+    rr(c,hx+1,yHero+1,hw-2,heroH-2,25);c.strokeStyle="rgba(255,255,255,.35)";c.lineWidth=2;c.stroke();
+    c.font="700 34px "+F;
+    T(fit(c,s.title||"旅遊行程",hw-60),hx+30,yHero+(only===null?44:40),34,"700",onB);
+    var chips=[];
+    if(only===null){var d1=dayDateStr(0),d2=dayDateStr(s.days.length-1);if(d1)chips.push(d1+(s.days.length>1?" – "+d2:""));chips.push(s.days.length+" 天");chips.push(s.days.reduce(function(a,d){return a+d.length},0)+" 個行程")}
+    else{var dd=dayDateStr(only);chips.push("第 "+(only+1)+" 天");if(dd)chips.push(dd+"（"+dayWd(only)+"）");chips.push(s.days[only].length+" 個行程")}
+    var cx=hx+30,cy=yHero+heroH-34;
+    chips.forEach(function(t){c.font="400 15px "+F;var w=c.measureText(t).width+26;pill(cx,cy-14,w,28,"rgba(255,255,255,.22)");T(t,cx+13,cy,15,"400",onB);cx+=w+10});
+    /* flights */
+    if(hasFl){
+      T("班機",offX+4,yFl+10,17,"700",accent);
+      var fw=Math.min((hw-gap)/2,colW*2);
+      [["out","去程"],["back","回程"]].forEach(function(z,j){
+        var l=s.flights[z[0]];if(!fl(l))return;
+        var fx=offX+j*(fw+gap),fy=yFl+26;
+        shadowCard(fx,fy,fw,78,16,surface);
+        T(z[1],fx+18,fy+22,14,"700",accent);
+        c.font="700 17px "+F;T(fit(c,l.no||"（未填班機號碼）",fw-90),fx+68,fy+22,17,"700",ink);
+        T(fdt(l.dep),fx+18,fy+54,14,"400",ink);T("→",fx+18+c.measureText(fdt(l.dep)).width+10,fy+54,14,"700",muted);
+        c.font="400 14px "+F;var dw=c.measureText(fdt(l.dep)).width;T(fdt(l.arr),fx+18+dw+30,fy+54,14,"400",ink);
+      });
+    }
+    /* hotels */
+    if(hotels.length){
+      T("飯店",offX+4,yHt+10,17,"700",accent);
+      hotels.forEach(function(sp,j){
+        var col=j%per,row=Math.floor(j/per),fx=offX+col*(colW+gap),fy=yHt+26+row*82;
+        shadowCard(fx,fy,colW,72,16,surface);
+        cover(imgs[sp.id],fx+10,fy+10,52,52,10);
+        c.font="700 16px "+F;T(fit(c,sp.name,colW-100),fx+74,fy+(sp.ko?25:36),16,"700",ink);
+        if(sp.ko){c.font="400 13px "+F;T(fit(c,sp.ko,colW-100),fx+74,fy+47,13,"400",muted)}
+      });
+    }
+    /* days */
+    rowsOfCols.forEach(function(rw,ri){
+      var ry=dayRowY[ri],bodyH=Math.max.apply(null,rw.map(function(c0){return c0.h}));
+      rw.forEach(function(col,ci){
+        var x=offX+ci*(colW+gap),k=col.k;
+        var gg=c.createLinearGradient(x,ry,x+colW,ry);gg.addColorStop(0,blue);gg.addColorStop(1,hero2);
+        c.save();c.shadowColor="rgba(30,42,74,.16)";c.shadowBlur=10;c.shadowOffsetY=3;pill(x,ry,colW,DAYH,gg);c.restore();
+        T("第 "+(k+1)+" 天",x+20,ry+DAYH/2,19,"700",onB);
+        c.font="700 19px "+F;var tw=c.measureText("第 "+(k+1)+" 天").width;
+        var dd=dayDateObj(k);if(dd)T(("0"+(dd.getMonth()+1)).slice(-2)+"/"+("0"+dd.getDate()).slice(-2)+"（"+dayWd(k)+"）",x+20+tw+12,ry+DAYH/2+1,13,"400","rgba(255,255,255,.85)");
+        T(col.cnt+" 站",x+colW-20,ry+DAYH/2,14,"400",onB,"right");
+        var cy0=ry+DAYH+14,cardX=x+26;
+        if(col.rows.length){
+          c.strokeStyle=rgba(blue,.4);c.lineWidth=2.5;c.lineCap="round";c.beginPath();c.moveTo(x+9,cy0+14);c.lineTo(x+9,cy0+col.h-14);c.stroke();
+        }
+        var yy=cy0;
+        if(!col.rows.length){shadowCard(cardX,yy,cardW,44,14,rgba(surface,.8));T("（尚無行程）",cardX+16,yy+22,14,"400",muted)}
+        col.rows.forEach(function(r){
+          yy+=r.gapA;
+          if(r.drive){
+            var lb="路程 "+r.drive+" 分";c.font="400 12px "+F;var pw=c.measureText(lb).width+22,py=yy-r.gapA+ (r.gapA-22)/2;
+            rr(c,cardX+6,py,pw,22,11);c.fillStyle=rgba(surface,.85);c.fill();c.save();c.setLineDash([4,3]);c.lineWidth=1;c.strokeStyle=rgba(accent,.55);c.stroke();c.restore();
+            T(lb,cardX+6+11,py+11,12,"400",accent);
+          }
+          var sp=r.sp,isFood=sp.cat==="美食";
+          shadowCard(cardX,yy,cardW,r.ch,16,surface);
+          c.save();rr(c,cardX,yy,cardW,r.ch,16);c.clip();c.fillStyle=isFood?food:tagBg;c.fillRect(cardX,yy,6,r.ch);c.restore();
+          /* timeline dot */
+          c.beginPath();c.arc(x+9,yy+24,8,0,7);c.fillStyle=pg;c.fill();c.beginPath();c.arc(x+9,yy+24,5.5,0,7);c.fillStyle=isFood?food:blue;c.fill();
+          cover(imgs[sp.id],cardX+16,yy+14,TH,TH,12);
+          var tx=cardX+16+TH+12,ty=yy+14,tmax=cardW-(tx-cardX)-14;
+          if(r.top){
+            var lx=tx;
+            if(r.rg){c.font="700 13px "+F;T(r.rg,lx,ty+10,13,"700",r.it.fixed?accent:ink);lx+=c.measureText(r.rg).width+8}
+            if(sp.cat){c.font="700 11px "+F;var ct=fit(c,sp.cat,60),w1=c.measureText(ct).width+16;pill(lx,ty,w1,20,isFood?food:tagBg);T(ct,lx+8,ty+10.5,11,"700",tagInk);lx+=w1+5}
+            if(sp.area&&lx<tx+tmax-30){c.font="700 11px "+F;var at=fit(c,sp.area,Math.max(30,tx+tmax-lx-16)),w2=c.measureText(at).width+16;pill(lx,ty,w2,20,areaBg);T(at,lx+8,ty+10.5,11,"700",accent)}
+          }
+          var ly=ty+r.top;
+          r.nm.forEach(function(l,li){T(l,tx,ly+11.5+li*23,17,"700",ink)});ly+=r.nm.length*23;
+          if(sp.ko){c.font="400 13px "+F;T(fit(c,sp.ko,tmax),tx,ly+9,13,"400",muted);ly+=19}
+          if(r.nl.length){ly+=4;r.nl.forEach(function(l,li){T(l,tx,ly+8.5+li*17,12.5,"400",rgba(ink,.7))});ly+=r.nl.length*17}
+          if(r.kd.length){ly+=4;r.kd.forEach(function(kd,ki){var ky=ly+ki*27;cover(imgs[kd.id],tx,ky+1,24,24,6);c.font="400 13px "+F;T(fit(c,kd.name,tmax-32),tx+32,ky+13.5,13,"400",ink)})}
+          yy+=r.ch;
         });
       });
     });
+    T("hthsiehtrip",W-pad,H-20,13,"400",rgba(ink,.5),"right");
     return new Promise(function(res){cv.toBlob(res,"image/png")});
   }
 
