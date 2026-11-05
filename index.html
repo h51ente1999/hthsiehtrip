@@ -306,6 +306,22 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .tripbar .syncbadge{flex:0 0 auto}
 @media (max-width:420px){.tripbar{gap:4px!important}.tripbar .ib,.tripbar .gear{min-width:32px!important;width:32px;height:32px}.tripbar select{padding:7px 6px!important;font-size:.92rem}}
 @media (max-width:360px){.tripbar .ib,.tripbar .gear{min-width:30px!important;width:30px;height:30px;border-radius:8px}}
+/* day add */
+.dayadd{display:flex;align-items:center;justify-content:center;width:100%;height:38px;margin-top:8px;padding:0;border-radius:12px;border:1.5px dashed var(--accent-text);background:transparent;color:var(--accent-text);line-height:0}
+.dayadd:hover{background:var(--blue-soft)}
+#pickSheet{position:fixed;inset:0;z-index:80;display:none}#pickSheet.on{display:block}
+#pickSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
+#pickSheet .sh{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:82vh;display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2);animation:shup .22s ease-out}
+#pickSheet .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#pickSheet .hd h3{margin:0;font-size:1rem;flex:1}
+#pickSheet input[type=search]{width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+#pickSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
+#pickSheet .it{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:6px;border-radius:12px;border:0;background:var(--bg);color:var(--ink)}
+#pickSheet .it .th{flex:0 0 40px;width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--blue-soft);display:grid;place-items:center}
+#pickSheet .it .bd{flex:1;min-width:0}#pickSheet .it .n{font-weight:700;overflow-wrap:anywhere}#pickSheet .it .m{font-size:.78rem;opacity:.7}
+#pickSheet .it .ck{flex:0 0 auto;font-size:.8rem;color:var(--accent-text);font-weight:700}
+#pickSheet .it.in{opacity:.55}
+#pickSheet .it.add .ck{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue);font-size:1.1rem;line-height:1}
 </style>
 </head>
 <body>
@@ -499,7 +515,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var vl=validItems(d),cr=calcDay(vl);
       var items=vl.map(function(it,k){return slotHtml(it,k,cr[k],i)}).join("");
       return '<div class="day"><header><b>第 '+(i+1)+' 天</b><span>'+d.length+' 站</span>'+(s.days.length>1?'<button data-delday="'+i+'" aria-label="刪除第 '+(i+1)+' 天">✕</button>':'')+'</header>'+
-        '<div class="drop dz" data-day="'+i+'">'+(items||'<div class="empty">拖曳景點到這裡</div>')+'</div></div>';
+        '<div class="drop dz" data-day="'+i+'">'+(items||'<div class="empty">拖曳景點到這裡</div>')+'</div><button type="button" class="dayadd" data-pickday="'+i+'" aria-label="從景點庫加入第 '+(i+1)+' 天" title="從景點庫加入"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>';
     }).join("")+'<button class="addday" id="addday">＋ 新增一天</button>';
     $("days").scrollLeft=keepSL;
     applyView();
@@ -533,6 +549,33 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     save();filterCat="";filterArea="";openKey=s.spots[0].id;render();$("lib").parentNode.scrollTop=0;$("n").focus();
   };
 
+  var pickDay=0;
+  function closePick(){var a=document.getElementById("pickSheet");if(a)a.classList.remove("on")}
+  function pickList(){
+    var a=document.getElementById("pickSheet"),q=(a.querySelector("input").value||"").trim().toLowerCase(),dl=s.days[pickDay]||[];
+    var have=function(sid){return dl.some(function(x){return x.sid===sid||(x.kids||[]).some(function(k){return k.sid===sid})})};
+    var rows=s.spots.filter(function(sp){return !q||[sp.name,sp.ko,sp.area,sp.cat].join(" ").toLowerCase().indexOf(q)>=0}).map(function(sp){
+      var h=have(sp.id),m=[sp.cat,sp.area].filter(Boolean).join("・");
+      return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
+    a.querySelector(".ls").innerHTML=rows||'<p class="hint" style="margin:8px">'+(s.spots.length?"沒有符合的景點。":"景點庫還沒有景點。")+'</p>';
+    a.querySelector("h3").textContent="加入第 "+(pickDay+1)+" 天（目前 "+dl.length+" 站）";
+  }
+  function openPick(di){
+    pickDay=di;var a=document.getElementById("pickSheet");
+    if(!a){a=document.createElement("div");a.id="pickSheet";document.body.appendChild(a);
+      a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-label="從景點庫加入"><div class="hd"><h3></h3><button type="button" data-x="1">完成</button></div><input type="search" placeholder="搜尋景點、區域、分類" aria-label="搜尋景點"><div class="ls"></div></div>';
+      a.addEventListener("click",function(e){
+        if(e.target.classList.contains("bk")||e.target.closest("[data-x]")){closePick();return}
+        var b=e.target.closest("button[data-padd]");if(!b)return;
+        var sp=spot(b.dataset.padd),dl=s.days[pickDay];if(!sp||!dl)return;
+        if(dl.some(function(x){return x.sid===sp.id}))return;
+        dl.push({uid:uid(),sid:sp.id,time:"",note:""});save();render();
+        var ls=a.querySelector(".ls"),st=ls.scrollTop;pickList();ls.scrollTop=st;
+      });
+      a.querySelector("input").addEventListener("input",pickList);
+    }
+    a.querySelector("input").value="";pickList();a.classList.add("on");
+  }
   function closeAdd(){var a=document.getElementById("addSheet");if(a)a.classList.remove("on")}
   function openAddSheet(sid){
     var sp=spot(sid);if(!sp)return;
@@ -556,6 +599,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var t=e.target.closest("button");
     if(t){
       if(t.dataset.addto){openAddSheet(t.dataset.addto);return}
+      if(t.dataset.pickday!==undefined){openPick(Number(t.dataset.pickday));return}
       if(t.dataset.del){
         var id=t.dataset.del;
         s.spots=s.spots.filter(function(x){return x.id!==id});
