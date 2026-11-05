@@ -373,10 +373,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #pickSheet{position:fixed;inset:0;z-index:80;display:none}#pickSheet.on{display:block}
 #pickSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
 #pickSheet .sh{transform:translate(-50%,-50%);position:absolute;left:50%;top:50%;width:min(520px,calc(100vw - 24px));max-height:82vh;display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:20px;padding:14px 14px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:cpop .2s ease}
-#pickSheet .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#pickSheet .hd{flex:0 0 auto;display:flex;align-items:center;gap:8px;margin-bottom:10px}
 #pickSheet .hd h3{margin:0;font-size:1rem;flex:1}
-#pickSheet input[type=search]{width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
-#pickSheet .pf{display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}#pickSheet .pf::-webkit-scrollbar{display:none}#pickSheet .pf[hidden]{display:none}
+#pickSheet input[type=search]{flex:0 0 auto;width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+#pickSheet .pf{flex:0 0 auto;min-height:32px;display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}#pickSheet .pf::-webkit-scrollbar{display:none}#pickSheet .pf[hidden]{display:none}
 #pickSheet .pfc{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap}
 #pickSheet .pfc.on{background:var(--blue);color:var(--on-blue);border-color:var(--blue);font-weight:700}
 #pickSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
