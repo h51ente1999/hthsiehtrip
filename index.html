@@ -1994,7 +1994,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var rc=b.getBoundingClientRect(),g=b.cloneNode(true);
     g.className+=" ghost";g.style.width=rc.width+"px";g.style.left=rc.left+"px";g.style.top=rc.top+"px";
     document.body.appendChild(g);
-    drag={el:b,ghost:g,px:x,py:y,dx:x-rc.left,dy:y-rc.top,x0:x,y0:y,moved:false,sid:b.dataset.sid,uid:b.dataset.uid||null,day:b.dataset.day===undefined?null:b.dataset.day,zone:null,idx:0};
+    drag={touch:true,el:b,ghost:g,px:x,py:y,dx:x-rc.left,dy:y-rc.top,x0:x,y0:y,moved:false,sid:b.dataset.sid,uid:b.dataset.uid||null,day:b.dataset.day===undefined?null:b.dataset.day,zone:null,idx:0};
     /* touch: shrink every stop to a compact card so a long day fits on screen, keeping the held card under the finger */
     document.body.classList.add("tdrag");
     var nt=b.getBoundingClientRect().top;if(Math.abs(nt-rc.top)>1)window.scrollBy(0,nt-rc.top);
@@ -2132,7 +2132,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(changed){save();render()}
   }
   window.addEventListener("pointerup",end);
-  window.addEventListener("pointercancel",end);
+  /* touch drags: the browser may cancel the pointer when it claims the touch (iOS), so finish on the touch events instead */
+  window.addEventListener("pointercancel",function(e){if(drag&&drag.touch&&drag.moved)return;end()});
+  window.addEventListener("touchend",function(){if(drag&&drag.touch)end()});
+  window.addEventListener("touchcancel",function(){if(drag&&drag.touch){drag.zone=null;end()}});
   window.addEventListener("touchmove",function(e){if(drag)e.preventDefault()},{passive:false});
   document.addEventListener("contextmenu",function(e){if(drag||pend)e.preventDefault()});
 
