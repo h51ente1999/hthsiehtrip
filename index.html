@@ -723,7 +723,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     themeState.ts=Date.now();themeState.dirty=true;persistThemeState();scheduleMeta();
     var e=ent(IDX.cur);if(e&&e.shareId)markDirty();
   }
-  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}, {"n": "灰藍莫藍迪", "t": {"--page": "#bcc4c8", "--blue": "#667b88", "--tag-bg": "#667b88", "--bg": "#f4f1ee", "--surface": "#fbfaf8", "--ink": "#2c3338", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#b58b77", "--hit": "#b58b77"}}, {"n": "石墨×橘紅", "t": {"--page": "#d3d7da", "--blue": "#38434d", "--tag-bg": "#38434d", "--bg": "#f3f4f5", "--surface": "#ffffff", "--ink": "#15191d", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#df5b35", "--hit": "#df5b35"}}, {"n": "天藍紫", "t": {"--page": "#d6e6f6", "--blue": "#2e90d4", "--tag-bg": "#2e90d4", "--bg": "#f3f8fd", "--surface": "#ffffff", "--ink": "#14243a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e8704f", "--hit": "#e8704f", "--blue2": "#7b60b0"}}, {"n": "霧紫", "t": {"--page": "#dbe0e9", "--blue": "#6890b4", "--tag-bg": "#6890b4", "--bg": "#f4f5f8", "--surface": "#ffffff", "--ink": "#252b38", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#bf8670", "--hit": "#bf8670", "--blue2": "#8b79aa"}}];
+  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}, {"n": "灰藍莫藍迪", "t": {"--page": "#bcc4c8", "--blue": "#667b88", "--tag-bg": "#667b88", "--bg": "#f4f1ee", "--surface": "#fbfaf8", "--ink": "#2c3338", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#b58b77", "--hit": "#b58b77"}}, {"n": "石墨×橘紅", "t": {"--page": "#d3d7da", "--blue": "#38434d", "--tag-bg": "#38434d", "--bg": "#f3f4f5", "--surface": "#ffffff", "--ink": "#15191d", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#df5b35", "--hit": "#df5b35"}}, {"n": "天藍紫", "t": {"--page": "#d6e6f6", "--blue": "#2e90d4", "--tag-bg": "#2e90d4", "--bg": "#f3f8fd", "--surface": "#ffffff", "--ink": "#14243a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8272a8", "--hit": "#8272a8", "--blue2": "#7b60b0"}}, {"n": "霧紫", "t": {"--page": "#d8dfec", "--blue": "#5a8dbd", "--tag-bg": "#5a8dbd", "--bg": "#f3f5fa", "--surface": "#ffffff", "--ink": "#232a3c", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c8805f", "--hit": "#c8805f", "--blue2": "#8570b4"}}];
   function presetOn(t){var ks=COLORS.map(function(c){return c[0]}),n=Object.keys(theme).filter(function(k){return theme[k]}).length;if(!Object.keys(t).length)return n===0;return ks.every(function(k){return (theme[k]||"").toLowerCase()===(t[k]||"").toLowerCase()})&&n===Object.keys(t).length}
   function drawPresets(){
     $("presets").innerHTML=PRESETS.map(function(p,i){var t=p.t,d=function(k,f){return t[k]||DEF[k]||f};return '<button type="button" data-pre="'+i+'" aria-pressed="'+presetOn(t)+'" title="'+p.n+'"><i><s style="background:'+d("--page")+'"></s><s style="background:'+d("--surface")+'"></s><s style="background:'+d("--blue")+'"></s><s style="background:'+d("--tag-food")+'"></s></i>'+p.n+'</button>'}).join("");
@@ -1014,6 +1014,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     }
     return res;
   }
+  function plannedSids(){var m={};s.days.forEach(function(d){d.forEach(function(it){m[it.sid]=1;(it.kids||[]).forEach(function(k){m[k.sid]=1})})});return m}
+  function checkData(){
+    var cv=document.createElement("canvas");cv.width=cv.height=160;var c=cv.getContext("2d");
+    c.beginPath();c.arc(80,80,72,0,7);c.fillStyle="#2f9e5b";c.fill();
+    c.lineWidth=14;c.strokeStyle="#ffffff";c.lineCap="round";c.lineJoin="round";c.beginPath();c.moveTo(48,82);c.lineTo(70,104);c.lineTo(114,58);c.stroke();
+    return cv.toDataURL("image/png");
+  }
   function foodPages(foods){
     var groups={};foods.forEach(function(sp){var k=sp.area||"";(groups[k]=groups[k]||[]).push(sp)});
     var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return a.localeCompare(b,"zh-Hant")});
@@ -1178,6 +1185,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     /* 4. food list: image + name + map links, grouped by area, multi-slide */
     var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
     var fpages=foods.length?foodPages(foods):[[[],[]]];
+    var planned=plannedSids(),chkImg=checkData();
     fpages.forEach(function(fp,pi){
       var s4=P.addSlide();s4.background={color:C.bg};
       s4.addShape(P.ShapeType.rect,{x:0,y:0,w:2.1,h:7.5,fill:{color:C.main}});
@@ -1207,13 +1215,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           else s4.addShape(P.ShapeType.roundRect,{x:ix,y:iy,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
           var tx=ix+sz+0.14,tw=cw-(tx-cx)-0.1;
           var lk=mapLinks(sp),isz=0.26,iw=lk.length*(isz+0.07),twN=tw-iw-0.04;
-          lk.forEach(function(l,j){s4.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.07),y:ry+rowH/2-isz/2,w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
+          var addIc=function(){lk.forEach(function(l,j){s4.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-iw+j*(isz+0.07),y:ry+rowH/2-isz/2,w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})})};
+          if(!planned[sp.id])addIc();
           var maxN=Math.floor(twN/(15/72*1.2)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:15,bold:true,color:C.ink}}];
           var rest=maxN-wlen(trunc(sp.name,maxN))-1;
           if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
           s4.addText(nruns,{x:tx,y:ry+0.14,w:twN,h:0.28,fontFace:FACE,margin:0,valign:"middle",isTextBox:true});
           var sub=sp.addr||sp.area||"";
           if(sub)s4.addText(trunc(sub,twN/(10/72)),{x:tx,y:ry+0.46,w:twN,h:0.22,fontFace:FACE,fontSize:10,color:C.muted,margin:0,valign:"middle",isTextBox:true});
+          if(planned[sp.id]){
+            s4.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.12,fill:{color:"FFFFFF",transparency:40},line:{color:"FFFFFF",width:0,transparency:100}});
+            s4.addImage({data:chkImg.replace(/^data:/,""),x:cx+cw/2-0.2,y:ry+rowH/2-0.2,w:0.4,h:0.4});
+            addIc();
+          }
         });
       });
     });
@@ -1433,6 +1447,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     /* 4 food: image + name + map links, grouped by area, multi-page */
     var foods=s.spots.filter(function(sp){return sp.cat==="美食"});
     var fpages=foods.length?foodPages(foods):[[[],[]]];
+    var planned=plannedSids(),chkIm=await loadImg(checkData());
     fpages.forEach(function(fp,pi){
       var c=newPage(C.bg);
       c.fillStyle=C.main;c.fillRect(0,0,2.1*P,PH);
@@ -1461,13 +1476,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           else{c.fillStyle=C.line;c.fillRect(ix,iy,sz,sz)}
           c.restore();
           var tx=ix+sz+0.14*P,tw=cx+w-tx-0.1*P,dz=0.26*P,dw2=iconW(sp,dz);
-          icons(c,sp,cx+w-0.1*P,ry+h/2,dz);
+          if(!planned[sp.id])icons(c,sp,cx+w-0.1*P,ry+h/2,dz);
           c.font="700 "+pt(15)+"px "+F;
           var nm=fit(c,sp.name,tw-dw2),nw=c.measureText(nm).width,ny=ry+0.28*P;
           T(c,nm,tx,ny,15,"700",C.ink);
           if(sp.ko&&tw-dw2-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sp.ko,tw-dw2-nw-0.12*P),tx+nw+0.12*P,ny,10,"400",C.muted)}
           var sub=sp.addr||sp.area||"";
           if(sub){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sub,tw-dw2),tx,ry+0.57*P,10,"400",C.muted)}
+          if(planned[sp.id]){
+            c.save();rr(c,cx,ry,w,h,0.12*P);c.fillStyle="rgba(255,255,255,.62)";c.fill();c.restore();
+            if(chkIm){var cz=0.4*P;c.drawImage(chkIm,cx+w/2-cz/2,ry+h/2-cz/2,cz,cz)}
+            icons(c,sp,cx+w-0.1*P,ry+h/2,dz);
+          }
           y+=h+0.1*P;
         });
       });
