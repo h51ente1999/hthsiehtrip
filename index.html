@@ -322,6 +322,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #pickSheet .it .ck{flex:0 0 auto;font-size:.8rem;color:var(--accent-text);font-weight:700}
 #pickSheet .it.in{opacity:.55}
 #pickSheet .it.add .ck{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue);font-size:1.1rem;line-height:1}
+/* wide share page: days side by side */
+@media (min-width:1000px){
+ #viewer{max-width:min(1480px,96vw)}
+ #vTabs{display:none!important}
+ #viewer .vwrap>.vhead,#viewer .vwrap>.row{max-width:none}
+ .vdays{display:grid;grid-template-columns:repeat(var(--nd,4),minmax(0,1fr));gap:16px;align-items:start}
+ .vdays .vdaycol>h2.vday{margin-top:0}
+ #vBody>.vlist:not(.vtl){grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+}
+@media (max-width:999px){.vdays{display:block}}
 </style>
 </head>
 <body>
@@ -2043,11 +2053,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(legs)h+='<h2>班機</h2><div class="vrow">'+legs+'</div>';
     var hs=s.hotelSpots.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
     if(hs.length)h+='<h2>飯店</h2><div class="vlist">'+hs.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>';
+    h+='<div class="vdays" style="--nd:'+Math.min(Math.max(s.days.length,1),4)+'">';
     s.days.forEach(function(d,i){
       var vl=validItems(d),cr=calcDay(vl);
       var cl=vCollapsed[i]?' collapsed':'';
-      h+='<h2 class="vday'+cl+'" data-vday="'+i+'" role="button" tabindex="0" aria-expanded="'+(!vCollapsed[i])+'"><span>第 '+(i+1)+' 天'+(function(){var dt=dayDate(i);return dt?'<small class="vdt">'+("0"+(dt.getMonth()+1)).slice(-2)+"/"+("0"+dt.getDate()).slice(-2)+"（週"+WDN[dt.getDay()]+"）</small>":""})()+'</span><span class="vcnt">'+vl.length+' 站<span class="vchev" aria-hidden="true"></span></span></h2>'+(vl.length?'<div class="vlist vtl'+cl+'">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">路程 '+cr[q].drive+' 分'+'</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint'+cl+'">（尚無行程）</p>');
+      h+='<div class="vdaycol"><h2 class="vday'+cl+'" data-vday="'+i+'" role="button" tabindex="0" aria-expanded="'+(!vCollapsed[i])+'"><span>第 '+(i+1)+' 天'+(function(){var dt=dayDate(i);return dt?'<small class="vdt">'+("0"+(dt.getMonth()+1)).slice(-2)+"/"+("0"+dt.getDate()).slice(-2)+"（週"+WDN[dt.getDay()]+"）</small>":""})()+'</span><span class="vcnt">'+vl.length+' 站<span class="vchev" aria-hidden="true"></span></span></h2>'+(vl.length?'<div class="vlist vtl'+cl+'">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo">路程 '+cr[q].drive+' 分'+'</div>':'')+vitem(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint'+cl+'">（尚無行程）</p>')+'</div>';
     });
+    h+='</div>';
     $("vBody").innerHTML=h;
     drawVMeta();
   }
