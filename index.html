@@ -694,12 +694,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       if(t.dataset.addto){openAddSheet(t.dataset.addto);return}
       if(t.dataset.pickday!==undefined){openPick(Number(t.dataset.pickday));return}
       if(t.dataset.del){
-        var id=t.dataset.del;
-        s.spots=s.spots.filter(function(x){return x.id!==id});
-        s.days=s.days.map(function(d){return d.filter(function(it){return it.sid!==id}).map(function(it){if(it.kids)it.kids=it.kids.filter(function(k){return k.sid!==id});return it})});
-        s.hotelSpots=(s.hotelSpots||[]).filter(function(it){return it.sid!==id});
-        openKey=null;
-      }else if(t.dataset.delday!==undefined){s.days.splice(Number(t.dataset.delday),1)}
+        var id=t.dataset.del,dsp=spot(id);
+        askConfirm("刪除景點「"+(dsp?dsp.name:"")+"」？","會一併從所有行程中移除，此動作無法復原。","刪除",true,function(){
+          s.spots=s.spots.filter(function(x){return x.id!==id});
+          s.days=s.days.map(function(d){return d.filter(function(it){return it.sid!==id}).map(function(it){if(it.kids)it.kids=it.kids.filter(function(k){return k.sid!==id});return it})});
+          s.hotelSpots=(s.hotelSpots||[]).filter(function(it){return it.sid!==id});
+          openKey=null;save();render();
+        });
+        return;
+      }else if(t.dataset.delday!==undefined){
+        var di=Number(t.dataset.delday),cn=(s.days[di]||[]).length;
+        askConfirm("刪除第 "+(di+1)+" 天？",cn?"這一天的 "+cn+" 個行程都會被移除（景點庫的景點不受影響），此動作無法復原。":"這一天目前沒有行程。","刪除",true,function(){s.days.splice(di,1);save();render()});
+        return;
+      }
       else if(t.id==="addday"){s.days.push([])}
       else return;
       save();render();return;
@@ -763,8 +770,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   });
   document.addEventListener("click",function(e){
     var t=e.target.closest("button");if(!t||!t.dataset.rmstop)return;
-    s.days.forEach(function(dl){for(var i=dl.length-1;i>=0;i--)if(dl[i].uid===t.dataset.rmstop)dl.splice(i,1)});
-    openKey=null;save();render();
+    var ru=t.dataset.rmstop,rit=findItem(ru),rsp=rit?spot(rit.sid):null;
+    askConfirm("移出行程？","「"+(rsp?rsp.name:"這個景點")+"」會從這天的行程移除（景點庫仍保留）。","移出",true,function(){
+      s.days.forEach(function(dl){for(var i=dl.length-1;i>=0;i--)if(dl[i].uid===ru)dl.splice(i,1)});
+      openKey=null;save();render();
+    });
   });
   function findOpen(){
     if(!openKey)return null;
@@ -948,7 +958,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       save();render();
     }else if(b.dataset.rmkid){
       var pit=b.dataset.parent?findItem(b.dataset.parent):null;if(!pit){s.days.forEach(function(dl){dl.forEach(function(x){if((x.kids||[]).some(function(k){return k.uid===b.dataset.rmkid}))pit=x})})}if(!pit||!pit.kids)return;openKey=null;
+      var kid=pit.kids.filter(function(k){return k.uid===b.dataset.rmkid})[0];
       pit.kids=pit.kids.filter(function(k){return k.uid!==b.dataset.rmkid});if(!pit.kids.length)delete pit.kids;
+      /* put it back as its own stop right below the main stop instead of making it vanish */
+      if(kid){var pd=null;s.days.forEach(function(dl){if(dl.indexOf(pit)>=0)pd=dl});
+        if(pd&&!pd.some(function(x){return x.sid===kid.sid}))pd.splice(pd.indexOf(pit)+1,0,{uid:uid(),sid:kid.sid,time:"",note:""})}
       save();render();
     }
   });
