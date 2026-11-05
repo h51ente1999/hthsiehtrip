@@ -2081,7 +2081,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       pend2.push(c);
       if(c.classList.contains("slot")){units.push({els:pend2,slot:c});pend2=[]}
     });
-    var srcU=null;units.forEach(function(u){u.top=zr.top+off(u.els[0]);u.bot=zr.top+off(u.slot)+u.slot.offsetHeight;if(u.slot.contains(drag.el))srcU=u});
+    var srcU=null;units.forEach(function(u){var fe=u.els.filter(function(e){return e.getClientRects().length})[0]||u.slot;u.top=zr.top+off(fe);u.bot=zr.top+off(u.slot)+u.slot.offsetHeight;if(u.slot.contains(drag.el))srcU=u});
     var g=3;
     for(var q=1;q<units.length;q++){if(units[q].top-units[q-1].bot>=0){g=units[q].top-units[q-1].bot;break}}
     if(srcU)srcU.slot.classList.add("srcslot");
