@@ -1023,7 +1023,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   function foodPages(foods){
     var pl=plannedSids(),groups={};foods.forEach(function(sp){var k=sp.area||"";(groups[k]=groups[k]||[]).push(sp)});
-    var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return a.localeCompare(b,"zh-Hant")});
+    var keys=Object.keys(groups).sort(function(a,b){if(a===""&&b!=="")return 1;if(b===""&&a!=="")return -1;return groups[b].length-groups[a].length||a.localeCompare(b,"zh-Hant")});
     var NC=3,HEAD=0.46,CARD=0.9,CAP=5.5,pages=[[[],[],[]]],pi=0,used=0;
     function newPage(){pages.push([[],[],[]]);pi++;used=0}
     keys.forEach(function(k){
