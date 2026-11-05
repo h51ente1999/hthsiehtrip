@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
 <style>
-:root{--page:#afc3d0;--page-ink:#F2EBEB;--page-muted:color-mix(in srgb,var(--page-ink) 78%,var(--page));--bg:#ffffff;--surface:#ffffff;--ink:#0D2626;--muted:#025E73;--line:#d3c7c7;--blue:#afc3d0;--accent-text:color-mix(in srgb,var(--blue) 40%,var(--ink));--blue-soft:#e6eef3;--on-blue:#ffffff;--hit:#3691c9;--tag-bg:#afc3d0;--tag-ink:#ffffff;--tag-food:#e8b08c;
+:root{--hero2:color-mix(in srgb,var(--blue) 55%,#1f3340);--dayg2:color-mix(in srgb,var(--blue) 55%,var(--tag-food));--page:#afc3d0;--page-ink:#F2EBEB;--page-muted:color-mix(in srgb,var(--page-ink) 78%,var(--page));--bg:#ffffff;--surface:#ffffff;--ink:#0D2626;--muted:#025E73;--line:#d3c7c7;--blue:#afc3d0;--accent-text:color-mix(in srgb,var(--blue) 40%,var(--ink));--blue-soft:#e6eef3;--on-blue:#ffffff;--hit:#3691c9;--tag-bg:#afc3d0;--tag-ink:#ffffff;--tag-food:#e8b08c;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--muted:#7fc4bc;--line:#1f4a4a;--blue:#025373;--accent-text:#2EA69A;--blue-soft:#17403f;--on-blue:#F2EBEB;--hit:#2EA69A}}
 :root[data-theme="dark"]{--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--muted:#7fc4bc;--line:#1f4a4a;--blue:#025373;--accent-text:#2EA69A;--blue-soft:#17403f;--on-blue:#F2EBEB;--hit:#2EA69A}
@@ -213,7 +213,7 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 /* lively */
 :root{--pop:cubic-bezier(.34,1.56,.64,1)}
 body{font-family:"Huninn","Noto Serif TC",sans-serif!important;background:var(--page)!important}
-body::before{content:"";position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--blue) 22%,transparent) 0,transparent 38%),radial-gradient(circle at 90% 20%,color-mix(in srgb,var(--tag-food) 30%,transparent) 0,transparent 36%),radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--blue) 16%,transparent) 0,transparent 40%),var(--page)}
+body::before{content:"";position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--blue) 22%,transparent) 0,transparent 38%),radial-gradient(circle at 90% 20%,color-mix(in srgb,var(--blue2,var(--tag-food)) 30%,transparent) 0,transparent 36%),radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--blue) 16%,transparent) 0,transparent 40%),var(--page)}
 button,input,select,textarea{font-family:inherit}
 .panel,.vwrap>.vhead{border-radius:22px!important;box-shadow:0 6px 0 color-mix(in srgb,var(--blue) 18%,transparent),0 10px 24px rgba(30,42,74,.08)!important;border:2px solid color-mix(in srgb,var(--blue) 25%,#fff)!important}
 .blk{border-radius:16px!important;transition:transform .25s var(--pop),box-shadow .25s}
@@ -223,7 +223,7 @@ button,input,select,textarea{font-family:inherit}
 .th{transition:transform .3s var(--pop)}.blk:hover .th{transform:scale(1.08)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 /* share page polish */
-#viewer .vhead{background:linear-gradient(160deg,var(--blue),color-mix(in srgb,var(--blue) 55%,#1f3340));color:#fff;border-radius:22px;padding:22px 20px 26px;align-items:flex-start;margin-bottom:12px}
+#viewer .vhead{background:linear-gradient(160deg,var(--blue),var(--hero2));color:#fff;border-radius:22px;padding:22px 20px 26px;align-items:flex-start;margin-bottom:12px}
 #viewer .vhl{flex:1;min-width:0}
 #viewer .vhead h1{background:none!important;color:#fff!important;padding:0!important;margin:0 0 8px!important;font-size:1.7rem}
 #vMeta{display:flex;gap:6px;flex-wrap:wrap}.vchip{background:rgba(255,255,255,.2);border-radius:999px;padding:3px 12px;font-size:.85rem}
@@ -245,7 +245,7 @@ button,input,select,textarea{font-family:inherit}
 /* theme polish: everything derives from the active palette */
 body{background:
  radial-gradient(circle at 10% 6%,color-mix(in srgb,var(--blue) 30%,transparent) 0,transparent 36%),
- radial-gradient(circle at 92% 18%,color-mix(in srgb,var(--tag-food) 38%,transparent) 0,transparent 34%),
+ radial-gradient(circle at 92% 18%,color-mix(in srgb,var(--blue2,var(--tag-food)) 38%,transparent) 0,transparent 34%),
  radial-gradient(circle at 50% 105%,color-mix(in srgb,var(--blue) 24%,transparent) 0,transparent 42%),
  var(--page)!important}
 ::selection{background:color-mix(in srgb,var(--blue) 35%,transparent)}
@@ -254,7 +254,7 @@ body{background:
 .panel>h2::before,.panel h2:first-child::before{content:"";position:absolute;left:0;top:.15em;bottom:.15em;width:5px;border-radius:3px;background:linear-gradient(var(--blue),var(--tag-food))}
 /* day column */
 .day{background:color-mix(in srgb,var(--blue) 7%,var(--surface))!important;border:1.5px solid color-mix(in srgb,var(--blue) 22%,transparent)}
-.day header{background:linear-gradient(90deg,var(--blue),color-mix(in srgb,var(--blue) 55%,var(--tag-food)));border-radius:999px;padding:5px 8px 5px 16px}
+.day header{background:linear-gradient(90deg,var(--blue),var(--dayg2));border-radius:999px;padding:5px 8px 5px 16px}
 .day header b,.day header span,.day header button{color:var(--on-blue,#fff)!important}
 .day header span{opacity:.9}
 /* notes follow the palette instead of a fixed grey-blue */
@@ -702,7 +702,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(!sp){say("請先點開一個景點再貼上圖片；或在新增表單裡貼上。");return}
     shrink(f,function(d){sp.img=d;save();render();say("已更新「"+sp.name+"」的圖片。")});
   });
-  var COLORS=[["--page"],["--surface"],["--bg"],["--ink"],["--blue"],["--on-blue"],["--tag-bg"],["--tag-ink"],["--tag-food"],["--hit"]];
+  var COLORS=[["--page"],["--surface"],["--bg"],["--ink"],["--blue"],["--on-blue"],["--tag-bg"],["--tag-ink"],["--tag-food"],["--hit"],["--blue2"]];
   var DEF={"--page":"#afc3d0","--surface":"#ffffff","--bg":"#ffffff","--ink":"#0D2626","--blue":"#afc3d0","--on-blue":"#ffffff","--tag-bg":"#afc3d0","--tag-ink":"#ffffff","--hit":"#3691c9","--tag-food":"#e8b08c"};
   var GROUPS=[[["--page","--blue","--tag-bg"],"主色"],[["--bg"],"內部區塊背景"],[["--surface"],"面板背景"],[["--ink"],"深色文字"],[["--on-blue","--tag-ink"],"淺色文字（按鈕、分類標籤）"],[["--tag-food"],"美食標籤背景"],[["--hit"],"選取與拖曳提示"]];
   var theme={};
@@ -711,8 +711,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function lum(h){var n=parseInt(h.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)/255}
   function applyTheme(){
     var st=document.documentElement.style;
-    COLORS.map(function(c){return c[0]}).concat(["--accent-text","--on-blue"]).forEach(function(k){st.removeProperty(k)});
+    COLORS.map(function(c){return c[0]}).concat(["--accent-text","--on-blue","--hero2","--dayg2","--muted"]).forEach(function(k){st.removeProperty(k)});
     Object.keys(theme).forEach(function(k){st.setProperty(k,theme[k])});
+    if(theme["--blue2"]){st.setProperty("--hero2",theme["--blue2"]);st.setProperty("--dayg2",theme["--blue2"]);st.setProperty("--muted","color-mix(in srgb,var(--ink) 62%,var(--blue))")}
     if(theme["--blue"]){if(!theme["--on-blue"])st.setProperty("--on-blue",lum(theme["--blue"])>0.55?"#0D2626":"#fff")}
   }
   function saveTheme(){
@@ -722,7 +723,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     themeState.ts=Date.now();themeState.dirty=true;persistThemeState();scheduleMeta();
     var e=ent(IDX.cur);if(e&&e.shareId)markDirty();
   }
-  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}, {"n": "灰藍莫藍迪", "t": {"--page": "#bcc4c8", "--blue": "#667b88", "--tag-bg": "#667b88", "--bg": "#f4f1ee", "--surface": "#fbfaf8", "--ink": "#2c3338", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#b58b77", "--hit": "#b58b77"}}, {"n": "石墨×橘紅", "t": {"--page": "#d3d7da", "--blue": "#38434d", "--tag-bg": "#38434d", "--bg": "#f3f4f5", "--surface": "#ffffff", "--ink": "#15191d", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#df5b35", "--hit": "#df5b35"}}];
+  var PRESETS=[{"n": "霧藍（預設）", "t": {}}, {"n": "紫灰", "t": {"--page": "#9a8c98", "--blue": "#4a4e69", "--tag-bg": "#4a4e69", "--bg": "#faf6f3", "--surface": "#f2e9e4", "--ink": "#22223b", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#9a8c98", "--hit": "#4a4e69"}}, {"n": "丹寧藍", "t": {"--page": "#658cb8", "--blue": "#4873a2", "--tag-bg": "#658cb8", "--bg": "#e3effa", "--surface": "#ffffff", "--ink": "#1b2f47", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#4873a2", "--hit": "#4873a2"}}, {"n": "粉杏", "t": {"--page": "#ebd8d0", "--blue": "#8a5a4f", "--tag-bg": "#8a5a4f", "--bg": "#fffbff", "--surface": "#fefeff", "--ink": "#4a2f2a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#c0846f", "--hit": "#8a5a4f"}}, {"n": "長春花", "t": {"--page": "#d7e3fc", "--blue": "#5a78d1", "--tag-bg": "#5a78d1", "--bg": "#edf2fb", "--surface": "#ffffff", "--ink": "#1e2a4a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#8ea6e8", "--hit": "#5a78d1"}}, {"n": "小麥天青", "t": {"--page": "#ead2ac", "--blue": "#4281a4", "--tag-bg": "#4281a4", "--bg": "#faf3e6", "--surface": "#ffffff", "--ink": "#1f3340", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e56f68", "--hit": "#e56f68"}}, {"n": "灰藍莫藍迪", "t": {"--page": "#bcc4c8", "--blue": "#667b88", "--tag-bg": "#667b88", "--bg": "#f4f1ee", "--surface": "#fbfaf8", "--ink": "#2c3338", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#b58b77", "--hit": "#b58b77"}}, {"n": "石墨×橘紅", "t": {"--page": "#d3d7da", "--blue": "#38434d", "--tag-bg": "#38434d", "--bg": "#f3f4f5", "--surface": "#ffffff", "--ink": "#15191d", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#df5b35", "--hit": "#df5b35"}}, {"n": "天藍紫", "t": {"--page": "#d6e6f6", "--blue": "#2e90d4", "--tag-bg": "#2e90d4", "--bg": "#f3f8fd", "--surface": "#ffffff", "--ink": "#14243a", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#e8704f", "--hit": "#e8704f", "--blue2": "#7b60b0"}}, {"n": "霧紫", "t": {"--page": "#dbe0e9", "--blue": "#6890b4", "--tag-bg": "#6890b4", "--bg": "#f4f5f8", "--surface": "#ffffff", "--ink": "#252b38", "--on-blue": "#ffffff", "--tag-ink": "#ffffff", "--tag-food": "#bf8670", "--hit": "#bf8670", "--blue2": "#8b79aa"}}];
   function presetOn(t){var ks=COLORS.map(function(c){return c[0]}),n=Object.keys(theme).filter(function(k){return theme[k]}).length;if(!Object.keys(t).length)return n===0;return ks.every(function(k){return (theme[k]||"").toLowerCase()===(t[k]||"").toLowerCase()})&&n===Object.keys(t).length}
   function drawPresets(){
     $("presets").innerHTML=PRESETS.map(function(p,i){var t=p.t,d=function(k,f){return t[k]||DEF[k]||f};return '<button type="button" data-pre="'+i+'" aria-pressed="'+presetOn(t)+'" title="'+p.n+'"><i><s style="background:'+d("--page")+'"></s><s style="background:'+d("--surface")+'"></s><s style="background:'+d("--blue")+'"></s><s style="background:'+d("--tag-food")+'"></s></i>'+p.n+'</button>'}).join("");
@@ -887,7 +888,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   $("ar").addEventListener("input",drawAreaChips);
   $("areaFilter").onchange=function(){filterArea=this.value;render()};
   $("catFilter").onchange=function(){filterCat=this.value;render()};
-  var SERIF='"Noto Serif TC","Songti TC","PMingLiU","SimSun",serif';
+  var SERIF='"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
   async function saveBlob(blob,filename){
     if(downloads){
       try{await downloads.save({filename:filename,data:blob});return "ok"}
@@ -899,7 +900,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var F=SERIF;
     try{
       var ft=sp.name+(sp.cat||"")+(sp.ko||"")+(sp.addr||"")+(sp.hours||"")+(sp.note||"")+"韓文店名地址營業時間備註0123456789:";
-      await document.fonts.load('700 19px "Noto Serif TC"',ft);await document.fonts.load('400 14px "Noto Serif TC"',ft);
+      await document.fonts.load('700 19px "Huninn"',ft);await document.fonts.load('400 14px "Huninn"',ft);
     }catch(e){}
     var im=sp.img?await loadImg(sp.img):null;
     var K=2,W=380,out=16,pad=20,ts=64,CW=W-out*2,TW=CW-pad*2,NW=CW-pad-(pad+ts+14);
@@ -1034,7 +1035,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function fmtDT(v){return v?v.replace("T"," ").replace(/-/g,"/"):"—"}
   async function buildPpt(){
     var P=new PptxGenJS();P.layout="LAYOUT_WIDE";
-    var FACE="PMingLiU";
+    var FACE="Microsoft JhengHei";
     ensureTrip();
     var ink=th("--ink"),surface=th("--surface"),mainC=th("--blue"),pageC=th("--page");
     var C={ink:hx(ink),surface:hx(surface),bg:hx(th("--bg")),main:hx(mainC),onMain:hx(th("--on-blue")||"#ffffff"),page:hx(pageC),
@@ -1263,7 +1264,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       s.days.forEach(function(d){d.forEach(function(it){ft+=(it.note||"")+(it.time||"")})});
       s.hotelSpots.forEach(function(it){ft+=it.note||""});
       ft+=s.flights.out.no+s.flights.back.no;
-      await document.fonts.load('700 20px "Noto Serif TC"',ft);await document.fonts.load('500 15px "Noto Serif TC"',ft);await document.fonts.load('400 15px "Noto Serif TC"',ft);
+      await document.fonts.load('700 20px "Huninn"',ft);await document.fonts.load('400 15px "Huninn"',ft);
     }catch(e){}
     var need={};
     s.days.forEach(function(d){d.forEach(function(it){need[it.sid]=1;(it.kids||[]).forEach(function(k){need[k.sid]=1})})});
@@ -1573,17 +1574,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   async function buildPng(only){
     if(only===undefined)only=null;
     ensureTrip();
-    var F='"Huninn","Noto Serif TC","PingFang TC","Microsoft JhengHei",sans-serif';
+    var F=SERIF;
     var K=2;
     var blue=th("--blue","#025373"),ink=th("--ink","#0D2626"),surface=th("--surface","#ffffff"),bgc=th("--bg","#ffffff"),pg=th("--page","#afc3d0"),
         onB=th("--on-blue")||"#ffffff",tagBg=th("--tag-bg","#afc3d0"),tagInk=th("--tag-ink","#ffffff"),food=th("--tag-food","#e8b08c");
-    var accent=mixHex(blue,ink,0.6),muted=mixHex(ink,surface,0.45),hero2=mixHex(blue,ink,0.42),halo=mixHex(blue,bgc,0.7),areaBg=mixHex(tagBg,surface,0.55);
+    var accent=mixHex(blue,ink,0.6),muted=mixHex(ink,surface,0.45),hero2=th("--blue2")||mixHex(blue,ink,0.42),halo=mixHex(blue,bgc,0.7),areaBg=mixHex(tagBg,surface,0.55);
     function rgba(h,a){var n=parseInt(h.slice(1),16);return "rgba("+(n>>16&255)+","+(n>>8&255)+","+(n&255)+","+a+")"}
     try{
       var ftxt="旅遊行程第天個景點班機飯店去程回程路程分站週日一二三四五六0123456789:/–→ "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.area||"")}).join("");
       s.days.forEach(function(d){d.forEach(function(it){ftxt+=(it.note||"")+(it.time||"")})});
       await document.fonts.load('700 20px "Huninn"',ftxt);await document.fonts.load('400 15px "Huninn"',ftxt);
-      await document.fonts.load('700 20px "Noto Serif TC"',ftxt);await document.fonts.load('400 15px "Noto Serif TC"',ftxt);
     }catch(e){}
     var imgs={};
     for(var i=0;i<s.spots.length;i++){if(s.spots[i].img)imgs[s.spots[i].id]=await loadImg(s.spots[i].img)}
