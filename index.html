@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>旅遊行程規劃</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233691c9'/%3E%3Cpath d='M32 12c-8.8 0-15.5 6.6-15.5 15 0 10.6 13.2 23.6 14.2 24.5.8.7 1.8.7 2.6 0C34.3 50.6 47.5 37.6 47.5 27c0-8.4-6.7-15-15.5-15z' fill='%23fff'/%3E%3Ccircle cx='32' cy='27' r='6.5' fill='%233691c9'/%3E%3C/svg%3E">
+<title>hthsiehtrip</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%233691c9'/%3E%3Cpath%20transform='rotate%2845%2032%2032%29%20translate%2810.4%2010.4%29%20scale%281.8%29'%20fill='%23fff'%20d='M21%2016v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10%202.67%2010%203.5V9l-8%205v2l8-2.5V19l-2%201.5V22l3.5-1%203.5%201v-1.5L13%2019v-5.5l8%202.5z'/%3E%3C/svg%3E">
 <script defer src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
@@ -113,7 +113,7 @@ body.viewer main{display:none}
 .vth{background:var(--blue-soft)!important}
 #vInfo:not(:empty),#vBody p.hint{background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:10px}
 #viewer .row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.vlist{display:grid;gap:8px}.vrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.vlist{display:grid;gap:8px}.vrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:8px}
 .vcard,.vitem{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px}
 .vitem{display:flex;gap:12px}.vth{width:84px;height:84px;object-fit:cover;border-radius:8px;background:var(--bg);flex:none}
 .vbd{min-width:0;flex:1}.vbd .n{font-weight:700}.vsub{font-size:.9rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
@@ -279,6 +279,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #vLoad p{flex-basis:100%;text-align:center;margin:6px 0 0;font-size:.95rem;letter-spacing:.12em}
 @keyframes vdot{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1);opacity:1}}
 #viewer.vload .vwrap{display:none}
+/* pin + add sheet */
+.fixbtn{padding:0;width:28px;height:28px;display:inline-grid;place-items:center;border-radius:50%;line-height:0}
+.fixbtn svg{transition:transform .2s}
+.fixbtn[aria-pressed="true"] svg{fill:currentColor;transform:rotate(-20deg)}
+.blk .libadd{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue);border:0;line-height:0}
+.blk.hasadd:not(.open) .bd{padding-right:40px}.blk.open .libadd{display:none}
+#addSheet{position:fixed;inset:0;z-index:80;display:none}
+#addSheet.on{display:block}
+#addSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
+#addSheet .sh{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2);animation:shup .22s ease-out}
+@keyframes shup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#addSheet h3{margin:0 0 12px;font-size:1rem;overflow-wrap:anywhere}
+#addSheet .dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+#addSheet .dl button{padding:10px 8px;border-radius:12px;font-size:.95rem;text-align:center;line-height:1.3}
+#addSheet .dl button:disabled{opacity:.45}
+#addSheet .dl button small{display:block;opacity:.7;font-size:.75rem}
+.vcard{min-width:0;overflow-wrap:anywhere}.vft{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin-top:4px;font-size:.85rem;opacity:.85}.vft span{white-space:nowrap}.vft i{font-style:normal}
+.leg,.fld{min-width:0}.fld input{width:100%;min-width:0;max-width:100%;box-sizing:border-box}.fld input[type="datetime-local"]{-webkit-appearance:none;appearance:none;display:block;font-size:max(16px,.9rem)}.fld input[type="datetime-local"]::-webkit-date-and-time-value{text-align:left;min-width:0}
 </style>
 </head>
 <body>
@@ -415,7 +433,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(r.calc)tm=r.arr!=null?'<b class="ct">'+rangeStr(r)+'</b>':'';
     else tm='<input type="time" class="itime" data-time="'+it.uid+'" value="'+esc(it.time||"")+'" aria-label="抵達時間">'+(r.leave!=null&&r.arr!=null?'<span class="lv">– '+m2t(r.leave)+'</span>':'');
     var tl='<div class="tl">'+tm+'<label class="stay">停留<input type="number" min="0" step="5" inputmode="numeric" data-stay="'+it.uid+'" value="'+(numv(it.stay)==null?"":numv(it.stay))+'" aria-label="停留分鐘">分</label>'+
-      '<button type="button" class="fixbtn" data-fix="'+it.uid+'" aria-pressed="'+(!!it.fixed)+'" title="固定這一站的抵達時間">固定</button></div>'+
+      '<button type="button" class="fixbtn" data-fix="'+it.uid+'" aria-pressed="'+(!!it.fixed)+'" title="固定這一站的抵達時間" aria-label="固定這一站的抵達時間"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button></div>'+
       (late?'<div class="late">預計 '+m2t(r.arr+r.late)+' 才會到，晚了 '+r.late+' 分</div>':'');
     var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+'</div>':'';
     var ks=it.kids||[];
@@ -456,11 +474,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       '<label class="lf"><span>Naver 地圖連結</span><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" aria-label="Naver 地圖連結"></label>'+
       '<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+iconHtml(sp)+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
-    return '<div class="blk'+(open?' open':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
+    return '<div class="blk'+(open?' open':'')+(inLib?' hasadd':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(inLib?'<button type="button" class="libadd" data-addto="'+sp.id+'" title="加入行程" aria-label="加入行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>':'')+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
       th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko" lang="ko">'+esc(sp.ko)+'</div>':'')+d+'</div></div>';
   }
 
-  function render(){
+  function setDocTitle(){document.title="hthsiehtrip"+(s&&s.title?" - "+s.title:"")}
+  function render(){setDocTitle();
     updateCountdown();
     $("title").value=s.title||"";
     var shown=s.spots.filter(function(sp){return (!filterCat||(filterCat==="__none"?!sp.cat:sp.cat===filterCat))&&(!filterArea||(filterArea==="__none"?!sp.area:sp.area===filterArea))});
@@ -478,7 +497,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     growNotes();
   }
 
-  $("title").oninput=function(){s.title=this.value;var e=ent(IDX.cur);if(e)e.name=s.title;save();drawTripSel()};
+  $("title").oninput=function(){s.title=this.value;setDocTitle();var e=ent(IDX.cur);if(e)e.name=s.title;save();drawTripSel()};
 
   var img="";
   $("f").onchange=function(){
@@ -505,9 +524,29 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     save();filterCat="";filterArea="";openKey=s.spots[0].id;render();$("lib").parentNode.scrollTop=0;$("n").focus();
   };
 
+  function closeAdd(){var a=document.getElementById("addSheet");if(a)a.classList.remove("on")}
+  function openAddSheet(sid){
+    var sp=spot(sid);if(!sp)return;
+    var a=document.getElementById("addSheet");
+    if(!a){a=document.createElement("div");a.id="addSheet";document.body.appendChild(a);
+      a.addEventListener("click",function(e){
+        if(e.target.classList.contains("bk")||e.target.closest("[data-x]")){closeAdd();return}
+        var b=e.target.closest("button[data-pick]");if(!b)return;
+        var sp2=spot(a.dataset.sid),di=Number(b.dataset.pick);if(!sp2||!s.days[di])return;
+        var dl=s.days[di];
+        if(dl.some(function(x){return x.sid===sp2.id||(x.kids||[]).some(function(k){return k.sid===sp2.id})})){say("「"+sp2.name+"」第 "+(di+1)+" 天已經在行程裡了，不會重複加入。");closeAdd();return}
+        dl.push({uid:uid(),sid:sp2.id,time:"",note:""});save();render();closeAdd();say("已把「"+sp2.name+"」加入第 "+(di+1)+" 天");
+        var col=document.querySelector('.dz[data-day="'+di+'"]');if(col){var last=col.lastElementChild;try{(last||col).scrollIntoView({block:"nearest",behavior:"smooth"})}catch(_){}}
+      });
+    }
+    a.dataset.sid=sid;
+    a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-label="加入行程"><h3>把「'+esc(sp.name)+'」加到哪一天？</h3><div class="dl">'+s.days.map(function(d,i){var dd=dayDateObj(i);var has=d.some(function(x){return x.sid===sp.id||(x.kids||[]).some(function(k){return k.sid===sp.id})});return '<button type="button" data-pick="'+i+'"'+(has?' disabled':'')+'>第 '+(i+1)+' 天<small>'+(has?"已在行程中":(dd?(dd.getMonth()+1)+"/"+dd.getDate()+"　":"")+d.length+" 站")+'</small></button>'}).join("")+'</div><div class="row" style="margin-top:12px"><button type="button" data-x="1">取消</button></div></div>';
+    a.classList.add("on");
+  }
   document.addEventListener("click",function(e){
     var t=e.target.closest("button");
     if(t){
+      if(t.dataset.addto){openAddSheet(t.dataset.addto);return}
       if(t.dataset.del){
         var id=t.dataset.del;
         s.spots=s.spots.filter(function(x){return x.id!==id});
@@ -1945,9 +1984,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     $("viewer").classList.remove("vload");
     ensureTrip();
     var cdx=cdText(s);$("vTitle").textContent=s.title||"旅遊行程";$("vCd").textContent=cdx;$("vCd").hidden=!cdx;
-    document.title=s.title||"旅遊行程";
+    document.title="hthsiehtrip - "+(s.title||"旅遊行程");
     var h="";
-    var legs=[["out","去程"],["back","回程"]].map(function(L){var l=s.flights[L[0]];if(!(l.no||l.dep||l.arr))return "";return '<div class="vcard"><b>'+L[1]+'</b>　'+esc(l.no||"")+'<br><small>'+esc(fmtDT(l.dep))+'　→　'+esc(fmtDT(l.arr))+'</small></div>'}).join("");
+    var legs=[["out","去程"],["back","回程"]].map(function(L){var l=s.flights[L[0]];if(!(l.no||l.dep||l.arr))return "";return '<div class="vcard"><b>'+L[1]+'</b>　'+esc(l.no||"")+'<div class="vft"><span>'+esc(fmtDT(l.dep))+'</span><i>→</i><span>'+esc(fmtDT(l.arr))+'</span></div></div>'}).join("");
     if(legs)h+='<h2>班機</h2><div class="vrow">'+legs+'</div>';
     var hs=s.hotelSpots.map(function(it){return {it:it,sp:spot(it.sid)}}).filter(function(x){return x.sp});
     if(hs.length)h+='<h2>飯店</h2><div class="vlist">'+hs.map(function(x){return vitem(x.sp,x.it)}).join("")+'</div>';
