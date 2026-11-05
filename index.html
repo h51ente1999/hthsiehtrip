@@ -176,6 +176,13 @@ body.viewer main{display:none}
 #tripSheet .ls button.cur{background:var(--blue);color:var(--on-blue)}
 @keyframes tpop{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translateX(-50%)}}
 @media (max-width:460px){.presets{grid-template-columns:repeat(3,1fr)}}
+#cfmSheet{position:fixed;inset:0;z-index:90;display:none}#cfmSheet.on{display:block}
+#cfmSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.45);backdrop-filter:blur(2px)}
+#cfmSheet .sh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border-radius:20px;padding:22px 20px 18px;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:cpop .2s ease}
+#cfmSheet h3{margin:0 0 8px;font-size:1.1rem;overflow-wrap:anywhere}
+#cfmSheet p{margin:0 0 18px;font-size:.92rem;opacity:.75;line-height:1.5}
+#cfmSheet .btns{display:flex;gap:10px}#cfmSheet .btns button{flex:1;padding:11px 8px;border-radius:12px;font:inherit;font-weight:700}
+#cfmSheet .btns .danger{background:#d64545;border-color:#d64545;color:#fff}
 @keyframes sfade{from{opacity:0}to{opacity:1}}
 @keyframes sdrawer{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 .settings[hidden]{display:none}
@@ -369,6 +376,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #pickSheet .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 #pickSheet .hd h3{margin:0;font-size:1rem;flex:1}
 #pickSheet input[type=search]{width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+#pickSheet .pf{display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}#pickSheet .pf::-webkit-scrollbar{display:none}#pickSheet .pf[hidden]{display:none}
+#pickSheet .pfc{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap}
+#pickSheet .pfc.on{background:var(--blue);color:var(--on-blue);border-color:var(--blue);font-weight:700}
 #pickSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
 #pickSheet .it{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:6px;border-radius:12px;border:0;background:var(--bg);color:var(--ink)}
 #pickSheet .it .th{flex:0 0 40px;width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--blue-soft);display:grid;place-items:center}
@@ -615,10 +625,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
   var pickDay=0;
   function closePick(){var a=document.getElementById("pickSheet");if(a)a.classList.remove("on")}
+  var pickCats={},pickAreas={};
   function pickList(){
     var a=document.getElementById("pickSheet"),q=(a.querySelector("input").value||"").trim().toLowerCase(),dl=s.days[pickDay]||[];
     var have=function(sid){return dl.some(function(x){return x.sid===sid||(x.kids||[]).some(function(k){return k.sid===sid})})};
-    var rows=s.spots.filter(function(sp){return !q||[sp.name,sp.ko,sp.area,sp.cat].join(" ").toLowerCase().indexOf(q)>=0}).map(function(sp){
+    var cs=Object.keys(pickCats),ar=Object.keys(pickAreas);
+    var catAll=[];CATS.forEach(function(c){if(s.spots.some(function(x){return x.cat===c}))catAll.push(c)});s.spots.forEach(function(x){if(x.cat&&catAll.indexOf(x.cat)<0)catAll.push(x.cat)});
+    var chip=function(k,v,on){return '<button type="button" class="pfc'+(on?' on':'')+'" data-'+k+'="'+esc(v)+'" aria-pressed="'+(!!on)+'">'+esc(v)+'</button>'};
+    var rc=a.querySelector("#pfc"),ra=a.querySelector("#pfa"),sc1=rc.scrollLeft,sc2=ra.scrollLeft;
+    rc.innerHTML=catAll.map(function(c){return chip("pc",c,pickCats[c])}).join("");rc.hidden=!catAll.length;
+    ra.innerHTML=areaList().map(function(c){return chip("pa",c,pickAreas[c])}).join("");ra.hidden=!ra.innerHTML;
+    rc.scrollLeft=sc1;ra.scrollLeft=sc2;
+    var rows=s.spots.filter(function(sp){return (!cs.length||pickCats[sp.cat])&&(!ar.length||pickAreas[sp.area])&&(!q||[sp.name,sp.ko,sp.area,sp.cat].join(" ").toLowerCase().indexOf(q)>=0)}).map(function(sp){
       var h=have(sp.id),m=[sp.cat,sp.area].filter(Boolean).join("・");
       return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
     a.querySelector(".ls").innerHTML=rows||'<p class="hint" style="margin:8px">'+(s.spots.length?"沒有符合的景點。":"景點庫還沒有景點。")+'</p>';
@@ -627,9 +645,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function openPick(di){
     pickDay=di;var a=document.getElementById("pickSheet");
     if(!a){a=document.createElement("div");a.id="pickSheet";document.body.appendChild(a);
-      a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-label="從景點庫加入"><div class="hd"><h3></h3><button type="button" data-x="1">完成</button></div><input type="search" placeholder="搜尋景點、區域、分類" aria-label="搜尋景點"><div class="ls"></div></div>';
+      a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-label="從景點庫加入"><div class="hd"><h3></h3><button type="button" data-x="1">完成</button></div><input type="search" placeholder="搜尋景點、區域、分類" aria-label="搜尋景點"><div class="pf" id="pfc" role="group" aria-label="類別（可複選）"></div><div class="pf" id="pfa" role="group" aria-label="區域（可複選）"></div><div class="ls"></div></div>';
       a.addEventListener("click",function(e){
         if(e.target.classList.contains("bk")||e.target.closest("[data-x]")){closePick();return}
+        var f=e.target.closest("button[data-pc],button[data-pa]");
+        if(f){var m=f.dataset.pc!==undefined?pickCats:pickAreas,k=f.dataset.pc!==undefined?f.dataset.pc:f.dataset.pa;if(m[k])delete m[k];else m[k]=1;var ls0=a.querySelector(".ls");pickList();ls0.scrollTop=0;return}
         var b=e.target.closest("button[data-padd]");if(!b)return;
         var sp=spot(b.dataset.padd),dl=s.days[pickDay];if(!sp||!dl)return;
         if(dl.some(function(x){return x.sid===sp.id}))return;
@@ -638,7 +658,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       });
       a.querySelector("input").addEventListener("input",pickList);
     }
-    a.querySelector("input").value="";pickList();a.classList.add("on");
+    pickCats={};pickAreas={};    a.querySelector("input").value="";pickList();a.classList.add("on");
   }
   function closeAdd(){var a=document.getElementById("addSheet");if(a)a.classList.remove("on")}
   function openAddSheet(sid){
@@ -2144,8 +2164,23 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   $("tripOpen").onclick=openTrip;
   $("tripSel").onchange=function(){switchTrip(this.value)};
+  function askConfirm(title,msg,okText,danger,cb){
+    var a=document.getElementById("cfmSheet");
+    if(!a){a=document.createElement("div");a.id="cfmSheet";document.body.appendChild(a);
+      a.addEventListener("click",function(e){
+        if(e.target.classList.contains("bk")||e.target.closest("[data-no]")){a.classList.remove("on");return}
+        if(e.target.closest("[data-ok]")){a.classList.remove("on");var f=a._cb;a._cb=null;if(f)f()}
+      });
+      document.addEventListener("keydown",function(e){if(e.key==="Escape")a.classList.remove("on")});
+    }
+    a._cb=cb;
+    a.innerHTML='<div class="bk"></div><div class="sh" role="alertdialog" aria-modal="true" aria-label="'+esc(title)+'"><h3>'+esc(title)+'</h3><p>'+esc(msg).replace(/\n/g,"<br>")+'</p><div class="btns"><button type="button" data-no="1">取消</button><button type="button" data-ok="1" class="'+(danger?"danger":"primary")+'">'+esc(okText)+'</button></div></div>';
+    a.classList.add("on");a.querySelector("[data-no]").focus();
+  }
   $("tripNew").onclick=function(){
-    var id=newTripEntry(blankTrip(""),false);persistIdx();switchTrip(id);$("title").focus();
+    askConfirm("新增行程","要建立一個新的空白行程嗎？","新增",false,function(){
+      var id=newTripEntry(blankTrip(""),false);persistIdx();switchTrip(id);$("title").focus();
+    });
   };
   $("exClose").onclick=function(){$("out").style.display="none";$("prev").style.display="none";this.hidden=true};
   $("tripDup").onclick=function(){
@@ -2154,10 +2189,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   };
   $("tripDel").onclick=function(){
     var e=ent(IDX.cur);if(!e)return;
-    if(!confirm("確定要刪除「"+(s.title||"這個行程")+"」嗎？"+(cloudUser?"\n雲端上的這份行程也會一併刪除，分享連結會失效。":"")+"\n此動作無法復原。"))return;
-    if(e.ts||e.shareId){IDX.pendingDel=(IDX.pendingDel||[]).concat([{id:e.id,sid:e.shareId||""}])}
-    removeLocalTrip(e.id);
-    flushPendingDel();
+    askConfirm("刪除「"+(s.title||"這個行程")+"」？",(cloudUser?"雲端上的這份行程也會一併刪除，分享連結會失效。\n":"")+"此動作無法復原。","刪除",true,function(){
+      var e2=ent(e.id);if(!e2)return;
+      if(e2.ts||e2.shareId){IDX.pendingDel=(IDX.pendingDel||[]).concat([{id:e2.id,sid:e2.shareId||""}])}
+      removeLocalTrip(e2.id);
+      flushPendingDel();
+    });
   };
 
   /* push / pull */
