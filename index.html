@@ -365,6 +365,11 @@ button,input,select,textarea{font-family:inherit}
 .cprow .cpy{margin-left:0}
 .vitem .cpy{width:24px;height:24px;margin-left:4px;border:0;background:transparent;opacity:.65}
 #vSugSheet .pastebtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px 12px;border-radius:14px;border:2px dashed var(--blue);background:var(--bg);color:var(--accent-text,var(--ink));font:inherit;font-weight:700;font-size:1rem;cursor:pointer}
+.blk.planned::after{content:"";position:absolute;inset:0;border-radius:inherit;background:color-mix(in srgb,var(--bg) 62%,transparent);pointer-events:none;z-index:1}
+.blk.planned .plchk{position:absolute;left:25px;top:25px;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue,#fff);box-shadow:0 0 0 2px var(--bg),0 2px 6px rgba(0,0,0,.25);pointer-events:none;z-index:2}.blk.planned .plchk svg{width:14px;height:14px}
+.blk.planned .libadd{z-index:3}
+.blk.planned.open::after,.blk.planned.open .plchk{display:none}
+.kidbtn{margin-left:auto;padding:0;width:20px;height:20px;display:inline-grid;place-items:center;border-radius:50%;line-height:0;border:1px solid var(--accent-text);color:var(--accent-text);background:transparent;cursor:pointer}.kidbtn svg{width:12px;height:12px}.kidbtn+.fixbtn{margin-left:6px}.kidbtn:active{transform:scale(.9)}
 /* theme polish: everything derives from the active palette */
 body{background:
  radial-gradient(circle at 10% 6%,color-mix(in srgb,var(--blue) 30%,transparent) 0,transparent 36%),
@@ -599,11 +604,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(r.calc)tm=r.arr!=null?'<b class="ct">'+rangeStr(r)+'</b>':'';
     else tm='<input type="time" class="itime" data-time="'+it.uid+'" value="'+esc(it.time||"")+'" aria-label="抵達時間">'+(r.leave!=null&&r.arr!=null?'<span class="lv">– '+m2t(r.leave)+'</span>':'');
     var tl='<div class="tl">'+tm+'<label class="stay">停留<input type="number" min="0" step="5" inputmode="numeric" data-stay="'+it.uid+'" value="'+(numv(it.stay)==null?"":numv(it.stay))+'" aria-label="停留分鐘">分</label>'+
+      '<button type="button" class="kidbtn" data-addkid="'+it.uid+'" title="加入內含景點" aria-label="加入內含景點"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>'+
       '<button type="button" class="fixbtn" data-fix="'+it.uid+'" aria-pressed="'+(!!it.fixed)+'" title="固定這一站的抵達時間" aria-label="固定這一站的抵達時間"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button></div>'+
       (late?'<div class="late">預計 '+m2t(r.arr+r.late)+' 才會到，晚了 '+r.late+' 分</div>':'');
     var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+'</div>':'';
     var ks=it.kids||[];
-    var kz='<div class="kids dz kz'+(ks.length?' has':'')+'" data-kids="'+it.uid+'">'+(ks.length?'<div class="lab">包含（'+ks.length+'）</div>':'<div class="lab">拖曳景點到這裡，加入「內含」</div>')+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
+    var kz=!ks.length?"":'<div class="kids kz has" data-kidsof="'+it.uid+'"><div class="lab">包含（'+ks.length+'）</div>'+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
     return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note||"")+'</textarea></div>';
   }
   function cdText(d){
@@ -635,6 +641,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
   if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
 
+  var libPlanned={};
   function blk(sp,inst,day,inLib,forceOpen){
     var key=inst||sp.id,open=forceOpen||openKey===key;
     var th=sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>';
@@ -649,7 +656,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       '<label class="lf"><span>Naver 地圖連結</span><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" aria-label="Naver 地圖連結"></label>'+
       '<label class="coverck"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>用在 PPT 封面'+(sp.img||sp.cover?'':'（需先有圖片）')+'</span></label>'+'<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+iconHtml(sp)+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
-    return '<div class="blk'+(open?' open':'')+(inLib?' hasadd':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(inLib?'<button type="button" class="libadd" data-addto="'+sp.id+'" title="加入行程" aria-label="加入行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>':'')+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
+    var pl=inLib&&libPlanned[sp.id];
+    return '<div class="blk'+(open?' open':'')+(inLib?' hasadd':'')+(pl?' planned':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(inLib?'<button type="button" class="libadd" data-addto="'+sp.id+'" title="加入行程" aria-label="加入行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>':'')+(pl?'<span class="plchk" title="已加入行程" aria-label="已加入行程"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>':'')+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
       th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(kol(sp)?'<div class="ko" lang="ko">'+esc(kol(sp))+'</div>':'')+d+'</div></div>';
   }
 
@@ -658,6 +666,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     updateCountdown();
     $("title").value=s.title||"";
     var shown=s.spots.filter(function(sp){return (!filterCat||(filterCat==="__none"?!sp.cat:sp.cat===filterCat))&&(!filterArea||(filterArea==="__none"?!sp.area:sp.area===filterArea))});
+    libPlanned=plannedSids();(s.hotelSpots||[]).forEach(function(it){libPlanned[it.sid]=1});
     $("lib").innerHTML=shown.length?shown.map(function(sp){return blk(sp,null,null,true)}).join(""):'<p class="hint" style="margin:8px">'+(s.spots.length?'沒有符合篩選條件的景點。':'還沒有景點。複製 Google 地圖連結後按「貼上連結」，或按「手動輸入」，再把景點拖到每天的行程；點一下景點可編輯地址與備註，手機請長按再拖曳。')+'</p>';
     drawFilter();drawJump();renderHotels();
     var keepSL=$("days").scrollLeft;
@@ -699,11 +708,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     save();filterCat="";filterArea="";openKey=s.spots[0].id;render();$("lib").parentNode.scrollTop=0;$("n").focus();
   };
 
-  var pickDay=0;
+  var pickDay=0,pickParent=null;
+  function pickDayList(){
+    if(pickParent){var par=findItem(pickParent),r=null;if(par)s.days.forEach(function(dl){if(dl.indexOf(par)>=0)r=dl});return r||[]}
+    return s.days[pickDay]||[];
+  }
   function closePick(){var a=document.getElementById("pickSheet");if(a)a.classList.remove("on")}
   var pickCats={},pickAreas={};
   function pickList(){
-    var a=document.getElementById("pickSheet"),q=(a.querySelector("input").value||"").trim().toLowerCase(),dl=s.days[pickDay]||[];
+    var a=document.getElementById("pickSheet"),q=(a.querySelector("input").value||"").trim().toLowerCase(),dl=pickDayList();
     var have=function(sid){return dl.some(function(x){return x.sid===sid||(x.kids||[]).some(function(k){return k.sid===sid})})};
     var cs=Object.keys(pickCats),ar=Object.keys(pickAreas);
     var catAll=[];CATS.forEach(function(c){if(s.spots.some(function(x){return x.cat===c}))catAll.push(c)});s.spots.forEach(function(x){if(x.cat&&catAll.indexOf(x.cat)<0)catAll.push(x.cat)});
@@ -716,10 +729,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var h=have(sp.id),m=[sp.cat,sp.area].filter(Boolean).join("・");
       return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
     a.querySelector(".ls").innerHTML=rows||'<p class="hint" style="margin:8px">'+(s.spots.length?"沒有符合的景點。":"景點庫還沒有景點。")+'</p>';
-    a.querySelector("h3").textContent="加入第 "+(pickDay+1)+" 天（目前 "+dl.length+" 站）";
+    var pp=pickParent?findItem(pickParent):null,psp=pp?spot(pp.sid):null;
+    a.querySelector("h3").textContent=pickParent?"加入「"+(psp?psp.name:"")+"」的內含（目前 "+((pp&&pp.kids||[]).length)+" 個）":"加入第 "+(pickDay+1)+" 天（目前 "+dl.length+" 站）";
   }
-  function openPick(di){
-    pickDay=di;var a=document.getElementById("pickSheet");
+  function openPick(di,parentUid){
+    pickDay=di;pickParent=parentUid||null;var a=document.getElementById("pickSheet");
     if(!a){a=document.createElement("div");a.id="pickSheet";document.body.appendChild(a);
       a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-label="從景點庫加入"><div class="hd"><h3></h3><button type="button" data-x="1">完成</button></div><input type="search" placeholder="搜尋景點、區域、分類" aria-label="搜尋景點"><div class="pf" id="pfc" role="group" aria-label="類別（可複選）"></div><div class="pf" id="pfa" role="group" aria-label="區域（可複選）"></div><div class="ls"></div></div>';
       a.addEventListener("click",function(e){
@@ -727,9 +741,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var f=e.target.closest("button[data-pc],button[data-pa]");
         if(f){var m=f.dataset.pc!==undefined?pickCats:pickAreas,k=f.dataset.pc!==undefined?f.dataset.pc:f.dataset.pa;if(m[k])delete m[k];else m[k]=1;var ls0=a.querySelector(".ls");pickList();ls0.scrollTop=0;return}
         var b=e.target.closest("button[data-padd]");if(!b)return;
-        var sp=spot(b.dataset.padd),dl=s.days[pickDay];if(!sp||!dl)return;
-        if(dl.some(function(x){return x.sid===sp.id}))return;
-        dl.push({uid:uid(),sid:sp.id,time:"",note:""});save();render();
+        var sp=spot(b.dataset.padd),dl=pickDayList();if(!sp||!(pickParent||s.days[pickDay]))return;
+        if(dl.some(function(x){return x.sid===sp.id||(x.kids||[]).some(function(k){return k.sid===sp.id})}))return;
+        if(pickParent){var par=findItem(pickParent);if(!par)return;par.kids=par.kids||[];par.kids.push({uid:uid(),sid:sp.id})}
+        else dl.push({uid:uid(),sid:sp.id,time:"",note:""});
+        save();render();
         var ls=a.querySelector(".ls"),st=ls.scrollTop;pickList();ls.scrollTop=st;
       });
       a.querySelector("input").addEventListener("input",pickList);
@@ -760,6 +776,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(t){
       if(t.dataset.addto){openAddSheet(t.dataset.addto);return}
       if(t.dataset.pickday!==undefined){openPick(Number(t.dataset.pickday));return}
+      if(t.dataset.addkid){openPick(0,t.dataset.addkid);return}
       if(t.dataset.del){
         var id=t.dataset.del,dsp=spot(id);
         askConfirm("刪除景點「"+(dsp?dsp.name:"")+"」？","會一併從所有行程中移除，此動作無法復原。","刪除",true,function(){
