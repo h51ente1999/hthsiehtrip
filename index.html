@@ -452,6 +452,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #pickSheet .it .bd{flex:1;min-width:0}#pickSheet .it .n{font-weight:700;overflow-wrap:anywhere}#pickSheet .it .m{font-size:.78rem;opacity:.7}
 #pickSheet .it .ck{flex:0 0 auto;font-size:.8rem;color:var(--accent-text);font-weight:700}
 #pickSheet .it.in{opacity:.55}
+#pickSheet .it .used{font-size:.75rem;font-weight:700;color:var(--accent-text)}
 #pickSheet .it.add .ck{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue);font-size:1.1rem;line-height:1}
 /* wide share page: days side by side */
 @media (min-width:1000px){
@@ -727,7 +728,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     rc.scrollLeft=sc1;ra.scrollLeft=sc2;
     var rows=s.spots.filter(function(sp){return (!cs.length||pickCats[sp.cat])&&(!ar.length||pickAreas[sp.area])&&(!q||[sp.name,sp.ko,sp.area,sp.cat].join(" ").toLowerCase().indexOf(q)>=0)}).map(function(sp){
       var h=have(sp.id),m=[sp.cat,sp.area].filter(Boolean).join("・");
-      return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
+      var ud=[];s.days.forEach(function(d2,i2){if(d2!==dl&&d2.some(function(x){return x.sid===sp.id||(x.kids||[]).some(function(k){return k.sid===sp.id})}))ud.push(i2+1)});
+      var us=(ud.length?"第 "+ud.join("、")+" 天":"")+((s.hotelSpots||[]).some(function(x){return x.sid===sp.id})?(ud.length?"、":"")+"飯店資訊":"");
+      return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+(us?'<div class="used">✓ 已在'+esc(us)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
     a.querySelector(".ls").innerHTML=rows||'<p class="hint" style="margin:8px">'+(s.spots.length?"沒有符合的景點。":"景點庫還沒有景點。")+'</p>';
     var pp=pickParent?findItem(pickParent):null,psp=pp?spot(pp.sid):null;
     a.querySelector("h3").textContent=pickParent?"加入「"+(psp?psp.name:"")+"」的內含（目前 "+((pp&&pp.kids||[]).length)+" 個）":"加入第 "+(pickDay+1)+" 天（目前 "+dl.length+" 站）";
