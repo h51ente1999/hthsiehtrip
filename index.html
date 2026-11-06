@@ -321,6 +321,45 @@ button,input,select,textarea{font-family:inherit}
 #vLibSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
 #vLibSheet .ls .vitem{background:var(--bg)}#vLibSheet .em{text-align:center;opacity:.6;padding:20px 0}
 #vLib{position:fixed;right:16px;bottom:74px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vLib.ok{display:grid}#vLib:active{transform:scale(.92)}
+#vSugSheet{position:fixed;inset:0;z-index:80;display:none}#vSugSheet.on{display:block}
+#vSugSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
+#vSugSheet .sh{transform:translate(-50%,-50%);position:absolute;left:50%;top:50%;width:min(520px,calc(100vw - 24px));max-height:82vh;display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:20px;padding:14px 14px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:cpop .2s ease}
+#vSugSheet .hd{flex:0 0 auto;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#vSugSheet .hd h3{margin:0;font-size:1rem;flex:1}
+#vSugSheet input[type=search]{flex:0 0 auto;width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+#vSugSheet .pf{flex:0 0 auto;min-height:32px;display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}#vSugSheet .pf::-webkit-scrollbar{display:none}#vSugSheet .pf[hidden]{display:none}
+#vSugSheet .pfc{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap}
+#vSugSheet .pfc.on{background:var(--blue);color:var(--on-blue);border-color:var(--blue);font-weight:700}
+#vSugSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
+#sugSheet{position:fixed;inset:0;z-index:80;display:none}#sugSheet.on{display:block}
+#sugSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
+#sugSheet .sh{transform:translate(-50%,-50%);position:absolute;left:50%;top:50%;width:min(520px,calc(100vw - 24px));max-height:82vh;display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:20px;padding:14px 14px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:cpop .2s ease}
+#sugSheet .hd{flex:0 0 auto;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#sugSheet .hd h3{margin:0;font-size:1rem;flex:1}
+#sugSheet input[type=search]{flex:0 0 auto;width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+#sugSheet .pf{flex:0 0 auto;min-height:32px;display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}#sugSheet .pf::-webkit-scrollbar{display:none}#sugSheet .pf[hidden]{display:none}
+#sugSheet .pfc{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap}
+#sugSheet .pfc.on{background:var(--blue);color:var(--on-blue);border-color:var(--blue);font-weight:700}
+#sugSheet .ls{overflow:auto;display:grid;gap:6px;flex:1;min-height:120px;-webkit-overflow-scrolling:touch}
+#vSugSheet .ls,#sugSheet .ls{min-height:0}
+#vSugSheet .hint,#sugSheet .hint{flex:0 0 auto;margin:0 0 8px;font-size:.82rem;opacity:.75}
+#vSugSheet textarea,#vSugSheet input[type=text]{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink);margin-bottom:8px}
+#vSugSheet textarea{min-height:64px;resize:none}
+#vSugSheet label{display:block;font-size:.8rem;opacity:.75;margin:4px 0 2px}
+#vSugSheet .btn,#sugSheet .btn{padding:9px 16px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue);font:inherit;font-weight:700;cursor:pointer}
+#vSugSheet .btn.alt,#sugSheet .btn.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line,#ccd);font-weight:400}
+#vSugSheet .btn[disabled]{opacity:.5}
+#vSugSheet .st{font-size:.85rem;min-height:1.2em;margin:4px 0}
+#vSugSheet .pv{display:grid;gap:2px;padding:10px;border-radius:12px;background:var(--bg);margin:6px 0}
+#vSugSheet .pv .tg{font-size:.8rem;opacity:.8;margin-bottom:6px}
+#vSug{position:fixed;right:16px;bottom:130px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--blue);color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSug.ok{display:grid}#vSug:active{transform:scale(.92)}
+#vLibSheet .hd .sg2{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+#sugBtn{position:relative}#sugN{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5484d;color:#fff;font-size:.72rem;margin-left:4px;vertical-align:middle}
+.sgi{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:12px;background:var(--bg)}
+.sgi .th{flex:0 0 56px;width:56px;height:56px;border-radius:8px;object-fit:cover;background:var(--blue-soft,#dde)}
+.sgi .bd{flex:1;min-width:0}.sgi .n{font-weight:700;overflow-wrap:anywhere}.sgi .m{font-size:.8rem;opacity:.75;overflow-wrap:anywhere}
+.sgi .ac{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.sgi .dup{color:#c2410c;font-size:.78rem;font-weight:700}
 /* theme polish: everything derives from the active palette */
 body{background:
  radial-gradient(circle at 10% 6%,color-mix(in srgb,var(--blue) 30%,transparent) 0,transparent 36%),
@@ -418,8 +457,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 </head>
 <body>
 <section id="viewer" hidden><div id="vLoad" aria-live="polite"><i></i><i></i><i></i><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div></div></section>
+<button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><textarea id="vSugIn" rows="2" placeholder="貼上地圖連結（可在連結前加上店名）" aria-label="地圖連結"></textarea><div><button type="button" class="btn" id="vSugGo">讀取連結</button></div><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">景點名稱</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
+<div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
-<div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
+<div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
 <div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fa4e0"/><stop offset="1" stop-color="#8a6fb0"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#bg1)"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname">hthsieh Trip</span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
 <div class="setback" id="setBack" hidden></div>
@@ -458,7 +500,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   <p id="msg" role="status" class="srmsg"></p>
 </section>
 <section class="panel side">
-  <div class="sidehead"><h2>景點庫</h2><span class="selrow"><select id="catFilter" aria-label="篩選分類"></select><select id="areaFilter" aria-label="篩選區域"></select></span></div>
+  <div class="sidehead"><h2>景點庫</h2><span class="selrow"><button type="button" id="sugBtn" hidden>訪客建議<b id="sugN" hidden></b></button><select id="catFilter" aria-label="篩選分類"></select><select id="areaFilter" aria-label="篩選區域"></select></span></div>
     <div id="lib" class="dz" aria-label="景點庫"></div>
 </section>
 </div>
@@ -2587,7 +2629,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     });
     h+='</div>';
     $("vBody").innerHTML=h;
-    $("vLib").classList.toggle("ok",s.spots.length>0);
+    $("vLib").classList.toggle("ok",s.spots.length>0);$("vSug").classList.toggle("ok",!!sugApi());
     drawVMeta();
   }
   var vlC={},vlA={};
@@ -2612,6 +2654,122 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   $("vLibQ").oninput=vlDraw;
   $("vLibSheet").addEventListener("click",function(e){var b=e.target.closest(".pfc");if(!b)return;var m=b.dataset.k==="c"?vlC:vlA;m[b.dataset.v]=!m[b.dataset.v];vlDraw()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("vLibSheet").classList.contains("on"))vlClose()});
+
+  /* ===== visitor suggestions ===== */
+  function sugApi(){if(window.__demoSug)return window.__demoSug;return cloudApi&&cloudApi.suggestAdd?cloudApi:null}
+  function sugSid(){if(window.__demoSug)return "demoshare0000000001";if(viewerMode)return viewerShare;var e=ent(IDX.cur);return e&&e.shareId||""}
+  function sugClean(x){
+    var cat=str(x.cat);if(CATS.indexOf(cat)<0)cat="";
+    var nv=okNaver(str(x.naver));
+    return {name:str(x.name).slice(0,80).trim(),ko:str(x.ko).slice(0,80),addr:str(x.addr).slice(0,160),hours:normHours(str(x.hours)),cat:cat,area:str(x.area).slice(0,30),note:str(x.note).slice(0,300),img:IMGRE.test(str(x.img))&&str(x.img).length<60000?x.img:"",naver:nv,from:str(x.from).slice(0,20),ts:typeof x.ts==="number"?x.ts:0};
+  }
+  /* link -> spot fields (no side effects) */
+  function linkToSpot(raw){
+    raw=(raw||"").trim();
+    var um=raw.match(/https?:\/\/\S+/);
+    if(!um)return Promise.reject(new Error("請貼上包含 http 的地圖連結"));
+    var v=um[0],pre=raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean);
+    var r=parseMaps(v),nv0=okNaver(v);
+    if(!r&&!nv0)return Promise.reject(new Error("這不是 Google 或 Naver 地圖連結"));
+    function fin(o){
+      var sp={cat:"",area:"",name:o.name||"",ko:"",addr:o.addr||"",hours:normHours(o.hours),note:o.note||"",img:o.img||"",naver:o.naver||""};
+      if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
+      autoFill(sp);return sp;
+    }
+    if(r&&!r.short&&!r.empty)return Promise.resolve(fin({name:pre[0]||r.name,addr:pre[1]||""}));
+    if(!helperBase())return Promise.resolve(fin({name:pre[0]||"",addr:pre[1]||"",naver:nv0}));
+    return helperInfo(v).then(function(inf){
+      var fn=inf.finalUrl||v,gm=parseMaps(fn),nvf=okNaver(fn),nm=pre[0]||"",ad=pre[1]||"";
+      if((gm&&gm.name)||inf.name&&/google\./.test(fn))return fin({name:nm||(gm&&gm.name)||inf.name,addr:ad});
+      if(nvf||inf.naverId){
+        var nu=nvf||inf.finalUrl;nm=nm||inf.name||cleanTitle(inf.title);
+        var o={name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||""};
+        if(nm&&inf.image)return helperImg(inf.image).then(function(bl){return new Promise(function(res){shrink(bl,function(d){o.img=d;res(fin(o))})})},function(){return fin(o)});
+        return fin(o);
+      }
+      return fin({name:nm,addr:ad});
+    });
+  }
+  /* ---- visitor side ---- */
+  var vsCur=null,vsSent=0;
+  function vsOpen(){vsCur=null;$("vSugIn").value="";$("vSugPv").hidden=true;$("vSugSt").textContent="";$("vSugSheet").classList.add("on");setTimeout(function(){try{$("vSugIn").focus()}catch(e){}},50)}
+  function vsClose(){$("vSugSheet").classList.remove("on")}
+  function vsShowPrev(sp,msg){
+    vsCur=sp;$("vSugN1").value=sp.name;$("vSugA1").value=sp.addr;$("vSugH1").value=sp.hours;
+    var tg=[];if(sp.cat)tg.push("分類："+sp.cat);if(sp.area)tg.push("區域："+sp.area);if(sp.naver)tg.push("含 Naver 連結");if(sp.img)tg.push("含圖片");
+    $("vSugTg").textContent=tg.join("　")||"系統沒有判斷出分類與區域";
+    $("vSugPv").hidden=false;$("vSugSt").textContent=msg||"";
+  }
+  function vsGo(){
+    var raw=$("vSugIn").value;$("vSugGo").disabled=true;$("vSugSt").textContent="讀取中…";$("vSugPv").hidden=true;
+    linkToSpot(raw).then(function(sp){
+      if(!sp.name)vsShowPrev(sp,"讀不到店名，請自己填寫景點名稱。");else vsShowPrev(sp,"已讀取，確認內容後按「送出建議」。");
+    },function(e){$("vSugSt").textContent=e.message||"讀取失敗"}).then(function(){$("vSugGo").disabled=false});
+  }
+  function vsSend(){
+    var api=sugApi();if(!api||!vsCur)return;
+    var name=$("vSugN1").value.trim();if(!name){$("vSugSt").textContent="請填寫景點名稱。";return}
+    var key="travel-spots-v1-sugn-"+viewerShare,n=0;try{n=Number(localStorage.getItem(key))||0}catch(e){}
+    if(n>=10){$("vSugSt").textContent="已達送出上限（每個分享頁最多 10 筆）。";return}
+    var d=sugClean({name:name,ko:/[가-힣]/.test(name)?name:"",addr:$("vSugA1").value,hours:$("vSugH1").value,cat:vsCur.cat,area:vsCur.area,note:$("vSugNt").value,img:vsCur.img,naver:vsCur.naver,from:$("vSugFr").value,ts:Date.now()});
+    $("vSugSend").disabled=true;$("vSugSt").textContent="送出中…";
+    api.suggestAdd(sugSid(),d).then(function(){
+      try{localStorage.setItem(key,String(n+1))}catch(e){}
+      vsSent++;$("vSugIn").value="";$("vSugPv").hidden=true;vsCur=null;$("vSugSt").textContent="已送出「"+name+"」，旅伴看到後會決定是否加入。可以繼續推薦下一個。";
+    },function(e){$("vSugSt").textContent="送出失敗（"+((e&&e.code)||"錯誤")+"），請稍後再試。"}).then(function(){$("vSugSend").disabled=false});
+  }
+  if($("vSug")){
+    $("vSug").onclick=vsOpen;$("vLibSg").onclick=function(){$("vLibSheet").classList.remove("on");vsOpen()};
+    $("vSugX").onclick=vsClose;$("vSugSheet").querySelector(".bk").onclick=vsClose;
+    $("vSugGo").onclick=vsGo;$("vSugSend").onclick=vsSend;
+    $("vSugIn").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();vsGo()}});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("vSugSheet").classList.contains("on"))vsClose()});
+  }
+  /* ---- editor side ---- */
+  var sugList=[];
+  function sugAvail(){return !viewerMode&&sugApi()&&(window.__demoSug||(cloudUser&&sugSid()))}
+  function sugRefresh(cb){
+    var b=$("sugBtn");if(!b)return;
+    if(!sugAvail()){b.hidden=true;sugList=[];if(cb)cb();return}
+    sugApi().suggestList(sugSid()).then(function(a){
+      sugList=(a||[]).map(function(x){var c=sugClean(x);c.id=x.id;return c}).filter(function(x){return x.name&&x.id}).sort(function(a,b){return b.ts-a.ts});
+    },function(){}).then(function(){
+      b.hidden=false;var n=$("sugN");n.textContent=String(sugList.length);n.hidden=!sugList.length;
+      if($("sugSheet").classList.contains("on"))sugDraw();
+      if(cb)cb();
+    });
+  }
+  function sugDraw(){
+    var L=$("sugL");
+    if(!sugList.length){L.innerHTML='<div class="em" style="text-align:center;opacity:.6;padding:24px 0">目前沒有訪客建議</div>';return}
+    L.innerHTML=sugList.map(function(x){
+      var dup=s.spots.some(function(sp){return sp.name===x.name||(x.naver&&sp.naver===x.naver)});
+      var dt=x.ts?new Date(x.ts):null,ds=dt?(dt.getMonth()+1)+"/"+dt.getDate()+" "+("0"+dt.getHours()).slice(-2)+":"+("0"+dt.getMinutes()).slice(-2):"";
+      var tg=[x.cat,x.area].filter(Boolean).join(" · ");
+      return '<div class="sgi" data-id="'+esc(x.id)+'">'+(x.img?'<img class="th" src="'+x.img+'" alt="">':'<div class="th"></div>')+'<div class="bd"><div class="n">'+esc(x.name)+'</div>'+(tg?'<div class="m">'+esc(tg)+'</div>':'')+(x.addr?'<div class="m">'+esc(x.addr)+'</div>':'')+(x.hours?'<div class="m">營業時間：'+esc(x.hours)+'</div>':'')+(x.note?'<div class="m">推薦理由：'+esc(x.note)+'</div>':'')+'<div class="m">'+esc(x.from||"訪客")+' 推薦'+(ds?' · '+ds:'')+'</div>'+(dup?'<div class="dup">景點庫已有類似的景點</div>':'')+'<div class="ac"><button type="button" class="btn" data-sg="add">加入景點庫</button><button type="button" class="btn alt" data-sg="rm">略過</button></div></div></div>';
+    }).join("");
+  }
+  function sugOpen(){sugDraw();$("sugSheet").classList.add("on");sugRefresh()}
+  function sugClose(){$("sugSheet").classList.remove("on")}
+  if($("sugBtn")){
+    $("sugBtn").onclick=sugOpen;$("sugX").onclick=sugClose;$("sugSheet").querySelector(".bk").onclick=sugClose;
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("sugSheet").classList.contains("on"))sugClose()});
+    $("sugL").addEventListener("click",function(e){
+      var b=e.target.closest("button[data-sg]");if(!b)return;
+      var row=b.closest(".sgi"),id=row.dataset.id,x=sugList.filter(function(q){return q.id===id})[0];if(!x)return;
+      b.disabled=true;
+      function done(){sugList=sugList.filter(function(q){return q.id!==id});var n=$("sugN");n.textContent=String(sugList.length);n.hidden=!sugList.length;sugDraw()}
+      function del(then){sugApi().suggestDel(sugSid(),id).then(then,function(){b.disabled=false;say("刪除建議失敗，請稍後再試。")})}
+      if(b.dataset.sg==="add"){
+        var sp={id:uid(),cat:x.cat,name:x.name,ko:/[가-힣]/.test(x.name)?x.name:"",addr:x.addr,hours:x.hours,area:x.area,note:x.note,img:x.img,url:"",naver:x.naver};
+        s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";save();render();
+        del(function(){done();say("已把「"+x.name+"」加入景點庫。")});
+      }else del(done);
+    });
+    setTimeout(sugRefresh,2500);
+    setInterval(function(){if(!document.hidden)sugRefresh()},60000);
+    document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(sugRefresh,300)});
+  }
   var WDN="日一二三四五六";
   function dayDate(i){var v=(s.flights.out.dep||"").slice(0,10);if(!/^\d{4}-\d\d-\d\d$/.test(v))return null;var p=v.split("-");return new Date(Number(p[0]),Number(p[1])-1,Number(p[2])+i)}
   function drawVMeta(){
@@ -2783,6 +2941,7 @@ try {
     },
     async unshare(sid) {
       await clearCol(sSpots(sid));
+      try { await clearCol(collection(db, "shares", sid, "suggestions")); } catch (e) {}
       await deleteDoc(shareRef(sid));
     },
     async getShare(sid) {
@@ -2791,6 +2950,9 @@ try {
       const qs = await getDocs(sSpots(sid));
       return { trip: t.data(), spots: qs.docs.map((d) => ({ ...d.data(), id: d.id })) };
     },
+    async suggestAdd(sid, data) { await setDoc(doc(collection(db, "shares", sid, "suggestions")), data); },
+    async suggestList(sid) { const qs = await getDocs(collection(db, "shares", sid, "suggestions")); return qs.docs.map((d) => ({ ...d.data(), id: d.id })); },
+    async suggestDel(sid, id) { await deleteDoc(doc(db, "shares", sid, "suggestions", id)); },
     listenTrips(uid, cb) {
       return onSnapshot(tripsCol(uid), (snap) => cb(snap.docChanges().map((c) => ({ type: c.type, id: c.doc.id, data: c.doc.data() }))), () => {});
     }
