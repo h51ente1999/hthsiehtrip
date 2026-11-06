@@ -575,7 +575,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function naverUrl(sp){return sp.naver||(sp.ko?"https://map.naver.com/p/search/"+encodeURIComponent(sp.ko):"")}
   function mapLinks(sp){var a=[],nu=naverUrl(sp);if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
   function iconHtml(sp){return '<span class="mlinks">'+mapLinks(sp).map(function(l){return '<a class="mi" href="'+esc(l.u)+'" target="_blank" rel="noopener" title="'+l.t+'" aria-label="'+l.t+'"><img src="'+l.i+'" alt=""></a>'}).join("")+'</span>'}
-  function mapUrl(sp){if(sp.url)return sp.url;return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(sp.addr||sp.name)}
+  function mapUrl(sp){var q=(sp.ko||sp.name||"")+(sp.addr?" "+sp.addr:"");return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q.trim())}
 
   if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
 
@@ -766,11 +766,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     ["景點",/궁|공원|박물관|미술관|타워|전망대|해변|해수욕장|park\b|museum|palace|temple|tower|beach|observatory|宮|寺|公園|博物館|美術館|展望|海灘|神社|古城|瀑布/i]
   ];
   function suggestCat(txt){for(var i=0;i<CAT_KW.length;i++)if(CAT_KW[i][1].test(txt||""))return CAT_KW[i][0];return ""}
-  var AREA_KW=[[/서울|seoul|首爾/i,"首爾"],[/부산|busan|釜山/i,"釜山"],[/제주|jeju|濟州/i,"濟州"],[/인천|incheon|仁川/i,"仁川"],[/대구|daegu|大邱/i,"大邱"],[/경주|gyeongju|慶州/i,"慶州"],[/전주|jeonju|全州/i,"全州"],[/강릉|gangneung|江陵/i,"江陵"],[/속초|sokcho|束草/i,"束草"]];
+  var AREA_KW=[
+    [/해운대|haeundae|海雲台|海云台/i,"海雲台"],[/광안|gwangan|廣安/i,"廣安里"],[/서면|seomyeon|西面/i,"西面"],[/남포|nampo|南浦/i,"南浦洞"],[/부평|bupyeong|富平/i,"富平"],[/송정|songjeong|松亭/i,"松亭"],[/기장|gijang|機張/i,"機張"],[/영도|yeongdo|影島/i,"影島"],[/감천|gamcheon|甘川/i,"甘川"],[/태종대|taejongdae|太宗台/i,"太宗台"],[/센텀|centum|센텀시티/i,"Centum"],[/전포|jeonpo|田浦/i,"田浦"],[/자갈치|jagalchi|札嘎其/i,"札嘎其"],[/동래|dongnae|東萊/i,"東萊"],
+    [/명동|myeongdong|明洞/i,"明洞"],[/홍대|홍익|hongdae|hongik|弘大|弘益/i,"弘大"],[/강남|gangnam|江南/i,"江南"],[/이태원|itaewon|梨泰院/i,"梨泰院"],[/성수|seongsu|聖水/i,"聖水"],[/인사동|insadong|仁寺洞/i,"仁寺洞"],[/북촌|bukchon|北村/i,"北村"],[/종로|jongno|鍾路/i,"鍾路"],[/동대문|dongdaemun|東大門/i,"東大門"],[/남대문|namdaemun|南大門/i,"南大門"],[/여의도|yeouido|汝矣島/i,"汝矣島"],[/잠실|jamsil|蠶室/i,"蠶室"],[/연남|yeonnam|延南/i,"延南"],[/연희|yeonhui/i,"延禧"],[/한남|hannam|漢南/i,"漢南"],[/용산|yongsan|龍山/i,"龍山"],[/압구정|apgujeong|狎鷗亭/i,"狎鷗亭"],[/삼청|samcheong|三清/i,"三清洞"],[/익선|ikseon|益善/i,"益善洞"],[/건대|konkuk|建大/i,"建大"],[/신촌|sinchon|新村/i,"新村"],[/마포|mapo|麻浦/i,"麻浦"],[/을지로|euljiro|乙支路/i,"乙支路"],[/광장시장|gwangjang/i,"廣藏市場"],
+    [/서귀포|seogwipo|西歸浦/i,"西歸浦"],[/애월|aewol|涯月/i,"涯月"],[/성산|seongsan|城山/i,"城山"],[/한림|hallim|翰林/i,"翰林"],[/함덕|hamdeok|咸德/i,"咸德"],[/중문|jungmun|中文/i,"中文"],[/협재|hyeopjae|挾才/i,"挾才"],[/구좌|gujwa|舊左/i,"舊左"],[/표선|pyoseon|表善/i,"表善"],[/조천|jocheon|朝天/i,"朝天"],
+    [/경주|gyeongju|慶州/i,"慶州"],[/전주|jeonju|全州/i,"全州"],[/강릉|gangneung|江陵/i,"江陵"],[/속초|sokcho|束草/i,"束草"],[/인천|incheon|仁川/i,"仁川"],[/대구|daegu|大邱/i,"大邱"]
+  ];
+  var CITY_KW=[[/서울|seoul|首爾/i,"首爾"],[/부산|busan|釜山/i,"釜山"],[/제주|jeju|濟州/i,"濟州"]];
   function suggestArea(txt){
-    txt=txt||"";var l=areaList();
+    txt=txt||"";var l=areaList(),lab="";
+    for(var j=0;j<AREA_KW.length;j++)if(AREA_KW[j][0].test(txt)){lab=AREA_KW[j][1];break}
+    if(lab){for(var k=0;k<l.length;k++)if(l[k]===lab||l[k].indexOf(lab)>=0)return l[k];return lab}
     for(var i=0;i<l.length;i++)if(txt.indexOf(l[i])>=0)return l[i];
-    for(var j=0;j<AREA_KW.length;j++)if(AREA_KW[j][0].test(txt))return AREA_KW[j][1];
+    for(var c=0;c<CITY_KW.length;c++)if(CITY_KW[c][0].test(txt))return CITY_KW[c][1];
     return "";
   }
   function autoFill(sp){
@@ -781,8 +789,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(!sp.area){var a=suggestArea(txt);if(a){sp.area=a;guess.push("區域「"+a+"」")}}
     return guess;
   }
+  function normHours(v){var m=/(\d{1,2}):(\d{2})\s*[-~–—]\s*(\d{1,2}):(\d{2})/.exec(v||"");if(!m)return "";function p(x){return ("0"+x).slice(-2)}return p(m[1])+":"+m[2]+"-"+p(m[3])+":"+m[4]}
   function createSpot(o){
-    var sp={id:uid(),cat:"",name:o.name,ko:o.ko||"",addr:o.addr||"",hours:"",area:"",note:o.note||"",img:o.img||"",url:okUrl(o.url||""),naver:o.naver||""};
+    var sp={id:uid(),cat:"",name:o.name,ko:o.ko||"",addr:o.addr||"",hours:normHours(o.hours),area:"",note:o.note||"",img:o.img||"",url:"",naver:o.naver||""};
     if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
     var g=autoFill(sp);
     s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
@@ -805,7 +814,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var nu=nvf||inf.finalUrl;
         nm=nm||inf.name||cleanTitle(inf.title);
         if(nm){
-          var go=function(img){createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",img:img||""})};
+          var go=function(img){createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||"",img:img||""})};
           if(inf.image){helperImg(inf.image).then(function(bl){shrink(bl,function(d){go(d)})},function(){go("")})}else go("");
           return;
         }
