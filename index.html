@@ -360,6 +360,11 @@ button,input,select,textarea{font-family:inherit}
 .sgi .bd{flex:1;min-width:0}.sgi .n{font-weight:700;overflow-wrap:anywhere}.sgi .m{font-size:.8rem;opacity:.75;overflow-wrap:anywhere}
 .sgi .ac{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .sgi .dup{color:#c2410c;font-size:.78rem;font-weight:700}
+.cprow{display:flex;gap:6px;align-items:center}.cprow input{flex:1;min-width:0}
+.cpy{flex:0 0 auto;display:inline-grid;place-items:center;width:28px;height:28px;padding:0;margin-left:6px;border-radius:8px;border:1px solid var(--line,#ccd);background:var(--bg);color:var(--accent-text,var(--ink));vertical-align:middle;cursor:pointer}.cpy:active{transform:scale(.92)}
+.cprow .cpy{margin-left:0}
+.vitem .cpy{width:24px;height:24px;margin-left:4px;border:0;background:transparent;opacity:.65}
+#vSugSheet .pastebtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px 12px;border-radius:14px;border:2px dashed var(--blue);background:var(--bg);color:var(--accent-text,var(--ink));font:inherit;font-weight:700;font-size:1rem;cursor:pointer}
 /* theme polish: everything derives from the active palette */
 body{background:
  radial-gradient(circle at 10% 6%,color-mix(in srgb,var(--blue) 30%,transparent) 0,transparent 36%),
@@ -458,7 +463,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <body>
 <section id="viewer" hidden><div id="vLoad" aria-live="polite"><i></i><i></i><i></i><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div></div></section>
 <button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
-<div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><textarea id="vSugIn" rows="2" placeholder="貼上地圖連結（可在連結前加上店名）" aria-label="地圖連結"></textarea><div><button type="button" class="btn" id="vSugGo">讀取連結</button></div><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">景點名稱</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
+<div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
 <div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
@@ -617,6 +622,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function naverUrl(sp){return sp.naver||(sp.ko?"https://map.naver.com/p/search/"+encodeURIComponent(sp.ko):"")}
   function mapLinks(sp){var a=[],nu=naverUrl(sp);if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
   function iconHtml(sp){return '<span class="mlinks">'+mapLinks(sp).map(function(l){return '<a class="mi" href="'+esc(l.u)+'" target="_blank" rel="noopener" title="'+l.t+'" aria-label="'+l.t+'"><img src="'+l.i+'" alt=""></a>'}).join("")+'</span>'}
+  function kol(sp){return sp&&sp.ko&&sp.ko!==sp.name?sp.ko:""}
+  function copyText(tx){
+    if(!tx){say("沒有可複製的內容。");return}
+    function ok(){say("已複製「"+tx+"」")}
+    function fb(){try{var a=document.createElement("textarea");a.value=tx;a.setAttribute("readonly","");a.style.cssText="position:fixed;left:-999px;top:0";document.body.appendChild(a);a.select();var r=document.execCommand("copy");document.body.removeChild(a);if(r)ok();else say("複製失敗，請長按文字手動複製。")}catch(e){say("複製失敗，請長按文字手動複製。")}}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tx).then(ok,fb);else fb();
+  }
+  var CPY='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  document.addEventListener("click",function(e){var b=e.target.closest(".cpy");if(!b)return;e.preventDefault();e.stopPropagation();var tx=b.dataset.ctext!==undefined?b.dataset.ctext:(b.previousElementSibling&&b.previousElementSibling.value)||"";copyText(tx.trim())},true);
   function mapUrl(sp){var q=(sp.ko||sp.name||"")+(sp.addr?" "+sp.addr:"");return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q.trim())}
 
   if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
@@ -628,7 +642,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var d=open?'<div class="d">'+
       '<div class="chips" role="group" aria-label="分類">'+catChips(sp)+'</div>'+
       '<label class="lf"><span>區域</span><input type="text" data-f="area"'+at+' value="'+esc(sp.area)+'" aria-label="區域"></label>'+(areaList().length?'<div class="chips" role="group" aria-label="既有區域">'+areaChips(sp)+'</div>':'')+
-      '<div class="lf"><span>景點名稱</span><input type="text" data-f="name"'+at+' value="'+esc(sp.name)+'" aria-label="景點名稱"><input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名" style="margin-top:4px"></div>'+
+      '<div class="lf"><span>景點名稱</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="中文店名" aria-label="中文店名"><button type="button" class="cpy" title="複製中文店名" aria-label="複製中文店名">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名"><button type="button" class="cpy" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div></div>'+
       '<label class="lf"><span>地址</span><input type="text" data-f="addr"'+at+' value="'+esc(sp.addr)+'" aria-label="地址"></label>'+
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
@@ -636,7 +650,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       '<label class="coverck"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>用在 PPT 封面'+(sp.img||sp.cover?'':'（需先有圖片）')+'</span></label>'+'<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+iconHtml(sp)+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div>':'';
     return '<div class="blk'+(open?' open':'')+(inLib?' hasadd':'')+'" tabindex="0" data-key="'+key+'" data-sid="'+sp.id+'"'+(inst?' data-uid="'+inst+'" data-day="'+day+'"':'')+'>'+(inLib?'<button type="button" class="libadd" data-addto="'+sp.id+'" title="加入行程" aria-label="加入行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>':'')+(open?'<button type="button" class="dlcard" data-card="'+sp.id+'" title="下載圖卡" aria-label="下載圖卡">'+DLSVG+'</button>':'')+
-      th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko" lang="ko">'+esc(sp.ko)+'</div>':'')+d+'</div></div>';
+      th+'<div class="bd">'+((sp.cat||sp.area)?'<div class="tags">'+(sp.cat?'<span class="tag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="tag area">'+esc(sp.area)+'</span>':'')+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(kol(sp)?'<div class="ko" lang="ko">'+esc(kol(sp))+'</div>':'')+d+'</div></div>';
   }
 
   function setDocTitle(){document.title="hthsiehtrip"+(s&&s.title?" - "+s.title:"")}
@@ -1145,7 +1159,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var K=2,W=380,out=16,pad=20,ts=64,CW=W-out*2,TW=CW-pad*2,NW=CW-pad-(pad+ts+14);
     var mc=document.createElement("canvas").getContext("2d");
     mc.font="700 19px "+F;var nl=wrap(mc,sp.name,NW,2);
-    var headH=Math.max(ts,((sp.cat||sp.area)?26:0)+nl.length*26+(sp.ko?24:0));
+    var headH=Math.max(ts,((sp.cat||sp.area)?26:0)+nl.length*26+(kol(sp)?24:0));
     mc.font="400 14px "+F;
     var blocks=[["地址",sp.addr],["營業時間",sp.hours],["備註",sp.note]].filter(function(f){return f[1]}).map(function(f){return {l:f[0],lines:wrap(mc,f[1],TW,f[0]==="備註"?8:4)}});
     var bodyH=blocks.reduce(function(a,b){return a+20+b.lines.length*21+10},0);
@@ -1175,7 +1189,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(sp.cat||sp.area)ny+=26;
     c.fillStyle=ink;c.font="700 19px "+F;
     nl.forEach(function(l,i){c.fillText(l,nx,ny+13+i*26)});
-    if(sp.ko){c.font="400 15px "+F;c.fillStyle=accent;c.fillText(fit(c,sp.ko,NW),nx,ny+13+(nl.length-1)*26+24)}
+    if(kol(sp)){c.font="400 15px "+F;c.fillStyle=accent;c.fillText(fit(c,kol(sp),NW),nx,ny+13+(nl.length-1)*26+24)}
     var y=ty+headH;
     if(blocks.length){
       y+=10;c.globalAlpha=.25;c.fillStyle=accent;c.fillRect(tx,y,TW,1);c.globalAlpha=1;y+=10;
@@ -1405,7 +1419,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         else s2.addShape(P.ShapeType.roundRect,{x:hx0+0.2,y:hy+0.1,w:sz,h:sz,rectRadius:0.06,fill:{color:C.line}});
         var tx=hx0+0.2+sz+0.16,twd=hcw-(tx-hx0)-0.12;
         var runs=[{text:trunc(x.sp.name,Math.floor(twd/(15/72*1.15))),options:{fontSize:15,bold:true,color:C.ink,breakLine:true}}];
-        if(x.sp.ko)runs.push({text:trunc(x.sp.ko,Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted,breakLine:true}});
+        if(kol(x.sp))runs.push({text:trunc(kol(x.sp),Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted,breakLine:true}});
         if(x.sp.addr)runs.push({text:trunc(x.sp.addr,Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.ink,breakLine:true}});
         if(x.it.note)runs.push({text:trunc(x.it.note.replace(/\n/g," "),Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted}});
         else runs[runs.length-1].options.breakLine=false;
@@ -1465,7 +1479,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
             lk.forEach(function(l,j){sl.addImage({data:l.i.replace(/^data:/,""),x:cx+cw-0.1-isz,y:ry+0.1+j*(isz+0.06),w:isz,h:isz,hyperlink:{url:l.u.replace(/&/g,"&amp;"),tooltip:l.t}})});
             var maxN=Math.floor(twN/(14/72*0.95))*x.nn,nruns=[{text:trunc(sp.name,maxN),options:{fontSize:14,bold:true,color:C.ink}}];
             var rest=maxN-wlen(trunc(sp.name,maxN))-1;
-            if(sp.ko&&rest>3&&x.nn===1)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:10,color:C.muted}});
+            if(kol(sp)&&rest>3&&x.nn===1)nruns.push({text:"  "+trunc(kol(sp),rest),options:{fontSize:10,color:C.muted}});
             sl.addText(nruns,{x:tx,y:ry+0.32,w:twN,h:0.28+(x.nn-1)*0.22,fontFace:FACE,margin:0,valign:x.nn>1?"top":"middle",isTextBox:true});
             var ky=ry+0.62+(x.nn-1)*0.22,kz=0.17,kcur=tx,kend=tx+tw;
             kidList(it).forEach(function(k){
@@ -1530,7 +1544,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           if(!planned[sp.id])addIc();
           var maxN=Math.floor(tw/(13/72*1.2)),nruns=[{text:trunc(sp.name,maxN),options:{fontSize:13,bold:true,color:C.ink}}];
           var rest=maxN-wlen(trunc(sp.name,maxN))-1;
-          if(sp.ko&&rest>3)nruns.push({text:"  "+trunc(sp.ko,rest),options:{fontSize:9,color:C.muted}});
+          if(kol(sp)&&rest>3)nruns.push({text:"  "+trunc(kol(sp),rest),options:{fontSize:9,color:C.muted}});
           s4.addText(nruns,{x:tx,y:ry+0.12,w:tw,h:0.28,fontFace:FACE,margin:0,valign:"middle",isTextBox:true});
           if(planned[sp.id]){
             s4.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.12,fill:{color:"FFFFFF",transparency:40},line:{color:"FFFFFF",width:0,transparency:100}});
@@ -1723,7 +1737,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         else box(c,(hx0+0.2)*P,(hy+0.1)*P,sz*P,sz*P,0.06*P,C.line);
         var tx=(hx0+0.2+sz+0.16)*P,twd=(hcw-(0.2+sz+0.16)-0.12)*P,ty=(hy+0.25)*P;
         c.font="700 "+pt(15)+"px "+F;T(c,fit(c,x.sp.name,twd),tx,ty,15,"700",C.ink);ty+=0.26*P;
-        if(x.sp.ko){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.sp.ko,twd),tx,ty,10,"400",C.muted);ty+=0.2*P}
+        if(kol(x.sp)){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,kol(x.sp),twd),tx,ty,10,"400",C.muted);ty+=0.2*P}
         if(x.sp.addr){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.sp.addr,twd),tx,ty,10,"400",C.ink);ty+=0.2*P}
         if(x.it.note){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.it.note.replace(/\n/g," "),twd),tx,ty,10,"400",C.muted)}
         var isz=0.24*P;icons(c,x.sp,tx+iconW(x.sp,isz)-0.07*P,(hy+hh-0.28)*P,isz);
@@ -1785,7 +1799,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
             c.font="700 "+pt(14)+"px "+F;
             var nls=wrap(c,sp.name,twN,x.nn),nw=c.measureText(nls[0]).width;
             nls.forEach(function(l,j){T(c,l,tx,ry+0.46*P+j*0.22*P,14,"700",C.ink)});
-            if(x.nn===1&&sp.ko&&twN-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,sp.ko,twN-nw-0.12*P),tx+nw+0.12*P,ry+0.46*P,10,"400",C.muted)}
+            if(x.nn===1&&kol(sp)&&twN-nw>0.7*P){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,kol(sp),twN-nw-0.12*P),tx+nw+0.12*P,ry+0.46*P,10,"400",C.muted)}
             var kz=0.17*P,ky=ry+(0.62+(x.nn-1)*0.22)*P,kcur=tx,kend=tx+tw;
             c.font="400 "+pt(10)+"px "+F;
             kidList(it).forEach(function(k){
@@ -1853,7 +1867,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           c.font="700 "+pt(13)+"px "+F;
           var nm=fit(c,sp.name,tw),nw=c.measureText(nm).width,ny=ry+0.26*P;
           T(c,nm,tx,ny,13,"700",C.ink);
-          if(sp.ko&&tw-nw>0.6*P){c.font="400 "+pt(9)+"px "+F;T(c,fit(c,sp.ko,tw-nw-0.1*P),tx+nw+0.1*P,ny,9,"400",C.muted)}
+          if(kol(sp)&&tw-nw>0.6*P){c.font="400 "+pt(9)+"px "+F;T(c,fit(c,kol(sp),tw-nw-0.1*P),tx+nw+0.1*P,ny,9,"400",C.muted)}
           if(planned[sp.id]){
             c.save();rr(c,cx,ry,w,h,0.12*P);c.fillStyle="rgba(255,255,255,.62)";c.fill();c.restore();
             if(chkIm){var cz=0.4*P;c.drawImage(chkIm,cx+w/2-cz/2,ry+h/2-cz/2,cz,cz)}
@@ -1938,7 +1952,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   document.addEventListener("input",function(e){
     var f=e.target.dataset&&e.target.dataset.f;if(!f)return;
     var sp=spot(e.target.dataset.sid);if(!sp)return;
-    sp[f]=f==="naver"?okNaver(e.target.value.trim()):e.target.value;save();
+    var val=e.target.value;
+    if(f==="name"){sp.name=val.trim()?val:(sp.ko||"")}
+    else if(f==="ko"){var same=!sp.name||sp.name===sp.ko;sp.ko=val;if(same)sp.name=val}
+    else sp[f]=f==="naver"?okNaver(val.trim()):val;
+    save();
   });
 
   function textOut(){
@@ -1994,7 +2012,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var tx=cardW-14-TH-12-14;
         mc.font="700 17px "+F;var nm=wrap(mc,sp.name,tx,2);
         mc.font="400 12.5px "+F;var nl=nlt?wrap(mc,nlt,tx,3):[];
-        var top=(rg||sp.cat||sp.area)?26:0,th0=top+nm.length*23+(sp.ko?19:0)+(nl.length?nl.length*17+4:0)+(kd.length?kd.length*27+4:0);
+        var top=(rg||sp.cat||sp.area)?26:0,th0=top+nm.length*23+(kol(sp)?19:0)+(nl.length?nl.length*17+4:0)+(kd.length?kd.length*27+4:0);
         var ch=14+Math.max(TH,th0)+14,drive=(r.drive!=null&&r.drive>0)?r.drive:0;
         rows.push({it:it,sp:sp,rg:rg,kd:kd,nm:nm,nl:nl,top:top,ch:ch,drive:drive,gapA:q===0?0:(drive?34:12)});
         h+=ch+(q===0?0:(drive?34:12));
@@ -2060,8 +2078,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var col=j%per,row=Math.floor(j/per),fx=offX+col*(colW+gap),fy=yHt+26+row*82;
         shadowCard(fx,fy,colW,72,16,surface);
         cover(imgs[sp.id],fx+10,fy+10,52,52,10);
-        c.font="700 16px "+F;T(fit(c,sp.name,colW-100),fx+74,fy+(sp.ko?25:36),16,"700",ink);
-        if(sp.ko){c.font="400 13px "+F;T(fit(c,sp.ko,colW-100),fx+74,fy+47,13,"400",muted)}
+        c.font="700 16px "+F;T(fit(c,sp.name,colW-100),fx+74,fy+(kol(sp)?25:36),16,"700",ink);
+        if(kol(sp)){c.font="400 13px "+F;T(fit(c,kol(sp),colW-100),fx+74,fy+47,13,"400",muted)}
       });
     }
     /* days */
@@ -2103,7 +2121,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           }
           var ly=ty+r.top;
           r.nm.forEach(function(l,li){T(l,tx,ly+11.5+li*23,17,"700",ink)});ly+=r.nm.length*23;
-          if(sp.ko){c.font="400 13px "+F;T(fit(c,sp.ko,tmax),tx,ly+9,13,"400",muted);ly+=19}
+          if(kol(sp)){c.font="400 13px "+F;T(fit(c,kol(sp),tmax),tx,ly+9,13,"400",muted);ly+=19}
           if(r.nl.length){ly+=4;r.nl.forEach(function(l,li){T(l,tx,ly+8.5+li*17,12.5,"400",rgba(ink,.7))});ly+=r.nl.length*17}
           if(r.kd.length){ly+=4;r.kd.forEach(function(kd,ki){var ky=ly+ki*27;cover(imgs[kd.id],tx,ky+1,24,24,6);c.font="400 13px "+F;T(fit(c,kd.name,tmax-32),tx+32,ky+13.5,13,"400",ink)})}
           yy+=r.ch;
@@ -2608,7 +2626,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var th='<div class="vside">'+(sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>')+(rg?'<b class="vtime'+(it&&it.fixed?' vfix':'')+'">'+esc(rg)+'</b>':'')+'</div>';
     var kn=it?kidNames(it):[];
     var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
-    return '<div class="vitem'+(sp.cat==="美食"?' food':'')+'">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'</div>'+(sp.ko?'<div class="ko">'+esc(sp.ko)+'</div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
+    return '<div class="vitem'+(sp.cat==="美食"?' food':'')+'">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'<button type="button" class="cpy" data-ctext="'+esc(sp.name)+'" title="複製店名" aria-label="複製店名">'+CPY+'</button></div>'+(kol(sp)?'<div class="ko">'+esc(kol(sp))+'<button type="button" class="cpy" data-ctext="'+esc(kol(sp))+'" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
   var vCollapsed={};
   function renderViewer(){
@@ -2672,7 +2690,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var r=parseMaps(v),nv0=okNaver(v);
     if(!r&&!nv0)return Promise.reject(new Error("這不是 Google 或 Naver 地圖連結"));
     function fin(o){
-      var sp={cat:"",area:"",name:o.name||"",ko:"",addr:o.addr||"",hours:normHours(o.hours),note:o.note||"",img:o.img||"",naver:o.naver||""};
+      var hang=/[\uAC00-\uD7A3]/.test(o.name||"");
+      var sp={cat:"",area:"",name:hang?"":(o.name||""),ko:hang?o.name:"",addr:o.addr||"",hours:normHours(o.hours),note:o.note||"",img:o.img||"",naver:o.naver||""};
       if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
       autoFill(sp);return sp;
     }
@@ -2692,26 +2711,32 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   /* ---- visitor side ---- */
   var vsCur=null,vsSent=0;
-  function vsOpen(){vsCur=null;$("vSugIn").value="";$("vSugPv").hidden=true;$("vSugSt").textContent="";$("vSugSheet").classList.add("on");setTimeout(function(){try{$("vSugIn").focus()}catch(e){}},50)}
+  function vsOpen(){vsCur=null;$("vSugIn").value="";$("vSugIn").hidden=true;$("vSugPv").hidden=true;$("vSugSt").textContent="";$("vSugSheet").classList.add("on")}
+  function vsPaste(){
+    function manual(){$("vSugIn").hidden=false;$("vSugIn").focus();$("vSugSt").textContent="無法直接讀取剪貼簿，請在下方輸入框長按貼上連結。"}
+    if(navigator.clipboard&&navigator.clipboard.readText){
+      navigator.clipboard.readText().then(function(tx){if(tx&&tx.trim()){$("vSugIn").value=tx;vsGo()}else{$("vSugSt").textContent="剪貼簿是空的，請先複製地圖連結。"}},manual);
+    }else manual();
+  }
   function vsClose(){$("vSugSheet").classList.remove("on")}
   function vsShowPrev(sp,msg){
-    vsCur=sp;$("vSugN1").value=sp.name;$("vSugA1").value=sp.addr;$("vSugH1").value=sp.hours;
+    vsCur=sp;$("vSugN1").value=sp.name;$("vSugK1").value=sp.ko||"";$("vSugA1").value=sp.addr;$("vSugH1").value=sp.hours;
     var tg=[];if(sp.cat)tg.push("分類："+sp.cat);if(sp.area)tg.push("區域："+sp.area);if(sp.naver)tg.push("含 Naver 連結");if(sp.img)tg.push("含圖片");
     $("vSugTg").textContent=tg.join("　")||"系統沒有判斷出分類與區域";
     $("vSugPv").hidden=false;$("vSugSt").textContent=msg||"";
   }
   function vsGo(){
-    var raw=$("vSugIn").value;$("vSugGo").disabled=true;$("vSugSt").textContent="讀取中…";$("vSugPv").hidden=true;
+    var raw=$("vSugIn").value;$("vSugPaste").disabled=true;$("vSugSt").textContent="讀取中…";$("vSugPv").hidden=true;
     linkToSpot(raw).then(function(sp){
-      if(!sp.name)vsShowPrev(sp,"讀不到店名，請自己填寫景點名稱。");else vsShowPrev(sp,"已讀取，確認內容後按「送出建議」。");
-    },function(e){$("vSugSt").textContent=e.message||"讀取失敗"}).then(function(){$("vSugGo").disabled=false});
+      if(!sp.name&&!sp.ko)vsShowPrev(sp,"讀不到店名，請自己填寫店名。");else vsShowPrev(sp,"已讀取，確認內容後按「送出建議」。");
+    },function(e){$("vSugSt").textContent=e.message||"讀取失敗"}).then(function(){$("vSugPaste").disabled=false});
   }
   function vsSend(){
     var api=sugApi();if(!api||!vsCur)return;
-    var name=$("vSugN1").value.trim();if(!name){$("vSugSt").textContent="請填寫景點名稱。";return}
+    var zh=$("vSugN1").value.trim(),ko=$("vSugK1").value.trim(),name=zh||ko;if(!name){$("vSugSt").textContent="請至少填寫一個店名。";return}
     var key="travel-spots-v1-sugn-"+viewerShare,n=0;try{n=Number(localStorage.getItem(key))||0}catch(e){}
     if(n>=10){$("vSugSt").textContent="已達送出上限（每個分享頁最多 10 筆）。";return}
-    var d=sugClean({name:name,ko:/[가-힣]/.test(name)?name:"",addr:$("vSugA1").value,hours:$("vSugH1").value,cat:vsCur.cat,area:vsCur.area,note:$("vSugNt").value,img:vsCur.img,naver:vsCur.naver,from:$("vSugFr").value,ts:Date.now()});
+    var d=sugClean({name:name,ko:ko||(/[\uAC00-\uD7A3]/.test(name)?name:""),addr:$("vSugA1").value,hours:$("vSugH1").value,cat:vsCur.cat,area:vsCur.area,note:$("vSugNt").value,img:vsCur.img,naver:vsCur.naver,from:$("vSugFr").value,ts:Date.now()});
     $("vSugSend").disabled=true;$("vSugSt").textContent="送出中…";
     api.suggestAdd(sugSid(),d).then(function(){
       try{localStorage.setItem(key,String(n+1))}catch(e){}
@@ -2721,8 +2746,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   if($("vSug")){
     $("vSug").onclick=vsOpen;$("vLibSg").onclick=function(){$("vLibSheet").classList.remove("on");vsOpen()};
     $("vSugX").onclick=vsClose;$("vSugSheet").querySelector(".bk").onclick=vsClose;
-    $("vSugGo").onclick=vsGo;$("vSugSend").onclick=vsSend;
+    $("vSugPaste").onclick=vsPaste;$("vSugSend").onclick=vsSend;
     $("vSugIn").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();vsGo()}});
+    $("vSugIn").addEventListener("paste",function(){setTimeout(vsGo,0)});
     document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("vSugSheet").classList.contains("on"))vsClose()});
   }
   /* ---- editor side ---- */
@@ -2746,7 +2772,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var dup=s.spots.some(function(sp){return sp.name===x.name||(x.naver&&sp.naver===x.naver)});
       var dt=x.ts?new Date(x.ts):null,ds=dt?(dt.getMonth()+1)+"/"+dt.getDate()+" "+("0"+dt.getHours()).slice(-2)+":"+("0"+dt.getMinutes()).slice(-2):"";
       var tg=[x.cat,x.area].filter(Boolean).join(" · ");
-      return '<div class="sgi" data-id="'+esc(x.id)+'">'+(x.img?'<img class="th" src="'+x.img+'" alt="">':'<div class="th"></div>')+'<div class="bd"><div class="n">'+esc(x.name)+'</div>'+(tg?'<div class="m">'+esc(tg)+'</div>':'')+(x.addr?'<div class="m">'+esc(x.addr)+'</div>':'')+(x.hours?'<div class="m">營業時間：'+esc(x.hours)+'</div>':'')+(x.note?'<div class="m">推薦理由：'+esc(x.note)+'</div>':'')+'<div class="m">'+esc(x.from||"訪客")+' 推薦'+(ds?' · '+ds:'')+'</div>'+(dup?'<div class="dup">景點庫已有類似的景點</div>':'')+'<div class="ac"><button type="button" class="btn" data-sg="add">加入景點庫</button><button type="button" class="btn alt" data-sg="rm">略過</button></div></div></div>';
+      return '<div class="sgi" data-id="'+esc(x.id)+'">'+(x.img?'<img class="th" src="'+x.img+'" alt="">':'<div class="th"></div>')+'<div class="bd"><div class="n">'+esc(x.name)+'</div>'+(x.ko&&x.ko!==x.name?'<div class="m">'+esc(x.ko)+'</div>':'')+(tg?'<div class="m">'+esc(tg)+'</div>':'')+(x.addr?'<div class="m">'+esc(x.addr)+'</div>':'')+(x.hours?'<div class="m">營業時間：'+esc(x.hours)+'</div>':'')+(x.note?'<div class="m">推薦理由：'+esc(x.note)+'</div>':'')+'<div class="m">'+esc(x.from||"訪客")+' 推薦'+(ds?' · '+ds:'')+'</div>'+(dup?'<div class="dup">景點庫已有類似的景點</div>':'')+'<div class="ac"><button type="button" class="btn" data-sg="add">加入景點庫</button><button type="button" class="btn alt" data-sg="rm">略過</button></div></div></div>';
     }).join("");
   }
   function sugOpen(){sugDraw();$("sugSheet").classList.add("on");sugRefresh()}
@@ -2761,7 +2787,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       function done(){sugList=sugList.filter(function(q){return q.id!==id});$("sugN").textContent=String(sugList.length);$("sugBtn").hidden=!sugList.length;sugDraw()}
       function del(then){sugApi().suggestDel(sugSid(),id).then(then,function(){b.disabled=false;say("刪除建議失敗，請稍後再試。")})}
       if(b.dataset.sg==="add"){
-        var sp={id:uid(),cat:x.cat,name:x.name,ko:/[가-힣]/.test(x.name)?x.name:"",addr:x.addr,hours:x.hours,area:x.area,note:x.note,img:x.img,url:"",naver:x.naver};
+        var sp={id:uid(),cat:x.cat,name:x.name,ko:x.ko||(/[\uAC00-\uD7A3]/.test(x.name)?x.name:""),addr:x.addr,hours:x.hours,area:x.area,note:x.note,img:x.img,url:"",naver:x.naver};
         s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";save();render();
         del(function(){done();say("已把「"+x.name+"」加入景點庫。")});
       }else del(done);
