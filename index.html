@@ -806,7 +806,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       }
       var dbg="";try{dbg=decodeURIComponent(fin)}catch(e){dbg=fin}
       pendingUrl=/google\./.test(fin)||/goo\.gl/.test(fin)?v:"";$("gm").value="";openManual();$("n").focus();
-      say("讀不到名稱，已保留連結，請手動輸入。（助手回傳：「"+(inf.title||"無標題")+"」，"+dbg.slice(0,80)+"）");
+      say("讀不到名稱，已保留連結，請手動輸入。（助手回傳：狀態 "+(inf.status||"?")+"／"+(inf.ct||"?")+"／"+(inf.ua||"?")+"／標題「"+(inf.title||"無")+"」／"+dbg.slice(0,60)+"）");
     }).catch(function(e){
       say("連結助手沒有回應（"+((e&&e.message)||"錯誤")+"）。請確認設定裡的網址，或手動輸入。");
     });
