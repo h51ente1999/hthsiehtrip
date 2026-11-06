@@ -370,6 +370,8 @@ button,input,select,textarea{font-family:inherit}
 .blk.planned .libadd{z-index:3}
 .blk.planned.open::after,.blk.planned.open .plchk{display:none}
 .kidbtn{margin-left:auto;padding:0;width:20px;height:20px;display:inline-grid;place-items:center;border-radius:50%;line-height:0;border:1px solid var(--accent-text);color:var(--accent-text);background:transparent;cursor:pointer}.kidbtn svg{width:12px;height:12px}.kidbtn+.fixbtn{margin-left:6px}.kidbtn:active{transform:scale(.9)}
+.snote{margin-top:4px;padding:6px 10px;border-radius:8px;background:color-mix(in srgb,var(--blue) 12%,var(--bg));color:var(--ink);font-size:.85rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+body.tdrag .slot .snote{display:none!important}
 /* theme polish: everything derives from the active palette */
 body{background:
  radial-gradient(circle at 10% 6%,color-mix(in srgb,var(--blue) 30%,transparent) 0,transparent 36%),
@@ -452,7 +454,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #pickSheet .it .bd{flex:1;min-width:0}#pickSheet .it .n{font-weight:700;overflow-wrap:anywhere}#pickSheet .it .m{font-size:.78rem;opacity:.7}
 #pickSheet .it .ck{flex:0 0 auto;font-size:.8rem;color:var(--accent-text);font-weight:700}
 #pickSheet .it.in{opacity:.55}
-#pickSheet .it .used{font-size:.75rem;font-weight:700;color:var(--accent-text)}
+#pickSheet .it .used{display:flex;align-items:center;gap:4px;font-size:.75rem;font-weight:700;color:var(--accent-text)}
 #pickSheet .it.add .ck{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:var(--on-blue);font-size:1.1rem;line-height:1}
 /* wide share page: days side by side */
 @media (min-width:1000px){
@@ -595,7 +597,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var a=[];
     if(!noDrive&&r&&r.drive>0)a.push("路程 "+r.drive+" 分");
     var kn=noKids?[]:kidNames(it);if(kn.length)a.push("含："+kn.join("、"));
-    if(it.note)a.push(it.note.replace(/\n/g," "));
+    var nsp=spot(it.sid);if(nsp&&nsp.note)a.push(nsp.note.replace(/\n/g," "));
     return a.join("　");
   }
   function validItems(d){return d.filter(function(it){return spot(it.sid)})}
@@ -611,7 +613,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+'</div>':'';
     var ks=it.kids||[];
     var kz=!ks.length?"":'<div class="kids kz has" data-kidsof="'+it.uid+'"><div class="lab">包含（'+ks.length+'）</div>'+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
-    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note||"")+'</textarea></div>';
+    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+(sp.note?'<div class="snote">'+esc(sp.note)+'</div>':'')+'</div>';
   }
   function cdText(d){
     var m=d&&d.flights&&d.flights.out&&/^(\d{4})-(\d{2})-(\d{2})/.exec(d.flights.out.dep||"");
@@ -730,7 +732,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var h=have(sp.id),m=[sp.cat,sp.area].filter(Boolean).join("・");
       var ud=[];s.days.forEach(function(d2,i2){if(d2!==dl&&d2.some(function(x){return x.sid===sp.id||(x.kids||[]).some(function(k){return k.sid===sp.id})}))ud.push(i2+1)});
       var us=(ud.length?"第 "+ud.join("、")+" 天":"")+((s.hotelSpots||[]).some(function(x){return x.sid===sp.id})?(ud.length?"、":"")+"飯店資訊":"");
-      return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+(us?'<div class="used">✓ 已在'+esc(us)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
+      return '<button type="button" class="it'+(h?' in':' add')+'" data-padd="'+sp.id+'"'+(h?' disabled':'')+'>'+(sp.img?'<img class="th" src="'+sp.img+'" alt="">':'<div class="th">📍</div>')+'<div class="bd"><div class="n">'+esc(sp.name)+'</div>'+(m?'<div class="m">'+esc(m)+'</div>':'')+(us?'<div class="used"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>已在'+esc(us)+'</div>':'')+'</div><span class="ck">'+(h?'已加入':'＋')+'</span></button>'}).join("");
     a.querySelector(".ls").innerHTML=rows||'<p class="hint" style="margin:8px">'+(s.spots.length?"沒有符合的景點。":"景點庫還沒有景點。")+'</p>';
     var pp=pickParent?findItem(pickParent):null,psp=pp?spot(pp.sid):null;
     a.querySelector("h3").textContent=pickParent?"加入「"+(psp?psp.name:"")+"」的內含（目前 "+((pp&&pp.kids||[]).length)+" 個）":"加入第 "+(pickDay+1)+" 天（目前 "+dl.length+" 站）";
@@ -1084,7 +1086,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function renderHotels(){
     $("hlist").innerHTML=s.hotelSpots.map(function(it){
       var sp=spot(it.sid);
-      return sp?'<div class="slot">'+blk(sp,it.uid,"h",false,false)+'<div class="haddr'+(sp.addr?'':' none')+'">'+(sp.addr?esc(sp.addr):'尚未填寫地址（點上方飯店可編輯）')+'</div>'+(it.note?'<textarea class="inote" rows="1" data-inote="'+it.uid+'" aria-label="備註">'+esc(it.note)+'</textarea>':'')+'</div>':"";
+      return sp?'<div class="slot">'+blk(sp,it.uid,"h",false,false)+'<div class="haddr'+(sp.addr?'':' none')+'">'+(sp.addr?esc(sp.addr):'尚未填寫地址（點上方飯店可編輯）')+'</div>'+(sp.note?'<div class="snote">'+esc(sp.note)+'</div>':'')+'</div>':"";
     }).join("")||'<div class="empty">把住宿景點拖曳到這裡</div>';
     growNotes();
   }
@@ -1441,7 +1443,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var runs=[{text:trunc(x.sp.name,Math.floor(twd/(15/72*1.15))),options:{fontSize:15,bold:true,color:C.ink,breakLine:true}}];
         if(kol(x.sp))runs.push({text:trunc(kol(x.sp),Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted,breakLine:true}});
         if(x.sp.addr)runs.push({text:trunc(x.sp.addr,Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.ink,breakLine:true}});
-        if(x.it.note)runs.push({text:trunc(x.it.note.replace(/\n/g," "),Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted}});
+        if(x.sp.note)runs.push({text:trunc(x.sp.note.replace(/\n/g," "),Math.floor(twd/(10/72*1.1))),options:{fontSize:10,color:C.muted}});
         else runs[runs.length-1].options.breakLine=false;
         s2.addText(runs,{x:tx,y:hy+0.08,w:twd,h:hh-0.5,fontFace:FACE,margin:0,valign:"top",isTextBox:true});
         var hl=mapLinks(x.sp);
@@ -1759,7 +1761,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         c.font="700 "+pt(15)+"px "+F;T(c,fit(c,x.sp.name,twd),tx,ty,15,"700",C.ink);ty+=0.26*P;
         if(kol(x.sp)){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,kol(x.sp),twd),tx,ty,10,"400",C.muted);ty+=0.2*P}
         if(x.sp.addr){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.sp.addr,twd),tx,ty,10,"400",C.ink);ty+=0.2*P}
-        if(x.it.note){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.it.note.replace(/\n/g," "),twd),tx,ty,10,"400",C.muted)}
+        if(x.sp.note){c.font="400 "+pt(10)+"px "+F;T(c,fit(c,x.sp.note.replace(/\n/g," "),twd),tx,ty,10,"400",C.muted)}
         var isz=0.24*P;icons(c,x.sp,tx+iconW(x.sp,isz)-0.07*P,(hy+hh-0.28)*P,isz);
       });
     }
@@ -1976,6 +1978,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(f==="name"){sp.name=val.trim()?val:(sp.ko||"")}
     else if(f==="ko"){var same=!sp.name||sp.name===sp.ko;sp.ko=val;if(same)sp.name=val}
     else sp[f]=f==="naver"?okNaver(val.trim()):val;
+    if(f==="note")document.querySelectorAll(".slot").forEach(function(sl){
+      var bb=sl.querySelector(":scope > .blk");if(!bb||bb.dataset.sid!==sp.id)return;
+      var nn=sl.querySelector(":scope > .snote");
+      if(val.trim()){if(!nn){nn=document.createElement("div");nn.className="snote";sl.appendChild(nn)}nn.textContent=val}else if(nn)nn.remove();
+    });
     save();
   });
 
@@ -1985,7 +1992,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       L.push("","【第 "+(i+1)+" 天】");
       if(!d.length)L.push("（尚無行程）");
       var vl=validItems(d),cr=calcDay(vl);
-      vl.forEach(function(it,j){var sp=spot(it.sid),r=cr[j],rg=rangeStr(r,"–"),kn=kidNames(it);if(r.drive!=null)L.push("　↓ 路程 "+r.drive+" 分");L.push((j+1)+". "+(rg?rg+" ":"")+(r.stay!=null?"（停留 "+r.stay+" 分）":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(kn.length?"（含："+kn.join("、")+"）":"")+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(sp.naver?" Naver："+sp.naver:"")+(it.note?"｜備註："+it.note.replace(/\n/g," "):""))});
+      vl.forEach(function(it,j){var sp=spot(it.sid),r=cr[j],rg=rangeStr(r,"–"),kn=kidNames(it);if(r.drive!=null)L.push("　↓ 路程 "+r.drive+" 分");L.push((j+1)+". "+(rg?rg+" ":"")+(r.stay!=null?"（停留 "+r.stay+" 分）":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(kn.length?"（含："+kn.join("、")+"）":"")+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(sp.naver?" Naver："+sp.naver:""))});
     });
     return L.join("\n");
   }
@@ -2646,7 +2653,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var th='<div class="vside">'+(sp.img?'<img class="vth" src="'+sp.img+'" alt="">':'<div class="vth"></div>')+(rg?'<b class="vtime'+(it&&it.fixed?' vfix':'')+'">'+esc(rg)+'</b>':'')+'</div>';
     var kn=it?kidNames(it):[];
     var tags=(sp.cat?'<span class="vtag'+(sp.cat==="美食"?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
-    return '<div class="vitem'+(sp.cat==="美食"?' food':'')+'">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'<button type="button" class="cpy" data-ctext="'+esc(sp.name)+'" title="複製店名" aria-label="複製店名">'+CPY+'</button></div>'+(kol(sp)?'<div class="ko">'+esc(kol(sp))+'<button type="button" class="cpy" data-ctext="'+esc(kol(sp))+'" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+(it&&it.note?'<div class="vnote">'+esc(it.note)+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
+    return '<div class="vitem'+(sp.cat==="美食"?' food':'')+'">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'<button type="button" class="cpy" data-ctext="'+esc(sp.name)+'" title="複製店名" aria-label="複製店名">'+CPY+'</button></div>'+(kol(sp)?'<div class="ko">'+esc(kol(sp))+'<button type="button" class="cpy" data-ctext="'+esc(kol(sp))+'" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+esc(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
   var vCollapsed={};
   function renderViewer(){
