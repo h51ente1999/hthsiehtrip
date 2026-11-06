@@ -354,7 +354,7 @@ button,input,select,textarea{font-family:inherit}
 #vSugSheet .pv .tg{font-size:.8rem;opacity:.8;margin-bottom:6px}
 #vSug{position:fixed;right:16px;bottom:130px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--blue);color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSug.ok{display:grid}#vSug:active{transform:scale(.92)}
 #vLibSheet .hd .sg2{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
-#sugBtn{position:relative}#sugN{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5484d;color:#fff;font-size:.72rem;margin-left:4px;vertical-align:middle}
+#sugBtn{flex:0 0 auto;min-width:28px;height:28px;padding:0 8px;border:0;border-radius:14px;background:#e5484d;color:#fff;font-size:.85rem;font-weight:700;line-height:1;display:inline-grid;place-items:center;box-shadow:0 2px 6px rgba(229,72,77,.4)}#sugBtn[hidden]{display:none}#sugN{font-weight:700}
 .sgi{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:12px;background:var(--bg)}
 .sgi .th{flex:0 0 56px;width:56px;height:56px;border-radius:8px;object-fit:cover;background:var(--blue-soft,#dde)}
 .sgi .bd{flex:1;min-width:0}.sgi .n{font-weight:700;overflow-wrap:anywhere}.sgi .m{font-size:.8rem;opacity:.75;overflow-wrap:anywhere}
@@ -500,7 +500,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   <p id="msg" role="status" class="srmsg"></p>
 </section>
 <section class="panel side">
-  <div class="sidehead"><h2>景點庫</h2><span class="selrow"><button type="button" id="sugBtn" hidden>訪客建議<b id="sugN" hidden></b></button><select id="catFilter" aria-label="篩選分類"></select><select id="areaFilter" aria-label="篩選區域"></select></span></div>
+  <div class="sidehead"><h2>景點庫</h2><span class="selrow"><button type="button" id="sugBtn" hidden title="訪客建議" aria-label="訪客建議"><b id="sugN">0</b></button><select id="catFilter" aria-label="篩選分類"></select><select id="areaFilter" aria-label="篩選區域"></select></span></div>
     <div id="lib" class="dz" aria-label="景點庫"></div>
 </section>
 </div>
@@ -2734,7 +2734,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     sugApi().suggestList(sugSid()).then(function(a){
       sugList=(a||[]).map(function(x){var c=sugClean(x);c.id=x.id;return c}).filter(function(x){return x.name&&x.id}).sort(function(a,b){return b.ts-a.ts});
     },function(){}).then(function(){
-      b.hidden=false;var n=$("sugN");n.textContent=String(sugList.length);n.hidden=!sugList.length;
+      b.hidden=!sugList.length;$("sugN").textContent=String(sugList.length);
       if($("sugSheet").classList.contains("on"))sugDraw();
       if(cb)cb();
     });
@@ -2758,7 +2758,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var b=e.target.closest("button[data-sg]");if(!b)return;
       var row=b.closest(".sgi"),id=row.dataset.id,x=sugList.filter(function(q){return q.id===id})[0];if(!x)return;
       b.disabled=true;
-      function done(){sugList=sugList.filter(function(q){return q.id!==id});var n=$("sugN");n.textContent=String(sugList.length);n.hidden=!sugList.length;sugDraw()}
+      function done(){sugList=sugList.filter(function(q){return q.id!==id});$("sugN").textContent=String(sugList.length);$("sugBtn").hidden=!sugList.length;sugDraw()}
       function del(then){sugApi().suggestDel(sugSid(),id).then(then,function(){b.disabled=false;say("刪除建議失敗，請稍後再試。")})}
       if(b.dataset.sg==="add"){
         var sp={id:uid(),cat:x.cat,name:x.name,ko:/[가-힣]/.test(x.name)?x.name:"",addr:x.addr,hours:x.hours,area:x.area,note:x.note,img:x.img,url:"",naver:x.naver};
