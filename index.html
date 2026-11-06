@@ -804,7 +804,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         if(nm){createSpot({name:nm,addr:ad,naver:nvf});return}
         $("gm").value="";openManual();$("nv").value=nvf;$("n").focus();say("已保留 Naver 連結，請輸入名稱後按「加入景點庫」。");return;
       }
-      say("讀不到這個連結的名稱，請手動輸入。");
+      var dbg="";try{dbg=decodeURIComponent(fin)}catch(e){dbg=fin}
+      pendingUrl=/google\./.test(fin)||/goo\.gl/.test(fin)?v:"";$("gm").value="";openManual();$("n").focus();
+      say("讀不到名稱，已保留連結，請手動輸入。（助手回傳：「"+(inf.title||"無標題")+"」，"+dbg.slice(0,80)+"）");
     }).catch(function(e){
       say("連結助手沒有回應（"+((e&&e.message)||"錯誤")+"）。請確認設定裡的網址，或手動輸入。");
     });
