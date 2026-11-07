@@ -481,6 +481,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .mapfill{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue,#fff);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
 .mapst{font-size:.85rem;opacity:.75;margin:4px 0 8px;line-height:1.5}
 .mapbox{height:420px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--bg);z-index:0}
+.leaflet-tile.bm{filter:grayscale(.85) saturate(.7) contrast(.78) brightness(1.14)}
 .mkp{background:none;border:0}
 .mkp .m{position:relative;display:block;width:24px;height:24px;border-radius:50%;border:2px solid var(--c);background:#fff center/cover no-repeat;box-shadow:0 1px 4px rgba(0,0,0,.4);box-sizing:border-box}
 .mkp .m i{position:absolute;left:-7px;top:-7px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;background:var(--c);color:var(--oc);font:700 10px/14px system-ui,sans-serif;font-style:normal;text-align:center;box-sizing:border-box;border:1px solid #fff}
@@ -3014,17 +3015,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   var vCollapsed={};
   /* map (Leaflet + OpenStreetMap) */
-  var CARTO_KEY="";/* 若 CARTO 要求金鑰，填在這裡 */
-  var baseOk=null;/* null=未知 true=淡色底圖可用 false=改用標準圖 */
+  /* 底圖：OpenStreetMap 標準圖磚，用 CSS 濾鏡淡化（調整 CSS 的 .leaflet-tile.bm） */
   function baseLayer(map){
-    var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"})};
-    if(baseOk===false)return osm().addTo(map);
-    var ly=L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"+(CARTO_KEY?"?key="+encodeURIComponent(CARTO_KEY):""),{subdomains:"abcd",maxZoom:20,attribution:"© OpenStreetMap © CARTO"});
-    var bad=0,good=0;
-    ly.on("tileload",function(){good++;baseOk=true});
-    ly.on("tileerror",function(){bad++;if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
-    return ly.addTo(map);
+    return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,className:"bm",attribution:"© OpenStreetMap"}).addTo(map);
   }
+
   var lfP=null;
   function loadLeaflet(){
     if(window.L)return Promise.resolve();
