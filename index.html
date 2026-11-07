@@ -475,6 +475,22 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .fxrow.on{border-color:var(--blue)}.fxu{grid-area:u;text-align:left;font-size:.8rem;color:var(--muted);align-self:center}.fxe{grid-area:e;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:center;min-height:1.1em}.fxv{grid-area:v;font-size:1.7rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fxk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.fk{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:600;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}.fk:active{transform:scale(.95)}.fk.fo{background:color-mix(in srgb,var(--blue) 18%,var(--bg));font-size:1.05rem}.fk.op{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent;font-size:1.3rem}
 .fxcp{width:100%;padding:11px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:inherit;font-weight:700;cursor:pointer}
+.mapbar{display:flex;gap:8px;align-items:center;margin:6px 0 4px}
+.mapchips{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-height:30px;padding-bottom:2px}.mapchips::-webkit-scrollbar{display:none}
+.mapchips button{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap;cursor:pointer}
+.mapchips button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2,var(--blue)));color:var(--on-blue,#fff);border-color:transparent;font-weight:700}
+.mapfill{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue,#fff);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+.mapst{font-size:.85rem;opacity:.75;margin:4px 0 8px;line-height:1.5}
+.mapbox{height:420px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--bg);z-index:0}
+.mkp{background:none;border:0}.mkp span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:#fff;font:700 13px/1 system-ui,sans-serif;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.mpop{font-size:13px;line-height:1.5;min-width:140px}.mpop b{font-size:14px}.mpop a{color:#2b6cb0;margin-right:8px}
+#vMapSheet{position:fixed;inset:0;z-index:80;display:none}#vMapSheet.on{display:block}
+#vMapSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.4)}
+#vMapSheet .sh{transform:translate(-50%,-50%);position:absolute;left:50%;top:50%;width:min(720px,calc(100vw - 20px));max-height:90vh;display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:20px;padding:14px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:cpop .2s ease}
+#vMapSheet .hd{display:flex;align-items:center;gap:8px;margin-bottom:6px}#vMapSheet .hd h3{margin:0;font-size:1rem;flex:1}
+#vMapSheet .x{width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);font-size:1rem;cursor:pointer}
+#vMapSheet .mapbox{height:min(62vh,520px)}
+#vMap{position:fixed;right:16px;bottom:242px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vMap.ok{display:grid}#vMap:active{transform:scale(.92)}
 #vFx{position:fixed;right:16px;bottom:186px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);font:inherit;font-size:1.25rem;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vFx.ok{display:grid}#vFx:active{transform:scale(.92)}
 .twd{margin-left:6px;font-size:.78rem;font-weight:600;color:var(--accent-text,var(--ink));white-space:nowrap}
 .zhs{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.zhs .hint{margin:0}.zhrow{display:flex;gap:6px;flex-wrap:wrap}
@@ -497,6 +513,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
 <div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
 <button type="button" id="vFx" aria-label="韓元匯率計算機" title="韓元匯率">₩</button>
+<button type="button" id="vMap" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></button>
+<div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
@@ -550,6 +568,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
+<section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
 </main>
 
@@ -689,7 +708,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
 
   function setDocTitle(){document.title="hthsiehtrip"+(s&&s.title?" - "+s.title:"")}
-  function render(){setDocTitle();
+  function render(){setDocTitle();try{mapSoon()}catch(e){}
     updateCountdown();
     $("title").value=s.title||"";
     var shown=s.spots.filter(function(sp){return (!filterCat||(filterCat==="__none"?!sp.cat:sp.cat===filterCat))&&(!filterArea||(filterArea==="__none"?!sp.area:sp.area===filterArea))});
@@ -862,7 +881,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var ctl=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort()},12000);
     return fetch(b+path,{signal:ctl?ctl.signal:undefined}).then(function(r){clearTimeout(tm);if(!r.ok)throw new Error("http-"+r.status);return asBlob?r.blob():r.json()},function(e){clearTimeout(tm);throw e});
   }
-  function helperInfo(u){return helperFetch("/?url="+encodeURIComponent(u))}
+  function helperInfo(u){return helperFetch("/?url="+encodeURIComponent(u)).then(nvFix)}
+  /* Naver 讀回來的資料保險：假名稱（[네이버지도] 等）丟掉；沒有數字的「地址」其實是店名 */
+  function nvFix(inf){
+    if(!inf||typeof inf!=="object")return inf;
+    var bad=function(n){return !n||/네이버|naver|지도|플레이스|^\[/i.test(n)};
+    if(inf.naverId||/naver/.test(inf.finalUrl||"")){
+      if(bad(inf.name))inf.name="";
+      if(inf.addr&&!/\d/.test(inf.addr)){if(!inf.name&&!bad(inf.addr))inf.name=inf.addr;inf.addr=""}
+      if(bad(inf.title))inf.title="";
+    }
+    return inf;
+  }
   function helperImg(u){return helperFetch("/img?u="+encodeURIComponent(u),true)}
   /* exchange rate (KRW -> TWD) */
   var FXKEY=KEY+"-fx",fx=null;
@@ -2949,6 +2979,88 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return '<div class="vitem'+(sp.cat==="美食"?' food':'')+'">'+th+'<div class="vbd">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="n">'+esc(sp.name)+'<button type="button" class="cpy" data-ctext="'+esc(sp.name)+'" title="複製店名" aria-label="複製店名">'+CPY+'</button></div>'+(kol(sp)?'<div class="ko">'+esc(kol(sp))+'<button type="button" class="cpy" data-ctext="'+esc(kol(sp))+'" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div>':'')+(sp.addr?'<div class="vsub">'+esc(sp.addr)+'</div>':'')+(sp.hours?'<div class="vsub">營業時間：'+esc(sp.hours)+'</div>':'')+(sp.note?'<div class="vsub">'+fxNote(sp.note)+'</div>':'')+(kn.length?'<div class="vkids"><b>包含</b>'+kidList(it).map(function(x){return '<span>'+(x.img?'<img src="'+x.img+'" alt="">':'<i></i>')+esc(x.name)+iconHtml(x)+'</span>'}).join("")+'</div>':'')+'<div style="margin-top:6px">'+iconHtml(sp)+'</div></div></div>';
   }
   var vCollapsed={};
+  /* map (Leaflet + OpenStreetMap) */
+  var lfP=null;
+  function loadLeaflet(){
+    if(window.L)return Promise.resolve();
+    if(lfP)return lfP;
+    lfP=new Promise(function(ok,no){
+      var c=document.createElement("link");c.rel="stylesheet";c.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";document.head.appendChild(c);
+      var j=document.createElement("script");j.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";j.onload=function(){ok()};j.onerror=function(){lfP=null;no(new Error("leaflet"))};document.head.appendChild(j);
+    });
+    return lfP;
+  }
+  var MPAL=["#5a8dbd","#c8805f","#4fa383","#8570b4","#d1a43b","#c9577a","#3f9db0","#7c8a45"];
+  function mapData(day){
+    var pts=[],miss=[],seen={};
+    function add(sp,d,n,time,hotel){if(okLL(sp.lat,sp.lng))pts.push({sp:sp,d:d,n:n,time:time,hotel:hotel});else if(!seen[sp.id]){seen[sp.id]=1;miss.push(sp)}}
+    s.days.forEach(function(dd,di){if(day>=0&&day!==di)return;validItems(dd).forEach(function(it,k){add(spot(it.sid),di,k+1,typeof it.time==="string"?it.time:"",false)})});
+    if(day<0)(s.hotelSpots||[]).forEach(function(it){var sp=spot(it.sid);if(sp)add(sp,-1,0,"",true)});
+    return {pts:pts,miss:miss};
+  }
+  function MapView(o){
+    var m={map:null,grp:null,day:-1,busy:false};
+    function setup(){
+      if(m.map)return;
+      m.map=L.map(o.box,{zoomControl:true,attributionControl:true}).setView([36.5,127.8],6);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(m.map);
+      m.grp=L.layerGroup().addTo(m.map);
+    }
+    function chips(){
+      var h='<button type="button" data-d="-1" class="'+(m.day<0?"on":"")+'">全部</button>';
+      s.days.forEach(function(dd,i){if(validItems(dd).length)h+='<button type="button" data-d="'+i+'" class="'+(m.day===i?"on":"")+'">第 '+(i+1)+' 天</button>'});
+      o.chips.innerHTML=h;
+    }
+    m.init=function(){return loadLeaflet().then(function(){setup();m.draw()},function(){o.st.textContent="地圖載入失敗，請檢查網路後重新整理。"})};
+    m.draw=function(){
+      if(!m.map)return;
+      if(m.day>=s.days.length)m.day=-1;
+      chips();
+      var D=mapData(m.day);m.grp.clearLayers();
+      var by={};
+      D.pts.forEach(function(q){
+        var col=q.hotel?"#333":MPAL[q.d%MPAL.length],sp=q.sp;
+        var ic=L.divIcon({className:"mkp",html:'<span style="background:'+col+'">'+(q.hotel?"宿":q.n)+'</span>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14]});
+        var nu=naverUrl(sp),gu=/^https:\/\//.test(sp.url||"")?sp.url:"https://www.google.com/maps/search/?api=1&query="+sp.lat+","+sp.lng;
+        var pop='<div class="mpop"><b>'+esc(sp.name)+'</b><br>'+(q.hotel?"住宿":"第 "+(q.d+1)+" 天 · 第 "+q.n+" 站"+(q.time?" · "+esc(q.time):""))+(sp.addr?'<br>'+esc(sp.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>';
+        L.marker([sp.lat,sp.lng],{icon:ic}).bindPopup(pop).addTo(m.grp);
+        if(!q.hotel){(by[q.d]=by[q.d]||[]).push([sp.lat,sp.lng])}
+      });
+      Object.keys(by).forEach(function(d){if(by[d].length>1)L.polyline(by[d],{color:MPAL[d%MPAL.length],weight:3,opacity:.75,dashArray:"6 6"}).addTo(m.grp)});
+      if(D.pts.length){m.map.fitBounds(L.latLngBounds(D.pts.map(function(q){return [q.sp.lat,q.sp.lng]})),{padding:[34,34],maxZoom:16})}
+      var names=D.miss.slice(0,6).map(function(x){return x.name}).join("、")+(D.miss.length>6?" 等":"");
+      o.st.textContent=D.pts.length?("已標示 "+D.pts.length+" 個地點"+(D.miss.length?"；"+D.miss.length+" 個尚無座標："+names:"")):(D.miss.length?"目前沒有可標示的座標；"+D.miss.length+" 個景點尚無座標："+names:"行程裡還沒有景點。");
+      if(o.fill)o.fill.hidden=!D.miss.length;
+    };
+    o.chips.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;m.day=Number(b.dataset.d);m.draw()});
+    if(o.fill)o.fill.addEventListener("click",function(){
+      if(m.busy)return;
+      if(!helperBase()){say("要先設定連結助手才能補座標。");return}
+      var list=mapData(-1).miss;if(!list.length)return;
+      m.busy=true;o.fill.disabled=true;var i=0,okn=0;
+      (function next(){
+        if(i>=list.length){m.busy=false;o.fill.disabled=false;m.draw();say("補座標完成：成功 "+okn+" / "+list.length+(okn<list.length?"，其餘找不到，可在景點裡貼上 Naver 連結再試。":"。"));return}
+        var sp=list[i++];o.st.textContent="補座標中 "+i+" / "+list.length+"：「"+sp.name+"」";
+        coordsOf(sp).then(function(c){if(c)okn++;m.draw();o.st.textContent="補座標中 "+i+" / "+list.length}).then(function(){setTimeout(next,1100)},function(){setTimeout(next,1100)});
+      })();
+    });
+    return m;
+  }
+  var mapEd=MapView({box:$("mapBox"),chips:$("mapChips"),st:$("mapSt"),fill:$("mapFill")}),mapEdTm=null,mapEdOn=false;
+  function mapSoon(){
+    if(viewerMode)return;
+    clearTimeout(mapEdTm);
+    mapEdTm=setTimeout(function(){if(mapEd.map)mapEd.draw()},250);
+  }
+  if(!viewerMode&&"IntersectionObserver" in window){
+    var mapIo=new IntersectionObserver(function(es){if(es.some(function(x){return x.isIntersecting})&&!mapEdOn){mapEdOn=true;mapIo.disconnect();mapEd.init()}},{rootMargin:"300px"});
+    mapIo.observe($("mapPanel"));
+  }else if(!viewerMode){setTimeout(function(){mapEdOn=true;mapEd.init()},800)}
+  var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt")});
+  function vmOpen(){$("vMapSheet").classList.add("on");loadLeaflet().then(function(){return mapVw.init()}).then(function(){if(mapVw.map){mapVw.map.invalidateSize();mapVw.draw()}})}
+  function vmClose(){$("vMapSheet").classList.remove("on")}
+  $("vMap").onclick=vmOpen;$("vMapX").onclick=vmClose;$("vMapSheet").querySelector(".bk").onclick=vmClose;
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("vMapSheet").classList.contains("on"))vmClose()});
   function renderViewer(){
     $("viewer").classList.remove("vload");
     ensureTrip();
@@ -2967,6 +3079,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     });
     h+='</div>';
     $("vBody").innerHTML=h;
+    $("vMap").classList.toggle("ok",mapData(-1).pts.length>0);
     $("vLib").classList.toggle("ok",s.spots.length>0);$("vSug").classList.toggle("ok",!!sugApi());
     drawVMeta();
   }
