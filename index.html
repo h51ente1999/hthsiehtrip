@@ -475,6 +475,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .fxk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.fk{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:600;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}.fk:active{transform:scale(.95)}.fk.fo{background:color-mix(in srgb,var(--blue) 18%,var(--bg));font-size:1.05rem}.fk.op{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent;font-size:1.3rem}
 .fxcp{width:100%;padding:11px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:inherit;font-weight:700;cursor:pointer}
 .mapbar{display:flex;gap:8px;align-items:center;margin:6px 0 4px}
+.mapnums{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 2px 2px}
+.mapnums[hidden]{display:none}
+.mapnums .mn-l{flex:0 0 auto;font-size:.8rem;color:var(--muted);margin-right:2px}
+.mapnums button{flex:0 0 auto;min-width:32px;height:32px;padding:0 8px;border-radius:999px;border:2px solid var(--c);background:var(--surface);color:var(--c);font:700 .85rem/1 system-ui,sans-serif;cursor:pointer}
+.mapnums button.on{background:var(--c);color:var(--oc)}
+.mapnums button:disabled{opacity:.35;cursor:default;border-style:dashed}
 .mapkind{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;white-space:nowrap;cursor:pointer}
 .mapchips{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-height:30px;padding-bottom:2px}.mapchips::-webkit-scrollbar{display:none}
 .mapchips button{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap;cursor:pointer}
@@ -3116,7 +3122,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return {pts:pts,miss:miss};
   }
   function MapView(o){
-    var m={map:null,grp:null,day:-1,busy:false};
+    var m={map:null,grp:null,day:-1,busy:false,mk:{},sel:0,nums:null};
     function setup(){
       if(m.map)return;
       m.map=L.map(o.box,{zoomControl:true,attributionControl:true}).setView([36.5,127.8],6);
@@ -3133,7 +3139,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       if(!m.map)return;
       if(m.day>=s.days.length)m.day=-1;
       chips();
-      var D=mapData(m.day);m.grp.clearLayers();
+      var D=mapData(m.day);m.grp.clearLayers();m.mk={};m.sel=0;
       var by={},pal=mapPal(s.days.length);
       D.pts.forEach(function(q){
         var sp=q.sp,col=q.hotel?th("--ink","#232a3c"):(o.mono?th("--blue","#5a8dbd"):pal[q.d%pal.length]),oc=onCol(col);
@@ -3141,7 +3147,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         var ic=L.divIcon({className:"mkp",html:/^data:image\//.test(sp.img||"")?'<span class="m" style="--c:'+col+';--oc:'+oc+';background-image:url(&quot;'+sp.img+'&quot;)"><i>'+lbl+'</i></span>':'<span class="m np" style="--c:'+col+';--oc:'+oc+'">'+lbl+'</span>',iconSize:[24,24],iconAnchor:[12,12],popupAnchor:[0,-12]});
         var nu=naverUrl(sp),gu=/^https:\/\//.test(sp.url||"")?sp.url:"https://www.google.com/maps/search/?api=1&query="+sp.lat+","+sp.lng;
         var pop='<div class="mpop">'+(sp.img?'<img class="pi" src="'+sp.img+'" alt="">':"")+'<b>'+esc(sp.name)+'</b><br>'+(q.hotel?"住宿":"第 "+(q.d+1)+" 天 · 第 "+q.n+" 站"+(q.time?" · "+esc(q.time):""))+(sp.addr?'<br>'+esc(sp.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>';
-        L.marker([sp.lat,sp.lng],{icon:ic}).bindPopup(pop).addTo(m.grp);
+        var mkr=L.marker([sp.lat,sp.lng],{icon:ic}).bindPopup(pop).addTo(m.grp);
+        if(!q.hotel&&m.day>=0)m.mk[q.n]=mkr;
         if(!q.hotel){(by[q.d]=by[q.d]||[]).push([sp.lat,sp.lng])}
       });
       Object.keys(by).forEach(function(d){if(by[d].length>1)L.polyline(by[d],{color:pal[d%pal.length],weight:3,opacity:.6,dashArray:"6 6"}).addTo(m.grp)});
@@ -3149,6 +3156,25 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var names=D.miss.slice(0,6).map(function(x){return x.name}).join("、")+(D.miss.length>6?" 等":"");
       o.st.textContent=D.pts.length?("已標示 "+D.pts.length+" 個地點"+(D.miss.length?"；"+D.miss.length+" 個尚無座標："+names:"")):(D.miss.length?"目前沒有可標示的座標；"+D.miss.length+" 個景點尚無座標："+names:"行程裡還沒有景點。");
       if(o.fill)o.fill.hidden=!D.miss.length;
+      nums();
+    };
+    function nums(){
+      var el=m.nums;
+      if(!el){el=m.nums=document.createElement("div");el.className="mapnums";o.box.insertAdjacentElement("afterend",el);
+        el.addEventListener("click",function(e){var b=e.target.closest("button[data-n]");if(!b||b.disabled)return;m.focus(Number(b.dataset.n))})}
+      if(m.day<0||!s.days[m.day]){el.hidden=true;el.innerHTML="";return}
+      var cnt=validItems(s.days[m.day]).length;
+      if(!cnt){el.hidden=true;el.innerHTML="";return}
+      var pal=mapPal(s.days.length),col=o.mono?th("--blue","#5a8dbd"):pal[m.day%pal.length],h='<span class="mn-l">站點</span>';
+      for(var i=1;i<=cnt;i++)h+='<button type="button" data-n="'+i+'" style="--c:'+col+';--oc:'+onCol(col)+'"'+(m.mk[i]?"":" disabled title=\"這個景點還沒有座標\"")+'>'+i+'</button>';
+      el.innerHTML=h;el.hidden=false;
+    }
+    m.focus=function(n){
+      var mk=m.mk[n];if(!mk||!m.map)return;
+      m.sel=n;
+      [].forEach.call(m.nums.querySelectorAll("button[data-n]"),function(b){b.classList.toggle("on",Number(b.dataset.n)===n)});
+      var ll=mk.getLatLng();m.map.setView(ll,Math.max(m.map.getZoom(),16),{animate:true});
+      mk.openPopup();
     };
     o.chips.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;m.day=Number(b.dataset.d);m.draw()});
     if(o.fill)o.fill.addEventListener("click",function(){
