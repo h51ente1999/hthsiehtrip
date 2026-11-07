@@ -481,7 +481,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .mapfill{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:0;background:var(--blue);color:var(--on-blue,#fff);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
 .mapst{font-size:.85rem;opacity:.75;margin:4px 0 8px;line-height:1.5}
 .mapbox{height:420px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--bg);z-index:0}
-.leaflet-tile.bm{filter:grayscale(.85) saturate(.7) contrast(.78) brightness(1.14)}
 .mkp{background:none;border:0}
 .mkp .m{position:relative;display:block;width:24px;height:24px;border-radius:50%;border:2px solid var(--c);background:#fff center/cover no-repeat;box-shadow:0 1px 4px rgba(0,0,0,.4);box-sizing:border-box}
 .mkp .m i{position:absolute;left:-7px;top:-7px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;background:var(--c);color:var(--oc);font:700 10px/14px system-ui,sans-serif;font-style:normal;text-align:center;box-sizing:border-box;border:1px solid #fff}
@@ -3015,10 +3014,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   var vCollapsed={};
   /* map (Leaflet + OpenStreetMap) */
-  /* 底圖：OpenStreetMap 標準圖磚，用 CSS 濾鏡淡化（調整 CSS 的 .leaflet-tile.bm） */
+  /* 底圖：CARTO Positron（淡色），失敗時自動退回 OpenStreetMap 標準圖 */
+  var CARTO_KEY="cb1_546q_1_772ecfe0d4ec9a394b4e3bf6";
+  var baseOk=null;
   function baseLayer(map){
-    return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,className:"bm",attribution:"© OpenStreetMap"}).addTo(map);
+    var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"})};
+    if(baseOk===false)return osm().addTo(map);
+    var ly=L.tileLayer("https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'});
+    var bad=0,good=0;
+    ly.on("tileload",function(){good++;baseOk=true});
+    ly.on("tileerror",function(){bad++;if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
+    return ly.addTo(map);
   }
+
 
   var lfP=null;
   function loadLeaflet(){
@@ -3031,11 +3039,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return lfP;
   }
   function mapPal(n){
-    var blue=th("--blue","#5a8dbd"),ink=th("--ink","#232a3c"),food=th("--tag-food",mixHex(blue,ink,0.3)),b2=th("--blue2")||mixHex(blue,ink,0.5),hit=th("--hit",food);
-    var cands=[blue,food,b2,hit,mixHex(blue,food,0.5),mixHex(food,ink,0.45),mixHex(blue,ink,0.62),mixHex(blue,food,0.25),mixHex(blue,food,0.75),mixHex(b2,food,0.5)];
+    var blue=th("--blue","#5a8dbd"),ink=th("--ink","#232a3c");
+    /* 只用主色系（主色加深／加亮），避開跳色（美食、重點色） */
+    var cands=[blue,mixHex(blue,ink,0.4),mixHex(blue,"#ffffff",0.3),mixHex(blue,ink,0.65),mixHex(blue,ink,0.2),mixHex(blue,"#ffffff",0.45),mixHex(blue,ink,0.8)];
     function dist(a,b){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16);return Math.sqrt(Math.pow((x>>16&255)-(y>>16&255),2)+Math.pow((x>>8&255)-(y>>8&255),2)+Math.pow((x&255)-(y&255),2))}
     var sel=[];
-    [80,55,35,0].forEach(function(th0){cands.forEach(function(c){if(sel.indexOf(c)<0&&sel.every(function(o){return dist(o,c)>=th0}))sel.push(c)})});
+    [60,40,25,0].forEach(function(th0){cands.forEach(function(c){if(sel.indexOf(c)<0&&sel.every(function(o){return dist(o,c)>=th0}))sel.push(c)})});
     var out=[];for(var k=0;k<Math.max(n,1);k++)out.push(sel[k%sel.length]);
     return out;
   }
