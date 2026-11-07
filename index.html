@@ -3175,8 +3175,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       [].forEach.call(m.nums.querySelectorAll("button[data-n]"),function(b){b.classList.toggle("on",Number(b.dataset.n)===n)});
       var ll=mk.getLatLng(),z=Math.max(m.map.getZoom(),16),ct=ll;
       try{var pt=m.map.project(ll,z),h=m.map.getSize().y;ct=m.map.unproject(L.point(pt.x,pt.y-h*0.2),z)}catch(e){ct=ll}
-      m.map.setView(ct,z,{animate:true});
+      m.map.setView(ct,z,{animate:false});
+      try{var pp=mk.getPopup();if(pp)pp.options.autoPan=false}catch(e){}
       mk.openPopup();
+      try{var pq=mk.getPopup();if(pq)pq.options.autoPan=true}catch(e){}
     };
     o.chips.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;m.day=Number(b.dataset.d);m.draw()});
     if(o.fill)o.fill.addEventListener("click",function(){
