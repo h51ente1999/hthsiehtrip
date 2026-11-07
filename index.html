@@ -3020,7 +3020,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function baseLayer(map){
     var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"})};
     if(baseOk===false)return osm().addTo(map);
-    var ly=L.tileLayer("https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'});
+    var ly=L.tileLayer("https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'});
     var bad=0,good=0;
     ly.on("tileload",function(){good++;baseOk=true});
     ly.on("tileerror",function(){bad++;if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
@@ -3041,7 +3041,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function mapPal(n){
     var blue=th("--blue","#5a8dbd"),ink=th("--ink","#232a3c");
     /* 只用主色系（主色加深／加亮），避開跳色（美食、重點色） */
-    var cands=[blue,mixHex(blue,ink,0.4),mixHex(blue,"#ffffff",0.3),mixHex(blue,ink,0.65),mixHex(blue,ink,0.2),mixHex(blue,"#ffffff",0.45),mixHex(blue,ink,0.8)];
+    var cands=[blue,mixHex(blue,"#ffffff",0.35),mixHex(blue,ink,0.22),mixHex(blue,"#ffffff",0.55),mixHex(blue,ink,0.1),mixHex(blue,"#ffffff",0.2),mixHex(blue,ink,0.34)];
     function dist(a,b){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16);return Math.sqrt(Math.pow((x>>16&255)-(y>>16&255),2)+Math.pow((x>>8&255)-(y>>8&255),2)+Math.pow((x&255)-(y&255),2))}
     var sel=[];
     [60,40,25,0].forEach(function(th0){cands.forEach(function(c){if(sel.indexOf(c)<0&&sel.every(function(o){return dist(o,c)>=th0}))sel.push(c)})});
@@ -3085,7 +3085,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         L.marker([sp.lat,sp.lng],{icon:ic}).bindPopup(pop).addTo(m.grp);
         if(!q.hotel){(by[q.d]=by[q.d]||[]).push([sp.lat,sp.lng])}
       });
-      Object.keys(by).forEach(function(d){if(by[d].length>1)L.polyline(by[d],{color:pal[d%pal.length],weight:3,opacity:.75,dashArray:"6 6"}).addTo(m.grp)});
+      Object.keys(by).forEach(function(d){if(by[d].length>1)L.polyline(by[d],{color:pal[d%pal.length],weight:3,opacity:.6,dashArray:"6 6"}).addTo(m.grp)});
       if(D.pts.length){m.map.fitBounds(L.latLngBounds(D.pts.map(function(q){return [q.sp.lat,q.sp.lng]})),{padding:[34,34],maxZoom:16})}
       var names=D.miss.slice(0,6).map(function(x){return x.name}).join("、")+(D.miss.length>6?" 等":"");
       o.st.textContent=D.pts.length?("已標示 "+D.pts.length+" 個地點"+(D.miss.length?"；"+D.miss.length+" 個尚無座標："+names:"")):(D.miss.length?"目前沒有可標示的座標；"+D.miss.length+" 個景點尚無座標："+names:"行程裡還沒有景點。");
