@@ -3014,6 +3014,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   var vCollapsed={};
   /* map (Leaflet + OpenStreetMap) */
+  var CARTO_KEY="";/* 若 CARTO 要求金鑰，填在這裡 */
+  var baseOk=null;/* null=未知 true=淡色底圖可用 false=改用標準圖 */
+  function baseLayer(map){
+    var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"})};
+    if(baseOk===false)return osm().addTo(map);
+    var ly=L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"+(CARTO_KEY?"?key="+encodeURIComponent(CARTO_KEY):""),{subdomains:"abcd",maxZoom:20,attribution:"© OpenStreetMap © CARTO"});
+    var bad=0,good=0;
+    ly.on("tileload",function(){good++;baseOk=true});
+    ly.on("tileerror",function(){bad++;if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
+    return ly.addTo(map);
+  }
   var lfP=null;
   function loadLeaflet(){
     if(window.L)return Promise.resolve();
@@ -3046,7 +3057,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     function setup(){
       if(m.map)return;
       m.map=L.map(o.box,{zoomControl:true,attributionControl:true}).setView([36.5,127.8],6);
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(m.map);
+      baseLayer(m.map);
       m.grp=L.layerGroup().addTo(m.map);
     }
     function chips(){
@@ -3110,7 +3121,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       box.hidden=!has;
       if(!has){if(c.map&&c.mk){c.map.removeLayer(c.mk);c.mk=null}return Promise.resolve(false)}
       return loadLeaflet().then(function(){
-        if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(c.map)}
+        if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map)}
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
         c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC()}).addTo(c.map);
