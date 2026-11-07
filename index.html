@@ -475,6 +475,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .fxk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.fk{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:600;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}.fk:active{transform:scale(.95)}.fk.fo{background:color-mix(in srgb,var(--blue) 18%,var(--bg));font-size:1.05rem}.fk.op{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent;font-size:1.3rem}
 .fxcp{width:100%;padding:11px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:inherit;font-weight:700;cursor:pointer}
 .mapbar{display:flex;gap:8px;align-items:center;margin:6px 0 4px}
+.mapkind{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;white-space:nowrap;cursor:pointer}
 .mapchips{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-height:30px;padding-bottom:2px}.mapchips::-webkit-scrollbar{display:none}
 .mapchips button{flex:0 0 auto;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;white-space:nowrap;cursor:pointer}
 .mapchips button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2,var(--blue)));color:var(--on-blue,#fff);border-color:transparent;font-weight:700}
@@ -538,7 +539,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <button type="button" id="vFx" aria-label="韓元匯率計算機" title="韓元匯率">₩</button>
 <button type="button" id="vMap" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></button>
 <div id="vPosSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點位置"><div class="hd"><h3 id="vPosT">位置</h3><button type="button" class="x" id="vPosX" aria-label="關閉">✕</button></div><div class="mapst" id="vPosSt"></div><div id="vPosBox" class="mapbox"></div><div style="margin-top:10px" id="vPosL"></div></div></div>
-<div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
+<div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：點陣</button><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
@@ -594,7 +595,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
-<section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
+<section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：點陣</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
 </main>
 
@@ -3014,19 +3015,59 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   var vCollapsed={};
   /* map (Leaflet + OpenStreetMap) */
-  /* 底圖：CARTO Positron（淡色），失敗時自動退回 OpenStreetMap 標準圖 */
+  /* 底圖：CARTO Positron，可切換「點陣」(raster) 或「向量」(vector)；失敗時退回 OpenStreetMap 標準圖 */
   var CARTO_KEY="cb1_546q_1_772ecfe0d4ec9a394b4e3bf6";
-  var baseOk=null;
-  function baseLayer(map){
+  var baseOk=null,KINDK="travel-spots-v1-mapkind",bmaps=[];
+  function mapKind(){try{return localStorage.getItem(KINDK)==="vector"?"vector":"raster"}catch(e){return "raster"}}
+  function setMapKind(k){try{localStorage.setItem(KINDK,k)}catch(e){}}
+  var ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+  function rasterLayer(map){
     var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap（CARTO 底圖載入失敗，已退回標準圖）"})};
-    if(baseOk===false)return osm().addTo(map);
-    var ly=L.tileLayer("https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'});
+    if(baseOk===false)return osm();
+    var ly=L.tileLayer("https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:ATTR});
     var bad=0,good=0;
     ly.on("tileload",function(){good++;baseOk=true});
-    ly.on("tileerror",function(e){bad++;try{console.warn("CARTO tile error",e&&e.tile&&e.tile.src)}catch(x){}if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
-    return ly.addTo(map);
+    ly.on("tileerror",function(e){bad++;try{console.warn("CARTO tile error",e&&e.tile&&e.tile.src)}catch(x){}if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{if(map._bm===ly){map.removeLayer(ly);map._bm=osm().addTo(map)}}catch(e){}}});
+    return ly;
   }
-
+  var glP=null;
+  function glOk(){try{var c=document.createElement("canvas");return !!(c.getContext("webgl2")||c.getContext("webgl"))}catch(e){return false}}
+  function loadGL(){
+    if(window.L&&L.maplibreGL)return Promise.resolve();
+    if(glP)return glP;
+    if(!glOk())return Promise.reject(new Error("webgl"));
+    function css(h){var c=document.createElement("link");c.rel="stylesheet";c.href=h;document.head.appendChild(c)}
+    function js(u){return new Promise(function(ok,no){var j=document.createElement("script");j.src=u;j.onload=ok;j.onerror=function(){no(new Error(u))};document.head.appendChild(j)})}
+    css("https://unpkg.com/maplibre-gl@5.23.0/dist/maplibre-gl.css");
+    glP=js("https://unpkg.com/maplibre-gl@5.23.0/dist/maplibre-gl.js").then(function(){return js("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.3/leaflet-maplibre-gl.js")}).then(function(){if(!(window.L&&L.maplibreGL))throw new Error("plugin")},function(e){glP=null;throw e});
+    return glP;
+  }
+  function applyBase(map){
+    var tok=(map._bt=(map._bt||0)+1);
+    function put(ly){if(tok!==map._bt)return;if(map._bm){try{map.removeLayer(map._bm)}catch(e){}}map._bm=ly.addTo(map);try{ly.bringToBack&&ly.bringToBack()}catch(e){}}
+    if(mapKind()==="vector"){
+      loadGL().then(function(){
+        if(tok!==map._bt)return;
+        var gl=L.maplibreGL({style:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json?key="+encodeURIComponent(CARTO_KEY),attribution:ATTR});
+        put(gl);
+      },function(e){try{console.warn("vector basemap failed",e)}catch(x){}put(rasterLayer(map));kindBtns("raster-fallback")});
+    }else put(rasterLayer(map));
+  }
+  function baseLayer(map){
+    bmaps.push(map);applyBase(map);
+    return map._bm;
+  }
+  function kindBtns(st){
+    var k=mapKind(),t=st==="raster-fallback"?"底圖：點陣（向量失敗）":(k==="vector"?"底圖：向量":"底圖：點陣");
+    document.querySelectorAll(".mapkind").forEach(function(b){b.textContent=t});
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest(".mapkind");if(!b)return;
+    setMapKind(mapKind()==="vector"?"raster":"vector");kindBtns();
+    bmaps=bmaps.filter(function(m){return m._container&&m._container.isConnected});
+    bmaps.forEach(applyBase);
+  });
+  kindBtns();
 
   var lfP=null;
   function loadLeaflet(){
@@ -3039,13 +3080,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return lfP;
   }
   function mapPal(n){
-    var blue=th("--blue","#5a8dbd"),ink=th("--ink","#232a3c");
-    /* 只用主色系（主色加深／加亮），避開跳色（美食、重點色） */
-    var cands=[blue,mixHex(blue,"#ffffff",0.35),mixHex(blue,ink,0.22),mixHex(blue,"#ffffff",0.55),mixHex(blue,ink,0.1),mixHex(blue,"#ffffff",0.2),mixHex(blue,ink,0.34)];
-    function dist(a,b){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16);return Math.sqrt(Math.pow((x>>16&255)-(y>>16&255),2)+Math.pow((x>>8&255)-(y>>8&255),2)+Math.pow((x&255)-(y&255),2))}
-    var sel=[];
-    [60,40,25,0].forEach(function(th0){cands.forEach(function(c){if(sel.indexOf(c)<0&&sel.every(function(o){return dist(o,c)>=th0}))sel.push(c)})});
-    var out=[];for(var k=0;k<Math.max(n,1);k++)out.push(sel[k%sel.length]);
+    /* 取自標題列漸層（主色 → 漸層終點色），依天數等距取色，不重複 */
+    var blue=th("--blue","#5a8dbd"),food=th("--tag-food",blue),end=mixHex(blue,food,0.45);
+    n=Math.max(n,1);var out=[];
+    for(var k=0;k<n;k++)out.push(n===1?blue:mixHex(blue,end,k/(n-1)));
     return out;
   }
   function onCol(h){return lum(h)>0.6?"#0D2626":"#fff"}
@@ -3077,7 +3115,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var D=mapData(m.day);m.grp.clearLayers();
       var by={},pal=mapPal(s.days.length);
       D.pts.forEach(function(q){
-        var sp=q.sp,col=q.hotel?th("--ink","#232a3c"):pal[q.d%pal.length],oc=onCol(col);
+        var sp=q.sp,col=q.hotel?th("--ink","#232a3c"):(o.mono?th("--blue","#5a8dbd"):pal[q.d%pal.length]),oc=onCol(col);
         var lbl=q.hotel?"宿":q.n;
         var ic=L.divIcon({className:"mkp",html:/^data:image\//.test(sp.img||"")?'<span class="m" style="--c:'+col+';--oc:'+oc+';background-image:url(&quot;'+sp.img+'&quot;)"><i>'+lbl+'</i></span>':'<span class="m np" style="--c:'+col+';--oc:'+oc+'">'+lbl+'</span>',iconSize:[24,24],iconAnchor:[12,12],popupAnchor:[0,-12]});
         var nu=naverUrl(sp),gu=/^https:\/\//.test(sp.url||"")?sp.url:"https://www.google.com/maps/search/?api=1&query="+sp.lat+","+sp.lng;
@@ -3115,7 +3153,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var mapIo=new IntersectionObserver(function(es){if(es.some(function(x){return x.isIntersecting})&&!mapEdOn){mapEdOn=true;mapIo.disconnect();mapEd.init()}},{rootMargin:"300px"});
     mapIo.observe($("mapPanel"));
   }else if(!viewerMode){setTimeout(function(){mapEdOn=true;mapEd.init()},800)}
-  var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt")});
+  var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt"),mono:true});
   /* single-spot map + spot modal */
   var PINIC=function(){var c=th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
   function SpotMap(box,st){
