@@ -539,7 +539,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <button type="button" id="vFx" aria-label="韓元匯率計算機" title="韓元匯率">₩</button>
 <button type="button" id="vMap" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></button>
 <div id="vPosSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點位置"><div class="hd"><h3 id="vPosT">位置</h3><button type="button" class="x" id="vPosX" aria-label="關閉">✕</button></div><div class="mapst" id="vPosSt"></div><div id="vPosBox" class="mapbox"></div><div style="margin-top:10px" id="vPosL"></div></div></div>
-<div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：點陣</button><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
+<div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
@@ -595,7 +595,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
-<section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：點陣</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
+<section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
 </main>
 
@@ -3018,7 +3018,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   /* 底圖：CARTO Positron，可切換「點陣」(raster) 或「向量」(vector)；失敗時退回 OpenStreetMap 標準圖 */
   var CARTO_KEY="cb1_546q_1_772ecfe0d4ec9a394b4e3bf6";
   var baseOk=null,KINDK="travel-spots-v1-mapkind",bmaps=[];
-  function mapKind(){try{return localStorage.getItem(KINDK)==="vector"?"vector":"raster"}catch(e){return "raster"}}
+  function mapKind(){try{return localStorage.getItem(KINDK)==="raster"?"raster":"vector"}catch(e){return "vector"}}
   function setMapKind(k){try{localStorage.setItem(KINDK,k)}catch(e){}}
   var ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
   function rasterLayer(map){
@@ -3155,8 +3155,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }else if(!viewerMode){setTimeout(function(){mapEdOn=true;mapEd.init()},800)}
   var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt"),mono:true});
   /* single-spot map + spot modal */
-  var PINIC=function(){var c=th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
-  function SpotMap(box,st){
+  var PINIC=function(mono){var c=mono?th("--blue","#5a8dbd"):th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
+  function SpotMap(box,st,mono){
     var c={map:null,mk:null};
     c.show=function(sp){
       var has=okLL(sp.lat,sp.lng);
@@ -3166,7 +3166,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map)}
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
-        c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC()}).addTo(c.map);
+        c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC(mono)}).addTo(c.map);
         c.map.setView([sp.lat,sp.lng],16);
         return true;
       },function(){st.textContent="地圖載入失敗，請檢查網路。";return false});
@@ -3228,7 +3228,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var has=okLL(sp.lat,sp.lng);
     $("vPosBox").hidden=!has;
     $("vPosSt").textContent=has?(sp.addr||""):"這個景點沒有座標，請用下方的 Naver 或 Google 地圖圖示查看位置。";
-    if(!posMapC)posMapC=SpotMap($("vPosBox"),$("vPosSt"));
+    if(!posMapC)posMapC=SpotMap($("vPosBox"),$("vPosSt"),true);
     if(has)posMapC.show(sp);
   }
   function vpClose(){$("vPosSheet").classList.remove("on")}
