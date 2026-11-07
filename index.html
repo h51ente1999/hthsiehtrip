@@ -3018,12 +3018,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   var CARTO_KEY="cb1_546q_1_772ecfe0d4ec9a394b4e3bf6";
   var baseOk=null;
   function baseLayer(map){
-    var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"})};
+    var osm=function(){return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap（CARTO 底圖載入失敗，已退回標準圖）"})};
     if(baseOk===false)return osm().addTo(map);
     var ly=L.tileLayer("https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key="+encodeURIComponent(CARTO_KEY),{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'});
     var bad=0,good=0;
     ly.on("tileload",function(){good++;baseOk=true});
-    ly.on("tileerror",function(){bad++;if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
+    ly.on("tileerror",function(e){bad++;try{console.warn("CARTO tile error",e&&e.tile&&e.tile.src)}catch(x){}if(!good&&bad>=3&&baseOk!==true){baseOk=false;try{map.removeLayer(ly);osm().addTo(map)}catch(e){}}});
     return ly.addTo(map);
   }
 
