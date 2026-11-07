@@ -466,17 +466,29 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
  #vBody>.vlist:not(.vtl){grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
 }
 @media (max-width:999px){.vdays{display:block}}
+.fxs{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center}.fxs[hidden]{display:none}
+.fxb{width:min(420px,100%);background:var(--surface);color:var(--ink);border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+@media(min-width:600px){.fxs{align-items:center}.fxb{border-radius:18px}}
+.fxh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.fxh button{background:transparent;border:0;color:var(--muted);font-size:1rem;padding:4px 8px}
+.fxl{display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:600}.fxl input{flex:1;min-width:0;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line);font:inherit;font-size:16px;background:var(--bg);color:var(--ink);text-align:right}
+.twd{margin-left:6px;font-size:.78rem;font-weight:600;color:var(--accent-text,var(--ink));white-space:nowrap}
+.zhs{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.zhs .hint{margin:0}.zhrow{display:flex;gap:6px;flex-wrap:wrap}
+.zhok,.zhask{border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem;padding:4px 12px;cursor:pointer}.zhok{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent;font-weight:700}
+.estbtn{margin-left:6px;width:26px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--blue) 8%,var(--bg));color:var(--muted);padding:0;cursor:pointer}.estbtn:disabled{opacity:.5}
+.day header button.estday{display:inline-flex;align-items:center;padding:0 6px}
 </style>
 </head>
 <body>
 <section id="viewer" hidden><div id="vLoad" aria-live="polite"><i></i><i></i><i></i><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div></div></section>
 <button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="韓元匯率"><div class="fxh"><b>韓元匯率</b><button type="button" id="fxX" aria-label="關閉">✕</button></div><p class="hint" id="fxInfo"></p><label class="fxl">韓元 ₩<input type="text" id="fxK" inputmode="decimal" autocomplete="off" aria-label="韓元金額"></label><label class="fxl">台幣 NT$<input type="text" id="fxT" inputmode="decimal" autocomplete="off" aria-label="台幣金額"></label><p class="hint">這是參考匯率，實際刷卡或換匯會因手續費而不同。備註裡寫「₩12,000」或「12,000원」，會自動在行程上標出台幣。</p></div></div>
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
 <div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
-<div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fa4e0"/><stop offset="1" stop-color="#8a6fb0"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#bg1)"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname">hthsieh Trip</span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+<div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fa4e0"/><stop offset="1" stop-color="#8a6fb0"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#bg1)"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname">hthsieh Trip</span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><button type="button" id="fxBtn" class="ib" hidden title="韓元匯率" aria-label="韓元匯率" style="font-weight:700">₩</button>
+<button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
 <div class="setback" id="setBack" hidden></div>
 <div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><button type="button" class="sx" id="sx" aria-label="關閉設定">✕</button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享此行程</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
 
@@ -610,10 +622,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       '<button type="button" class="kidbtn" data-addkid="'+it.uid+'" title="加入內含景點" aria-label="加入內含景點"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>'+
       '<button type="button" class="fixbtn" data-fix="'+it.uid+'" aria-pressed="'+(!!it.fixed)+'" title="固定這一站的抵達時間" aria-label="固定這一站的抵達時間"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button></div>'+
       (late?'<div class="late">預計 '+m2t(r.arr+r.late)+' 才會到，晚了 '+r.late+' 分</div>':'');
-    var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+'</div>':'';
+    var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'" value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+(helperBase()?'<button type="button" class="estbtn" data-estdrive="'+it.uid+'" title="估算開車時間" aria-label="估算開車時間"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></button>':'')+'</div>':'';
     var ks=it.kids||[];
     var kz=!ks.length?"":'<div class="kids kz has" data-kidsof="'+it.uid+'"><div class="lab">包含（'+ks.length+'）</div>'+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
-    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+(sp.note?'<div class="snote">'+esc(sp.note)+'</div>':'')+'</div>';
+    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+(sp.note?'<div class="snote">'+fxNote(sp.note)+'</div>':'')+'</div>';
   }
   function cdText(d){
     var m=d&&d.flights&&d.flights.out&&/^(\d{4})-(\d{2})-(\d{2})/.exec(d.flights.out.dep||"");
@@ -652,7 +664,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var d=open?'<div class="d">'+
       '<div class="chips" role="group" aria-label="分類">'+catChips(sp)+'</div>'+
       '<label class="lf"><span>區域</span><input type="text" data-f="area"'+at+' value="'+esc(sp.area)+'" aria-label="區域"></label>'+(areaList().length?'<div class="chips" role="group" aria-label="既有區域">'+areaChips(sp)+'</div>':'')+
-      '<div class="lf"><span>景點名稱</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="中文店名" aria-label="中文店名"><button type="button" class="cpy" title="複製中文店名" aria-label="複製中文店名">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名"><button type="button" class="cpy" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div></div>'+
+      '<div class="lf"><span>景點名稱</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="中文店名" aria-label="中文店名"><button type="button" class="cpy" title="複製中文店名" aria-label="複製中文店名">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名"><button type="button" class="cpy" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div><div class="zhs" data-zid="'+sp.id+'">'+zhHtml(sp)+'</div></div>'+
       '<label class="lf"><span>地址</span><input type="text" data-f="addr"'+at+' value="'+esc(sp.addr)+'" aria-label="地址"></label>'+
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
@@ -676,7 +688,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     $("days").innerHTML=s.days.map(function(d,i){
       var vl=validItems(d),cr=calcDay(vl);
       var items=vl.map(function(it,k){return slotHtml(it,k,cr[k],i)}).join("");
-      return '<div class="day"><header><b>第 '+(i+1)+' 天</b><span>'+d.length+' 站</span>'+(s.days.length>1?'<button data-delday="'+i+'" aria-label="刪除第 '+(i+1)+' 天">✕</button>':'')+'</header>'+
+      return '<div class="day"><header><b>第 '+(i+1)+' 天</b><span>'+d.length+' 站</span>'+(helperBase()&&d.length>1?'<button type="button" class="estday" data-estday="'+i+'" title="估算這天的開車時間（只填空白的）" aria-label="估算這天的開車時間"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></button>':'')+(s.days.length>1?'<button data-delday="'+i+'" aria-label="刪除第 '+(i+1)+' 天">✕</button>':'')+'</header>'+
         '<div class="drop dz" data-day="'+i+'">'+(items||'<div class="empty">拖曳景點到這裡</div>')+'</div><button type="button" class="dayadd" data-pickday="'+i+'" aria-label="從景點庫加入第 '+(i+1)+' 天" title="從景點庫加入"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>';
     }).join("")+'<button class="addday" id="addday">＋ 新增一天</button>';
     $("days").scrollLeft=keepSL;
@@ -836,6 +848,131 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   function helperInfo(u){return helperFetch("/?url="+encodeURIComponent(u))}
   function helperImg(u){return helperFetch("/img?u="+encodeURIComponent(u),true)}
+  /* exchange rate (KRW -> TWD) */
+  var FXKEY=KEY+"-fx",fx=null;
+  try{fx=JSON.parse(localStorage.getItem(FXKEY)||"null")}catch(e){fx=null}
+  if(!fx||!(fx.r>0))fx=null;
+  function fxRate(){return fx?fx.r:0}
+  function fxDraw(){
+    var i=$("fxInfo");if(!i)return;var r=fxRate();
+    i.textContent=r?"1 韓元 ≈ "+r.toFixed(5)+" 台幣；1,000 台幣 ≈ "+Math.round(1000/r).toLocaleString("en-US")+" 韓元（"+new Date(fx.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" 更新）":"尚未取得匯率，請確認連結助手已更新。";
+  }
+  function fxLoad(force){
+    if(!helperBase())return Promise.resolve();
+    if(!force&&fx&&Date.now()-fx.t<6*3600000)return Promise.resolve();
+    return helperFetch("/rate").then(function(j){
+      if(j&&j.krwTwd>0){fx={r:j.krwTwd,t:Date.now()};try{localStorage.setItem(FXKEY,JSON.stringify(fx))}catch(e){}fxDraw();if(!viewerMode)render()}
+    },function(){});
+  }
+  function fxNote(t){
+    t=t||"";var r=fxRate();if(!r)return esc(t);
+    var re=/₩\s?(\d[\d,]*(?:\.\d+)?)|(\d[\d,]*(?:\.\d+)?)\s?(?:원|won|韓元|韓幣)/gi,o="",last=0,m;
+    while((m=re.exec(t))){
+      var n=parseFloat((m[1]||m[2]).replace(/,/g,""));
+      o+=esc(t.slice(last,m.index))+esc(m[0]);
+      if(n>0)o+='<span class="twd">≈NT$'+Math.round(n*r).toLocaleString("en-US")+'</span>';
+      last=m.index+m[0].length;
+    }
+    return o+esc(t.slice(last));
+  }
+  function fxNum(v){return parseFloat(String(v||"").replace(/[^\d.]/g,""))||0}
+  (function(){
+    var b=$("fxBtn"),sh=$("fxSheet");if(!b||!sh)return;
+    b.hidden=!helperBase();
+    function close(){sh.hidden=true}
+    b.onclick=function(){sh.hidden=false;fxDraw();fxLoad(false).then(function(){fxDraw()});setTimeout(function(){$("fxK").focus()},50)};
+    $("fxX").onclick=close;
+    sh.addEventListener("click",function(e){if(e.target===sh)close()});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!sh.hidden)close()});
+    $("fxK").addEventListener("input",function(){var r=fxRate(),k=fxNum(this.value);$("fxT").value=r&&k?Math.round(k*r).toLocaleString("en-US"):""});
+    $("fxT").addEventListener("input",function(){var r=fxRate(),t=fxNum(this.value);$("fxK").value=r&&t?Math.round(t/r).toLocaleString("en-US"):""});
+    setTimeout(function(){if(!viewerMode)fxLoad(false)},1500);
+  })();
+  /* Korean name -> Chinese suggestion (Workers AI) */
+  var zhSug={},aiOff=false;
+  function zhNeed(sp){return !!(sp&&sp.ko&&/[가-힣]/.test(sp.ko)&&(!sp.name||sp.name===sp.ko))}
+  function zhHtml(sp){
+    if(!zhNeed(sp)||!helperBase())return "";
+    var v=zhSug[sp.id];
+    if(v==="…")return '<span class="hint">AI 翻譯中…</span>';
+    if(v)return '<div class="zhrow"><button type="button" class="zhok" data-zhapply="'+sp.id+'">套用「'+esc(v)+'」</button><button type="button" class="zhask" data-zhask="'+sp.id+'">重新翻譯</button></div><span class="hint">AI 建議，不一定正確。</span>';
+    return '<button type="button" class="zhask" data-zhask="'+sp.id+'">AI 建議中文店名</button>';
+  }
+  function zhPaint(id){var el=document.querySelector('.zhs[data-zid="'+id+'"]'),sp=spot(id);if(el&&sp)el.innerHTML=zhHtml(sp)}
+  function zhAsk(sp,manual){
+    if(!zhNeed(sp)||!helperBase()||zhSug[sp.id]==="…")return;
+    if(aiOff&&!manual)return;
+    zhSug[sp.id]="…";zhPaint(sp.id);
+    helperFetch("/translate?q="+encodeURIComponent(sp.ko)+"&hint="+encodeURIComponent([sp.cat,sp.area,sp.addr].filter(Boolean).join(" ").slice(0,120))).then(function(j){
+      zhSug[sp.id]=(j&&j.zh)||"";zhPaint(sp.id);
+      if(!zhSug[sp.id]&&manual)say("AI 沒有給出建議，請手動輸入中文店名。");
+    },function(e){
+      delete zhSug[sp.id];zhPaint(sp.id);
+      var m=String((e&&e.message)||"");
+      if(/501/.test(m)){aiOff=true;if(manual)say("連結助手還沒綁定 Workers AI：到 Cloudflare 的 Worker → 設定 → 綁定 → 新增「Workers AI」，變數名稱填 AI，再部署。")}
+      else if(manual)say(/429/.test(m)?"翻譯太頻繁，請稍等一下再試。":"翻譯失敗（"+m+"）。")
+    });
+  }
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("button");if(!t)return;
+    if(t.dataset.zhapply){var sp=spot(t.dataset.zhapply),v=zhSug[t.dataset.zhapply];if(sp&&v&&typeof v==="string"&&v!=="…"){sp.name=v;delete zhSug[sp.id];save();render();say("已套用中文店名「"+v+"」。")}return}
+    if(t.dataset.zhask){zhAsk(spot(t.dataset.zhask),true);return}
+  });
+  /* coordinates + driving time */
+  function okLL(a,b){return typeof a==="number"&&typeof b==="number"&&isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180&&!(a===0&&b===0)}
+  function spotName(sp){return sp.name||sp.ko||"這個景點"}
+  function coordsOf(sp){
+    if(okLL(sp.lat,sp.lng))return Promise.resolve([sp.lat,sp.lng]);
+    function got(la,ln){if(okLL(la,ln)){sp.lat=la;sp.lng=ln;save();return [la,ln]}return null}
+    function viaInfo(u){return u?helperInfo(u).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
+    function viaGeo(q){return q?helperFetch("/geo?q="+encodeURIComponent(q)).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
+    return viaInfo(sp.url).then(function(c){return c||viaInfo(sp.naver)}).then(function(c){return c||viaGeo(sp.addr)}).then(function(c){return c||viaGeo(sp.ko||sp.name)});
+  }
+  function driveMin(a,b){
+    return helperFetch("/route?from="+a.join(",")+"&to="+b.join(",")).then(function(j){
+      if(!j||!(j.sec>=0))throw new Error("route");
+      return Math.max(5,Math.ceil(j.sec*1.15/60/5)*5);
+    });
+  }
+  function dayItems(uidv){
+    for(var i=0;i<s.days.length;i++){var vl=validItems(s.days[i]);for(var k=0;k<vl.length;k++)if(vl[k].uid===uidv)return {vl:vl,k:k}}
+    return null;
+  }
+  function estDrive(uidv){
+    var f=dayItems(uidv);if(!f||f.k===0)return Promise.resolve("first");
+    var it=f.vl[f.k],a=spot(f.vl[f.k-1].sid),b=spot(it.sid);if(!a||!b)return Promise.resolve("fail");
+    return coordsOf(a).then(function(ca){
+      if(!ca)return "nocoord:"+spotName(a);
+      return coordsOf(b).then(function(cb){
+        if(!cb)return "nocoord:"+spotName(b);
+        return driveMin(ca,cb).then(function(m){it.drive=m;save();return "ok"},function(){return "fail"});
+      });
+    });
+  }
+  function estMsg(r){
+    if(r==="ok")return "已填入開車時間（不含即時路況，已加約 15% 緩衝）。";
+    if(r.indexOf("nocoord:")===0)return "找不到「"+r.slice(8)+"」的位置，請補上地址，或用 Google／Naver 連結重新加入。";
+    return "估算失敗，可能是路線服務暫時沒回應，請稍後再試。";
+  }
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("button");if(!t)return;
+    if(t.dataset.estdrive){
+      t.disabled=true;say("正在估算開車時間…");
+      estDrive(t.dataset.estdrive).then(function(r){render();say(estMsg(r))});return;
+    }
+    if(t.dataset.estday!==undefined){
+      var di=Number(t.dataset.estday),vl=validItems(s.days[di]||[]);
+      var todo=vl.filter(function(it,k){return k>0&&numv(it.drive)==null});
+      if(vl.length<2){say("這天至少要有兩個景點才能估算路程。");return}
+      if(!todo.length){say("這天的路程都已經填好了；想重算某一段，請按該段旁邊的小車按鈕。");return}
+      t.disabled=true;var ok=0,bad="";
+      say("正在估算 "+todo.length+" 段開車時間…");
+      todo.reduce(function(p,it){return p.then(function(){return estDrive(it.uid).then(function(r){if(r==="ok")ok++;else if(!bad)bad=estMsg(r)})})},Promise.resolve()).then(function(){
+        render();say("已估算 "+ok+" 段"+(ok<todo.length?"，"+(todo.length-ok)+" 段失敗。"+bad:"（開車、不含即時路況，已加約 15% 緩衝）。"));
+      });
+      return;
+    }
+  });
   var CAT_KW=[
     ["住宿",/호텔|리조트|게스트하우스|펜션|모텔|hotel|resort|hostel|guesthouse|villa|飯店|酒店|旅館|民宿|度假村|旅店/i],
     ["美食",/식당|카페|맛집|한식|중식|일식|양식|분식|술집|이자카야|해물|횟집|곱창|찌개|국수|치킨|갈비|삼겹|냉면|베이커리|디저트|커피|restaurant|cafe|coffee|bakery|bbq|bistro|餐|食堂|麵|咖啡|燒肉|烤肉|火鍋|甜點|小吃|早餐|酒吧|居酒屋|美食/i],
@@ -870,10 +1007,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function normHours(v){var m=/(\d{1,2}):(\d{2})\s*[-~–—]\s*(\d{1,2}):(\d{2})/.exec(v||"");if(!m)return "";function p(x){return ("0"+x).slice(-2)}return p(m[1])+":"+m[2]+"-"+p(m[3])+":"+m[4]}
   function createSpot(o){
     var sp={id:uid(),cat:"",name:o.name,ko:o.ko||"",addr:o.addr||"",hours:normHours(o.hours),area:"",note:o.note||"",img:o.img||"",url:"",naver:o.naver||""};
+    if(okLL(o.lat,o.lng)){sp.lat=o.lat;sp.lng=o.lng}
     if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
     var g=autoFill(sp);
     s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
-    save();render();$("lib").parentNode.scrollTop=0;
+    save();render();$("lib").parentNode.scrollTop=0;zhAsk(sp,false);
     say("已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
     return sp;
   }
@@ -886,13 +1024,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     helperInfo(v).then(function(inf){
       var fin=inf.finalUrl||v,gm=parseMaps(fin),nvf=okNaver(fin);
       var nm=pre[0]||"",ad=pre[1]||"";
-      if(gm&&gm.name){createSpot({name:nm||gm.name,addr:ad,url:gm.url});return}
-      if(inf.name&&/google\./.test(fin)){createSpot({name:nm||inf.name,addr:ad,url:fin});return}
+      if(gm&&gm.name){createSpot({name:nm||gm.name,addr:ad,url:gm.url,lat:inf.lat,lng:inf.lng});return}
+      if(inf.name&&/google\./.test(fin)){createSpot({name:nm||inf.name,addr:ad,url:fin,lat:inf.lat,lng:inf.lng});return}
       if(nvf||inf.naverId){
         var nu=nvf||inf.finalUrl;
         nm=nm||inf.name||cleanTitle(inf.title);
         if(nm){
-          var go=function(img){createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||"",img:img||""})};
+          var go=function(img){createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||"",img:img||"",lat:inf.lat,lng:inf.lng})};
           if(inf.image){helperImg(inf.image).then(function(bl){shrink(bl,function(d){go(d)})},function(){go("")})}else go("");
           return;
         }
@@ -1016,7 +1154,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     d.spots.forEach(function(x){
       if(!x||typeof x.id!=="string"||!IDRE.test(x.id)||!str(x.name))return;
       ids[x.id]=1;
-      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),cover:x.cover===true||x.cover===1?true:undefined});
+      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
     });
     var days=d.days.map(function(day){
       return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){var o={uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)};
@@ -1086,7 +1224,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function renderHotels(){
     $("hlist").innerHTML=s.hotelSpots.map(function(it){
       var sp=spot(it.sid);
-      return sp?'<div class="slot">'+blk(sp,it.uid,"h",false,false)+'<div class="haddr'+(sp.addr?'':' none')+'">'+(sp.addr?esc(sp.addr):'尚未填寫地址（點上方飯店可編輯）')+'</div>'+(sp.note?'<div class="snote">'+esc(sp.note)+'</div>':'')+'</div>':"";
+      return sp?'<div class="slot">'+blk(sp,it.uid,"h",false,false)+'<div class="haddr'+(sp.addr?'':' none')+'">'+(sp.addr?esc(sp.addr):'尚未填寫地址（點上方飯店可編輯）')+'</div>'+(sp.note?'<div class="snote">'+fxNote(sp.note)+'</div>':'')+'</div>':"";
     }).join("")||'<div class="empty">把住宿景點拖曳到這裡</div>';
     growNotes();
   }
@@ -1978,6 +2116,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(f==="name"){sp.name=val.trim()?val:(sp.ko||"")}
     else if(f==="ko"){var same=!sp.name||sp.name===sp.ko;sp.ko=val;if(same)sp.name=val}
     else sp[f]=f==="naver"?okNaver(val.trim()):val;
+    if(f==="addr"||f==="naver"){delete sp.lat;delete sp.lng}
     if(f==="note")document.querySelectorAll(".slot").forEach(function(sl){
       var bb=sl.querySelector(":scope > .blk");if(!bb||bb.dataset.sid!==sp.id)return;
       var nn=sl.querySelector(":scope > .snote");
@@ -2613,7 +2752,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
   /* sharing (read-only link) */
   function rand24(){var a=new Uint8Array(18);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
-  function shareLink(sid){return location.origin+location.pathname+"?share="+encodeURIComponent(sid)}
+  function shareLink(sid){var hb=helperBase();return hb?hb+"/s/"+encodeURIComponent(sid):location.origin+location.pathname+"?share="+encodeURIComponent(sid)}
   function updateShareUI(){
     var e=ent(IDX.cur),on=!!(cloudUser&&e&&e.shareId);
     $("tripShare").hidden=!cloudUser;
