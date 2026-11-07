@@ -506,6 +506,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .fxh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.fxh button{background:transparent;border:0;color:var(--muted);font-size:1rem;padding:4px 8px}
 .fxd{display:grid;gap:6px;margin:8px 0}.fxrow{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"u e" "v v";gap:0 8px;text-align:right;padding:8px 14px;border-radius:12px;border:2px solid transparent;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
 .fxrow.on{border-color:var(--blue)}.fxu{grid-area:u;text-align:left;font-size:.8rem;color:var(--muted);align-self:center}.fxe{grid-area:e;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:center;min-height:1.1em}.fxv{grid-area:v;font-size:1.7rem;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fxInfo{white-space:pre-line}.fxv{cursor:copy}
+.fxsel{display:flex;gap:8px;align-items:center;margin:0 0 6px}.fxsel select{flex:1;min-width:0;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem}.fxsel button{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}.fxsel button.on{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent}
 .fxk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.fk{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:600;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}.fk:active{transform:scale(.95)}.fk.fo{background:color-mix(in srgb,var(--blue) 18%,var(--bg));font-size:1.05rem}.fk.op{background:var(--blue);color:var(--on-blue,#fff);border-color:transparent;font-size:1.3rem}
 .fxcp{width:100%;padding:11px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:inherit;font-weight:700;cursor:pointer}
 .mapbar{display:flex;gap:8px;align-items:center;margin:6px 0 4px}
@@ -573,17 +575,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <body>
 <section id="viewer" hidden><div id="vLoad" aria-live="polite"><i></i><i></i><i></i><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div class="row"><button type="button" class="primary" id="vPdf">下載 PDF</button><button type="button" class="primary" id="vPpt">下載 PPT</button></div><div id="vBody"></div></div></section>
 <button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
-<div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="韓元匯率計算機"><div class="fxh"><b>韓元匯率</b><span style="flex:1"></span><button type="button" id="fxBs" aria-label="退格" title="退格">⌫</button><button type="button" id="fxX" aria-label="關閉">✕</button></div><p class="hint" id="fxInfo"></p><div class="fxd"><button type="button" class="fxrow on" id="fxRK" data-fxrow="k" aria-pressed="true"><span class="fxu">韓元 ₩</span><span class="fxe" id="fxEK"></span><b class="fxv" id="fxVK">0</b></button><button type="button" class="fxrow" id="fxRT" data-fxrow="t" aria-pressed="false"><span class="fxu">台幣 NT$</span><span class="fxe" id="fxET"></span><b class="fxv" id="fxVT">0</b></button></div><div class="fxk"><button type="button" class="fk fo" data-fk="c">AC</button><button type="button" class="fk fo" data-fk="neg">+/−</button><button type="button" class="fk fo" data-fk="pct">%</button><button type="button" class="fk op" data-fk="/">÷</button><button type="button" class="fk" data-fk="7">7</button><button type="button" class="fk" data-fk="8">8</button><button type="button" class="fk" data-fk="9">9</button><button type="button" class="fk op" data-fk="*">×</button><button type="button" class="fk" data-fk="4">4</button><button type="button" class="fk" data-fk="5">5</button><button type="button" class="fk" data-fk="6">6</button><button type="button" class="fk op" data-fk="-">−</button><button type="button" class="fk" data-fk="1">1</button><button type="button" class="fk" data-fk="2">2</button><button type="button" class="fk" data-fk="3">3</button><button type="button" class="fk op" data-fk="+">+</button><button type="button" class="fk" data-fk="0">0</button><button type="button" class="fk" data-fk="00">00</button><button type="button" class="fk" data-fk=".">.</button><button type="button" class="fk op" data-fk="=">=</button></div><button type="button" class="fxcp" id="fxCp">複製換算結果</button><p class="hint">參考匯率，實際刷卡或換匯會因手續費而不同。點上下兩列可切換要輸入的幣別；按「＋」可累加多筆價格。</p></div></div>
+<div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="匯率計算機"><div class="fxh"><b id="fxTitle">匯率</b><span style="flex:1"></span><button type="button" id="fxX" aria-label="關閉">✕</button></div><div class="fxsel"><select id="fxCur" aria-label="幣別"></select><button type="button" id="fxDef" title="之後新增的行程預設使用這個幣別">設為預設</button></div><p class="hint" id="fxInfo"></p><div class="fxd"><button type="button" class="fxrow on" id="fxRK" data-fxrow="k" aria-pressed="true"><span class="fxu" id="fxUK">韓元 ₩</span><span class="fxe" id="fxEK"></span><b class="fxv" id="fxVK">0</b></button><button type="button" class="fxrow" id="fxRT" data-fxrow="t" aria-pressed="false"><span class="fxu">台幣 NT$</span><span class="fxe" id="fxET"></span><b class="fxv" id="fxVT">0</b></button></div><div class="fxk"><button type="button" class="fk fo" data-fk="c">AC</button><button type="button" class="fk fo" data-fk="bs" aria-label="刪除" title="刪除" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M9.5 7.5v9l7-4.5z"/></svg></button><button type="button" class="fk fo" data-fk="pct">%</button><button type="button" class="fk op" data-fk="/">÷</button><button type="button" class="fk" data-fk="7">7</button><button type="button" class="fk" data-fk="8">8</button><button type="button" class="fk" data-fk="9">9</button><button type="button" class="fk op" data-fk="*">×</button><button type="button" class="fk" data-fk="4">4</button><button type="button" class="fk" data-fk="5">5</button><button type="button" class="fk" data-fk="6">6</button><button type="button" class="fk op" data-fk="-">−</button><button type="button" class="fk" data-fk="1">1</button><button type="button" class="fk" data-fk="2">2</button><button type="button" class="fk" data-fk="3">3</button><button type="button" class="fk op" data-fk="+">+</button><button type="button" class="fk" data-fk="0">0</button><button type="button" class="fk" data-fk="00">00</button><button type="button" class="fk" data-fk=".">.</button><button type="button" class="fk op" data-fk="=">=</button></div></div></div>
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
 <div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
-<button type="button" id="vFx" aria-label="韓元匯率計算機" title="韓元匯率">₩</button>
+<button type="button" id="vFx" aria-label="匯率計算機" title="匯率"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button>
 <button type="button" id="vMap" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></button>
 <div id="vPosSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點位置"><div class="hd"><h3 id="vPosT">位置</h3><button type="button" class="x" id="vPosX" aria-label="關閉">✕</button></div><div class="mapst" id="vPosSt"></div><div id="vPosBox" class="mapbox"></div><div style="margin-top:10px" id="vPosL"></div></div></div>
 <div id="vMapSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="地圖"><div class="hd"><h3>地圖</h3><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button><button type="button" class="x" id="vMapX" aria-label="關閉">✕</button></div><div class="mapchips" id="vMapChips"></div><div class="mapst" id="vMapSt"></div><div id="vMapBox" class="mapbox"></div></div></div>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <main>
-<div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><rect x="1.5" y="1.5" width="61" height="61" rx="15" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".75" stroke-width="3"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname"><b>hthsieh</b> Trip</span><span class="tools"><button type="button" id="fxBtn" class="ib" hidden title="韓元匯率" aria-label="韓元匯率" style="font-weight:700">₩</button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button></span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><div class="setback" id="setBack" hidden></div>
+<div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><rect x="1.5" y="1.5" width="61" height="61" rx="15" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".75" stroke-width="3"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname"><b>hthsieh</b> Trip</span><span class="tools"><button type="button" id="fxBtn" class="ib" hidden title="匯率" aria-label="匯率計算機"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button></span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><div class="setback" id="setBack" hidden></div>
 <div id="spotBack" hidden></div>
 <div class="settings spotm" id="spotModal" hidden role="dialog" aria-modal="true" aria-label="景點資料"><div class="shead"><h2 id="spotTitle"></h2><span id="spotBtns"></span><button type="button" class="sx" id="spotX" aria-label="關閉">✕</button></div><div class="spotmap"><div id="spotMapBox" class="mapbox"></div><div class="mapst" id="spotMapSt"></div><button type="button" class="mapfill" id="spotLocate" hidden>查詢位置</button></div><div class="d" id="spotEd"></div></div>
 <div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><button type="button" class="sx" id="sx" aria-label="關閉設定">✕</button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享此行程</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
@@ -651,7 +653,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   var viewerShare="";try{viewerShare=new URLSearchParams(location.search).get("share")||""}catch(e){}
   var viewerMode=!!viewerShare;
   function tkey(id){return KEY+"-t-"+id}
-  function blankTrip(title){return {title:title||"",spots:[],days:[[],[]],flights:{out:{no:"",dep:"",arr:""},back:{no:"",dep:"",arr:""}},hotelSpots:[]}}
+  function blankTrip(title){return {title:title||"",cur:"",spots:[],days:[[],[]],flights:{out:{no:"",dep:"",arr:""},back:{no:"",dep:"",arr:""}},hotelSpots:[]}}
   function persistIdx(){if(viewerMode)return;try{localStorage.setItem(KEY+"-idx",JSON.stringify(IDX))}catch(e){}}
   function ent(id){return IDX.list.filter(function(e){return e.id===id})[0]}
   function loadTripData(id){try{var p=JSON.parse(localStorage.getItem(tkey(id))||"null");if(p&&Array.isArray(p.spots)&&Array.isArray(p.days))return p}catch(e){}return null}
@@ -968,20 +970,58 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return inf;
   }
   function helperImg(u){return helperFetch("/img?u="+encodeURIComponent(u),true)}
-  /* exchange rate (KRW -> TWD) */
-  var FXKEY=KEY+"-fx",fx=null;
-  try{fx=JSON.parse(localStorage.getItem(FXKEY)||"null")}catch(e){fx=null}
-  if(!fx||!(fx.r>0))fx=null;
-  function fxRate(){return fx?fx.r:0}
-  function fxDraw(){
-    var i=$("fxInfo");if(!i)return;var r=fxRate();
-    i.textContent=r?"1 韓元 ≈ "+r.toFixed(5)+" 台幣；1,000 台幣 ≈ "+Math.round(1000/r).toLocaleString("en-US")+" 韓元（"+new Date(fx.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" 更新）":"尚未取得匯率，請確認連結助手已更新。";
+  /* exchange rate (any currency -> TWD) */
+  var CURS=[
+    {c:"KRW",n:"韓元",s:"₩",pre:"₩",suf:"원|won|韓元|韓幣"},
+    {c:"JPY",n:"日圓",s:"¥",pre:"[¥￥]",suf:"円|日圓|日元|yen"},
+    {c:"USD",n:"美元",s:"$",pre:"US\\$|\\$",suf:"美元|美金|USD"},
+    {c:"EUR",n:"歐元",s:"€",pre:"€",suf:"歐元|euros?|EUR"},
+    {c:"THB",n:"泰銖",s:"฿",pre:"฿",suf:"泰銖|baht|THB"},
+    {c:"CNY",n:"人民幣",s:"¥",pre:"RMB|CNY|人民幣",suf:"人民幣|RMB|CNY"},
+    {c:"HKD",n:"港幣",s:"HK$",pre:"HK\\$",suf:"港幣|港元|HKD"},
+    {c:"SGD",n:"新加坡幣",s:"S$",pre:"S\\$|SGD",suf:"新加坡幣|新幣|SGD"},
+    {c:"MYR",n:"馬來幣",s:"RM",pre:"RM",suf:"令吉|馬幣|MYR"},
+    {c:"VND",n:"越南盾",s:"₫",pre:"₫",suf:"越南盾|đồng|VND"},
+    {c:"GBP",n:"英鎊",s:"£",pre:"£",suf:"英鎊|GBP"},
+    {c:"AUD",n:"澳幣",s:"A$",pre:"A\\$|AU\\$",suf:"澳幣|AUD"},
+    {c:"PHP",n:"披索",s:"₱",pre:"₱",suf:"披索|PHP"},
+    {c:"IDR",n:"印尼盾",s:"Rp",pre:"Rp\\.?",suf:"印尼盾|IDR"}
+  ],CURMAP={};
+  CURS.forEach(function(x){CURMAP[x.c]=x;x.re=new RegExp("(?:"+x.pre+")\\s?(\\d[\\d,]*(?:\\.\\d+)?)|(\\d[\\d,]*(?:\\.\\d+)?)\\s?(?:"+x.suf+")","gi")});
+  var FXKEY=KEY+"-fx",FXDEF=KEY+"-fxdef",fx={},fxDef="KRW",viewerCur="";
+  try{var _f=JSON.parse(localStorage.getItem(FXKEY)||"null");if(_f&&_f.r>0)fx={KRW:{r:_f.r,t:_f.t||0}};else if(_f&&typeof _f==="object")Object.keys(_f).forEach(function(k){if(CURMAP[k]&&_f[k]&&_f[k].r>0)fx[k]={r:_f[k].r,t:_f[k].t||0}})}catch(e){fx={}}
+  try{var _d=localStorage.getItem(FXDEF);if(_d&&CURMAP[_d])fxDef=_d}catch(e){}
+  function fxCode(){
+    if(viewerMode)return CURMAP[viewerCur]?viewerCur:"KRW";
+    return (s&&CURMAP[s.cur])?s.cur:fxDef;
   }
-  function fxLoad(force){
-    if(!helperBase())return Promise.resolve();
-    if(!force&&fx&&Date.now()-fx.t<6*3600000)return Promise.resolve();
-    return helperFetch("/rate").then(function(j){
-      if(j&&j.krwTwd>0){fx={r:j.krwTwd,t:Date.now()};try{localStorage.setItem(FXKEY,JSON.stringify(fx))}catch(e){}fxDraw();if(viewerMode){if(typeof renderViewer==="function"&&$("vBody")&&$("vBody").innerHTML)renderViewer()}else render()}
+  function fxCur(){return CURMAP[fxCode()]}
+  function fxRate(){var c=fx[fxCode()];return c?c.r:0}
+  function fxFmtRate(r){return r<0.1?r.toFixed(5):(r<1?r.toFixed(4):r.toFixed(2))}
+  function fxDraw(){
+    var cu=fxCur(),r=fxRate(),i=$("fxInfo"),c=fx[cu.c];
+    var fb=$("fxBtn");if(fb){fb.title=cu.n+"匯率";fb.setAttribute("aria-label",cu.n+"匯率計算機")}
+    var vb=$("vFx");if(vb)vb.title=cu.n+"匯率";
+    var tt=$("fxTitle");if(tt)tt.textContent=cu.n+"匯率";
+    var sel=$("fxCur");if(sel&&sel.value!==cu.c)sel.value=cu.c;
+    var db=$("fxDef");if(db){var isD=cu.c===fxDef;db.textContent=isD?"預設":"設為預設";db.classList.toggle("on",isD)}
+    if(!i)return;
+    i.textContent=r?"1 "+cu.n+" ≈ "+fxFmtRate(r)+" 台幣；"+(r<1?"1,000 台幣 ≈ "+Math.round(1000/r).toLocaleString("en-US")+" "+cu.n:"1,000 台幣 ≈ "+(1000/r).toFixed(2)+" "+cu.n)+"\n（"+new Date(c.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" 更新）":"正在取得匯率…"
+  }
+  function fxDirect(code){
+    var lc=code.toLowerCase();
+    return fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/"+lc+".json").then(function(r){return r.json()}).then(function(j){var v=j&&j[lc]&&Number(j[lc].twd);if(!(v>0))throw 0;return v});
+  }
+  function fxLoad(force,code){
+    code=code||fxCode();var c0=fx[code];
+    if(!force&&c0&&Date.now()-c0.t<6*3600000)return Promise.resolve();
+    var p=helperBase()?helperFetch("/rate?c="+code).then(function(j){var r=j&&(j.rate>0?j.rate:(code==="KRW"&&j.krwTwd>0?j.krwTwd:0));if(!(r>0))throw 0;return r}):Promise.reject(0);
+    return p.catch(function(){return fxDirect(code)}).then(function(r){
+      if(!(r>0))return;
+      fx[code]={r:r,t:Date.now()};try{localStorage.setItem(FXKEY,JSON.stringify(fx))}catch(e){}
+      fxDraw();
+      if(code!==fxCode())return;
+      if(viewerMode){if(typeof renderViewer==="function"&&$("vBody")&&$("vBody").innerHTML)renderViewer()}else render();
     },function(){});
   }
   var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
@@ -1007,7 +1047,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       return o;
     }
     if(!r)return emit(0,t.length);
-    var re=/₩\s?(\d[\d,]*(?:\.\d+)?)|(\d[\d,]*(?:\.\d+)?)\s?(?:원|won|韓元|韓幣)/gi,o="",last=0,m;
+    var re=new RegExp(fxCur().re.source,"gi"),o="",last=0,m;
     while((m=re.exec(t))){
       var n=parseFloat((m[1]||m[2]).replace(/,/g,""));
       o+=emit(last,m.index)+emit(m.index,m.index+m[0].length);
@@ -1073,7 +1113,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     function draw(){
       var n=total(),o=other(),k=act==="k",bad=err||!isFinite(n);
       var typed=curNum(),shown=bad?"錯誤":(typed!==null?grp(typed):(tk.length?fmtN(n,8):"0"));
-      var conv=bad?"—":(o==null?"—":(k?fmtN(Math.round(o*10)/10,1):fmtN(Math.round(o),0)));
+      var cu=fxCur(),rr=fxRate(),fd=rr&&rr<0.5?0:2;
+      var uk=$("fxUK");if(uk)uk.textContent=cu.n+" "+cu.s;
+      var conv=bad?"—":(o==null?"—":(k?fmtN(Math.round(o),0):fmtN(Math.round(o*Math.pow(10,fd))/Math.pow(10,fd),fd)));
       $("fxVK").textContent=k?shown:conv;$("fxVT").textContent=k?conv:shown;
       var ex=exprText();$("fxEK").textContent=k?ex:"";$("fxET").textContent=k?"":ex;
       $("fxRK").classList.toggle("on",k);$("fxRT").classList.toggle("on",!k);
@@ -1113,22 +1155,38 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       act=to;tk=o==null||!(o>0)?[]:[String(Math.round(o*100)/100)];fresh=tk.length>0;err=false;
       draw();
     }
+    (function(){var sl=$("fxCur");if(sl&&!sl.options.length)sl.innerHTML=CURS.map(function(x){return '<option value="'+x.c+'">'+x.n+" "+x.c+'</option>'}).join("")})();
     function open(){sh.hidden=false;fxDraw();draw();fxLoad(false).then(function(){fxDraw();draw()})}
     function close(){sh.hidden=true}
-    var b=$("fxBtn");if(b){b.hidden=!helperBase();b.onclick=open}
-    var vb=$("vFx");if(vb){vb.classList.toggle("ok",!!helperBase());vb.onclick=open}
-    $("fxX").onclick=close;$("fxBs").onclick=function(){press("bs")};
+    var b=$("fxBtn");if(b){b.hidden=false;b.onclick=open}
+    var vb=$("vFx");if(vb){vb.classList.add("ok");vb.onclick=open}
+    $("fxCur").onchange=function(){
+      var code=this.value;if(!CURMAP[code])return;
+      if(viewerMode)viewerCur=code;else{s.cur=code;save()}
+      tk=[];fresh=false;err=false;act="k";
+      fxDraw();draw();
+      fxLoad(false,code).then(function(){fxDraw();draw()});
+      if(viewerMode){if($("vBody")&&$("vBody").innerHTML)renderViewer()}else render();
+    };
+    $("fxDef").onclick=function(){
+      var code=fxCode();fxDef=code;try{localStorage.setItem(FXDEF,code)}catch(e){}
+      fxDraw();say("已將「"+CURMAP[code].n+"」設為預設幣別。");
+    };
+    $("fxX").onclick=close;
     sh.addEventListener("click",function(e){
       if(e.target===sh){close();return}
       var t=e.target.closest("button");if(!t)return;
       if(t.dataset.fk){press(t.dataset.fk);return}
-      if(t.dataset.fxrow){swap(t.dataset.fxrow);return}
+      if(t.dataset.fxrow){
+        if(e.target.closest(".fxv")){copyAmt(t.dataset.fxrow);return}
+        swap(t.dataset.fxrow);return
+      }
     });
-    $("fxCp").onclick=function(){
-      var o=other(),n=total();if(o==null||!(n>0)){say("先輸入金額再複製。");return}
-      var kr=act==="k"?n:o,tw=act==="k"?o:n;
-      copyText("₩"+fmtN(Math.round(kr),0)+" ≈ NT$"+fmtN(Math.round(tw),0));
-    };
+    function copyAmt(which){
+      var el=which==="k"?$("fxVK"):$("fxVT"),v=(el.textContent||"").trim();
+      if(!v||v==="—"||v==="錯誤"||v==="0")return;
+      copyText((which==="k"?fxCur().s:"NT$")+v);
+    }
     document.addEventListener("keydown",function(e){
       if(sh.hidden)return;
       if(e.key==="Escape"){close();return}
@@ -1137,7 +1195,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       if(/^\d$/.test(e.key)){press(e.key);e.preventDefault()}
       else if(m){press(m);e.preventDefault()}
     });
-    setTimeout(function(){fxLoad(false)},1500);
+    setTimeout(function(){fxDraw();fxLoad(false)},1500);
   })();
   /* Korean name -> Chinese suggestion (Workers AI) */
   var driveEdit=null;
@@ -1422,7 +1480,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var fl={};["out","back"].forEach(function(k){var l=(d.flights&&d.flights[k])||{};fl[k]={no:str(l.no),dep:str(l.dep),arr:str(l.arr)}});
     var ht=Array.isArray(d.hotelSpots)?d.hotelSpots.filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){return {uid:it.uid,sid:it.sid,note:str(it.note)}}):undefined;
     var lg=(!ht&&Array.isArray(d.hotels))?d.hotels.map(function(h){return {name:str(h&&h.name),addr:str(h&&h.addr)}}):undefined;
-    return {title:str(d.title),spots:spots,days:days,flights:fl,hotelSpots:ht,hotels:lg};
+    return {title:str(d.title),cur:CURMAP[d.cur]?d.cur:"",spots:spots,days:days,flights:fl,hotelSpots:ht,hotels:lg};
   }
   function cleanTheme(t){var o={};if(t&&typeof t==="object")COLORS.forEach(function(c){var v=t[c[0]];if(typeof v==="string"&&/^#[0-9a-f]{6}$/i.test(v))o[c[0]]=v});return o}
   function showBk(j){var t=$("bkText");t.hidden=false;t.value=j;t.focus();t.select();bmsg("無法直接下載，已把備份內容顯示出來。請全選複製，貼到記事本存成 .json 檔。")}
@@ -1484,7 +1542,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     }).join("")||'<div class="empty">把住宿景點拖曳到這裡</div>';
     growNotes();
   }
-  function renderTrip(){ensureTrip();renderLegs();renderHotels()}
+  function renderTrip(){ensureTrip();renderLegs();renderHotels();try{fxDraw();fxLoad(false)}catch(e){}}
   document.addEventListener("input",function(e){
     var t=e.target,a=t.dataset&&t.dataset.fl,b=t.dataset&&t.dataset.ht;
     if(a){var p=a.split(".");s.flights[p[0]][p[1]]=t.value;save();updateCountdown()}
@@ -2894,10 +2952,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var pm=pushedMap[id],cur={},changed=[],removed=[],keep=null;
       d.spots.forEach(function(sp){var j=JSON.stringify(sp);cur[sp.id]=j;if(!pm||pm[sp.id]!==j)changed.push(JSON.parse(j))});
       if(pm){Object.keys(pm).forEach(function(k){if(!(k in cur))removed.push(k)})}else keep=Object.keys(cur);
-      var base={title:d.title||"",days:d.days.map(function(x){return {items:jclone(x)}}),hotelSpots:jclone(d.hotelSpots||[]),flights:jclone(d.flights),spotOrder:d.spots.map(function(x){return x.id}),updatedAt:ts};
+      var base={title:d.title||"",cur:CURMAP[d.cur]?d.cur:"",days:d.days.map(function(x){return {items:jclone(x)}}),hotelSpots:jclone(d.hotelSpots||[]),flights:jclone(d.flights),spotOrder:d.spots.map(function(x){return x.id}),updatedAt:ts};
       var trip=Object.assign({},base,{created:e.created||ts,shareId:e.shareId||"",device:deviceId,hist:histPack(id)});
       var share=null;
-      if(e.shareId)share={id:e.shareId,doc:Object.assign({},base,{owner:cloudUser.uid,theme:jclone(theme)}),all:(e.shareFull||keep)?d.spots.map(jclone):null};
+      if(e.shareId)share={id:e.shareId,doc:Object.assign({},base,{owner:cloudUser.uid,theme:jclone(theme),cur:CURMAP[d.cur]?d.cur:fxDef}),all:(e.shareFull||keep)?d.spots.map(jclone):null};
       await cloudApi.pushTrip(cloudUser.uid,id,trip,changed,removed,keep,share);
       pushedMap[id]=cur;e.ts=ts;e.name=d.title||"";
       if((e.ver||0)===ver)e.dirty=false;
@@ -2923,7 +2981,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     remote.spots.forEach(function(x){byId[x.id]=x});
     (t.spotOrder||[]).forEach(function(id){if(byId[id]){ordered.push(byId[id]);delete byId[id]}});
     Object.keys(byId).forEach(function(id){ordered.push(byId[id])});
-    return normTrip(cleanData({title:t.title,spots:ordered,days:(t.days||[]).map(function(x){return (x&&x.items)||[]}),flights:t.flights,hotelSpots:t.hotelSpots}));
+    return normTrip(cleanData({title:t.title,cur:t.cur,spots:ordered,days:(t.days||[]).map(function(x){return (x&&x.items)||[]}),flights:t.flights,hotelSpots:t.hotelSpots}));
   }
   function applyRemoteTrip(id,remote){
     applyingRemote=true;
@@ -3642,7 +3700,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(!/^[A-Za-z0-9_-]{10,64}$/.test(viewerShare)){vFail();return}
     cloudApi.getShare(viewerShare).then(function(r){
       if(!r){vFail();return}
-      s=buildFromRemote(r);theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();
+      s=buildFromRemote(r);viewerCur=CURMAP[r.trip.cur]?r.trip.cur:"KRW";theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();fxDraw();fxLoad(false);
     }).catch(function(err){vFail("無法載入（"+((err&&err.code)||"錯誤")+"），請稍後再試。")});
   }
   $("vPdf").onclick=function(){$("exPdf").click()};
