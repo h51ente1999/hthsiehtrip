@@ -2803,7 +2803,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var t=remote.trip,data=buildFromRemote(remote),e=ent(id),prev=tripData(id);
       if(prev&&hasData(prev)){try{localStorage.setItem(KEY+"-prev",JSON.stringify({id:id,data:prev}))}catch(_){}}
       if(!e){e={id:id,name:"",created:t.created||Date.now(),ts:0,dirty:false,shareId:""};IDX.list.push(e)}
-      e.name=data.title||"";e.ts=t.updatedAt||0;e.dirty=false;e.ver=(e.ver||0);e.shareId=(typeof t.shareId==="string"&&/^[A-Za-z0-9_-]{16,64}$/.test(t.shareId))?t.shareId:"";
+      e.name=data.title||"";e.ts=t.updatedAt||0;e.dirty=false;e.ver=(e.ver||0);e.shareId=(typeof t.shareId==="string"&&/^[A-Za-z0-9_-]{10,64}$/.test(t.shareId))?t.shareId:"";
       if(typeof t.created==="number")e.created=t.created;
       try{localStorage.setItem(tkey(id),JSON.stringify(data))}catch(_){}
       var pm={};data.spots.forEach(function(sp){pm[sp.id]=JSON.stringify(sp)});pushedMap[id]=pm;
@@ -2904,7 +2904,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function stopSync(){Object.keys(pushTimers).forEach(function(k){clearTimeout(pushTimers[k])});clearTimeout(metaTimer);stopListen()}
 
   /* sharing (read-only link) */
-  function rand24(){var a=new Uint8Array(18);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+  function rand24(){var a=new Uint8Array(9);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"").slice(0,10)}
   function shareLink(sid){var hb=helperBase(),own=/^(www\.)?hthsieh\.com$/.test(location.hostname)&&location.protocol==="https:";return own?location.origin+"/s/"+encodeURIComponent(sid):hb?hb+"/s/"+encodeURIComponent(sid):location.origin+location.pathname+"?share="+encodeURIComponent(sid)}
   function updateShareUI(){
     var e=ent(IDX.cur),on=!!(cloudUser&&e&&e.shareId);
@@ -3149,7 +3149,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   $("vBody").addEventListener("keydown",function(e){if(e.key!=="Enter"&&e.key!==" ")return;var h=e.target.closest(".vday");if(h){e.preventDefault();vToggle(h)}});
   function vFail(m){$("viewer").classList.remove("vload");$("vCd").hidden=true;$("vTitle").textContent="找不到這份行程";$("vInfo").textContent=m||"連結可能已被停止分享，或網址不正確。";$("vBody").innerHTML="";$("vPdf").hidden=true;$("vPpt").hidden=true}
   function initViewer(){
-    if(!/^[A-Za-z0-9_-]{16,64}$/.test(viewerShare)){vFail();return}
+    if(!/^[A-Za-z0-9_-]{10,64}$/.test(viewerShare)){vFail();return}
     cloudApi.getShare(viewerShare).then(function(r){
       if(!r){vFail();return}
       s=buildFromRemote(r);theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();
