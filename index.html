@@ -220,6 +220,19 @@ section.panel{background:var(--surface);color:var(--ink);border:1px solid var(--
 form.add{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin-bottom:14px}
 form.add .full{grid-column:1/-1}
 form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.editacts{display:flex;flex-direction:column;gap:10px;margin-top:6px}.editacts>*{margin:0!important}
+.editacts .ea1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.editacts .ea2{display:flex;align-items:center;gap:10px}
+.editacts .upload,.editacts .coverck{position:relative;border:1px solid var(--line);border-radius:999px;padding:5px 14px!important;font-size:.82rem!important;cursor:pointer;color:var(--ink);white-space:nowrap;display:inline-flex;gap:6px;align-items:center;align-self:center!important}
+.editacts .coverck input{position:absolute;opacity:0;width:1px;height:1px}
+.editacts .coverck:has(input:checked){background:linear-gradient(135deg,var(--blue),var(--dayg2,var(--blue)));border-color:transparent;color:var(--on-blue,#fff);font-weight:700}
+.editacts .coverck:has(input:checked)::before{content:"✓"}
+.editacts .coverck:has(input:disabled){opacity:.45;cursor:default}
+.editacts .ea2 button{padding:5px 14px;font-size:.82rem;margin-left:auto!important;border-radius:999px}
+.nvd{margin:2px 0}.nvd summary{cursor:pointer;font-size:.78rem;color:var(--muted);list-style:none;display:inline-flex;gap:6px;align-items:center;padding:2px 0}.nvd summary::-webkit-details-marker{display:none}
+.nvd summary::before{content:"▸";font-size:.7rem}.nvd[open] summary::before{content:"▾"}
+.nvd .nvs{font-style:normal;font-size:.7rem;padding:0 6px;border-radius:999px;background:color-mix(in srgb,var(--blue) 16%,transparent);color:var(--blue)}
+.nvd .lf{margin-top:4px}
 .coverck{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--ink);cursor:pointer;padding:2px 0}.coverck input{width:18px;height:18px;accent-color:var(--blue)}
 .upload{position:relative;border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;color:var(--muted);white-space:nowrap;font-size:.9rem;display:flex;gap:6px;align-items:center}
 .upload input{position:absolute;opacity:0;width:1px;height:1px}
@@ -575,7 +588,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   <form class="add" id="add" hidden>
     <div class="chips full" id="cchips" role="group" aria-label="分類"></div>
     <div class="full lf"><span>區域</span><input type="text" id="ar" aria-label="區域"><div class="chips" id="achips" style="margin-top:6px"></div></div>
-    <div class="full lf"><span>景點名稱</span><input type="text" id="n" required aria-label="景點名稱"><input type="text" id="ko" lang="ko" placeholder="韓文店名" aria-label="韓文店名" style="margin-top:4px"></div>
+    <div class="full lf"><span>店名</span><input type="text" id="n" required placeholder="主標題（例：中文店名）" aria-label="主標題"><input type="text" id="ko" placeholder="副標題（例：當地語言店名）" aria-label="副標題" style="margin-top:4px"></div>
     <label class="lf full"><span>地址</span><input type="text" id="a" aria-label="地址"></label>
     <label class="lf full"><span>營業時間</span><input type="text" id="hr" aria-label="營業時間"></label>
     <label class="lf full"><span>備註</span><textarea class="f" id="nt" rows="2" aria-label="備註"></textarea></label>
@@ -727,13 +740,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return (
       '<div class="chips" role="group" aria-label="分類">'+catChips(sp)+'</div>'+
       '<label class="lf"><span>區域</span><input type="text" data-f="area"'+at+' value="'+esc(sp.area)+'" aria-label="區域"></label>'+(areaList().length?'<div class="chips" role="group" aria-label="既有區域">'+areaChips(sp)+'</div>':'')+
-      '<div class="lf"><span>景點名稱</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="中文店名" aria-label="中文店名"><button type="button" class="cpy" title="複製中文店名" aria-label="複製中文店名">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' lang="ko" value="'+esc(sp.ko)+'" placeholder="韓文店名" aria-label="韓文店名"><button type="button" class="cpy" title="複製韓文店名" aria-label="複製韓文店名">'+CPY+'</button></div><div class="zhs" data-zid="'+sp.id+'">'+zhHtml(sp)+'</div></div>'+
+      '<div class="lf"><span>店名</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="主標題（例：中文店名）" aria-label="主標題"><button type="button" class="cpy" title="複製主標題" aria-label="複製主標題">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' value="'+esc(sp.ko)+'" placeholder="副標題（例：當地語言店名）" aria-label="副標題"><button type="button" class="cpy" title="複製副標題" aria-label="複製副標題">'+CPY+'</button></div><div class="zhs" data-zid="'+sp.id+'">'+zhHtml(sp)+'</div></div>'+
       '<label class="lf"><span>地址</span><input type="text" data-f="addr"'+at+' value="'+esc(sp.addr)+'" aria-label="地址"></label>'+
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
-      '<label class="lf"><span>Naver 地圖連結</span><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" aria-label="Naver 地圖連結"></label>'+
-      '<label class="coverck"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>用在 PPT 封面'+(sp.img||sp.cover?'':'（需先有圖片）')+'</span></label>'+'<label class="upload"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片（或直接貼上）':'上傳圖片（或直接貼上）')+'</span></label>'+iconHtml(sp)+
-      (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':''));
+      '<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>'+
+      '<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片':'上傳圖片')+'</span></label></div><div class="ea2">'+iconHtml(sp)+
+      (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div></div>');
   }
   function blk(sp,inst,day,inLib,forceOpen){
     var key=inst||sp.id,open=false;
