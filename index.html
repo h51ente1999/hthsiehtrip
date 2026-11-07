@@ -825,9 +825,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       save();render();return;
     }
     if(e.target.closest("a")||e.target.closest(".grip")||e.target.closest(".d"))return;
+    if(downInD){downInD=false;return}
     var b=e.target.closest(".blk");
+    if(b&&b.classList.contains("open")){var sel=window.getSelection&&window.getSelection();if(sel&&!sel.isCollapsed&&String(sel).length&&b.contains(sel.anchorNode))return}
     if(b&&!justDragged){openKey=openKey===b.dataset.key?null:b.dataset.key;render()}
   });
+  var downInD=false;
+  document.addEventListener("pointerdown",function(e){downInD=!!(e.target.closest&&e.target.closest(".blk .d"))},true);
   document.addEventListener("keydown",function(e){
     if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("blk")){
       e.preventDefault();var k=e.target.dataset.key;openKey=openKey===k?null:k;render();
