@@ -623,6 +623,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var nsp=spot(it.sid);if(nsp&&nsp.note)a.push(nsp.note.replace(/\n/g," "));
     return a.join("　");
   }
+  function driveLbl(it,n){return (it&&it.mode==="drive"?"開車 ":it&&it.mode==="walk"?"走路 ":"路程 ")+n+" 分"}
   function validItems(d){return d.filter(function(it){return spot(it.sid)})}
   function slotHtml(it,idx,r,di){
     var sp=spot(it.sid),late=r.late>0;
@@ -875,7 +876,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       if(j&&j.krwTwd>0){fx={r:j.krwTwd,t:Date.now()};try{localStorage.setItem(FXKEY,JSON.stringify(fx))}catch(e){}fxDraw();if(viewerMode){if(typeof renderViewer==="function"&&$("vBody")&&$("vBody").innerHTML)renderViewer()}else render()}
     },function(){});
   }
-  var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁/;
+  var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
+  var NTRE=/(?:\d{1,2}\s*[:：]\s*\d{2}|\d{1,2}\s*(?:點|时|時)(?:半|\d{1,2}分?)?)\s*(?:前\s*)?到(?!\s*(?:\d|上午|下午|晚上|中午|早上|凌晨|隔天))/;
   function noteMask(t){
     t=String(t||"");var m=[],s0=0,i,j;
     for(i=0;i<t.length;i++)m.push(false);
@@ -883,7 +885,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var ch=t.charAt(i),end=i===t.length;
       var d=!end&&(/[，。；！？、;!?\n]/.test(ch)||(ch===","&&!(/\d/.test(t.charAt(i-1))&&/\d/.test(t.charAt(i+1)))));
       if(end||d){
-        if(NKRE.test(t.slice(s0,i))){for(j=s0;j<i;j++)m[j]=true;if(d&&ch!=="\n")m[i]=true}
+        if(NKRE.test(t.slice(s0,i))||NTRE.test(t.slice(s0,i))){for(j=s0;j<i;j++)m[j]=true;if(d&&ch!=="\n")m[i]=true}
         s0=i+1;
       }
     }
@@ -1762,7 +1764,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
             var slotY=y,ry=y+CONN,rowH=x.h,sp=x.sp,it=x.it;y=ry+rowH;
             if(x.idx>0&&x.r.drive>0){
               var pw=Math.max(0.95,String(x.r.drive).length*0.1+0.8);
-              sl.addText("路程 "+x.r.drive+" 分",{shape:P.ShapeType.roundRect,rectRadius:0.1,x:cx+0.02,y:slotY+0.04,w:pw,h:0.2,fill:{color:C.surface},line:{color:C.main,width:0.75,dashType:"dash"},fontFace:FACE,fontSize:9,color:C.muted,align:"center",valign:"middle",margin:0});
+              sl.addText(driveLbl(x.it,x.r.drive),{shape:P.ShapeType.roundRect,rectRadius:0.1,x:cx+0.02,y:slotY+0.04,w:pw,h:0.2,fill:{color:C.surface},fontFace:FACE,fontSize:9,color:C.muted,align:"center",valign:"middle",margin:0});
             }
             sl.addShape(P.ShapeType.roundRect,{x:cx,y:ry,w:cw,h:rowH,rectRadius:0.12,fill:{color:C.surface},line:{color:C.cardLine,width:0.5}});
             sl.addShape(P.ShapeType.roundRect,{x:cx,y:ry+0.06,w:0.07,h:rowH-0.12,rectRadius:0.035,fill:{color:sp.cat==="美食"?C.food:C.main}});
@@ -1905,7 +1907,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var C={ink:ink,surface:surface,bg:bgc,main:mainC,page:pageC,onMain:th("--on-blue")||"#ffffff",tag:th("--tag-bg"),tagInk:th("--tag-ink"),food:th("--tag-food"),
       accent:mixHex(mainC,ink,0.6),muted:mixHex(ink,surface,0.45),line:mixHex(surface,ink,0.14),cardLine:mixHex(surface,ink,0.07),halo:mixHex(mainC,bgc,0.7),pageInk:lum(pageC)>0.55?"#0D2626":"#ffffff"};
     try{
-      var ft="旅遊行程機票及飯店資訊去程回程出發抵達第天共個行程美食清單依區域分類間未分區尚未加入飯店0123456789:/— "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.addr||"")+(x.area||"")}).join("");
+      var ft="旅遊行程機票及飯店資訊去程回程開車走路路程出發抵達第天共個行程美食清單依區域分類間未分區尚未加入飯店0123456789:/— "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.addr||"")+(x.area||"")}).join("");
       s.days.forEach(function(d){d.forEach(function(it){ft+=(it.note||"")+(it.time||"")})});
       s.hotelSpots.forEach(function(it){ft+=it.note||""});
       ft+=s.flights.out.no+s.flights.back.no;
@@ -2074,11 +2076,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
           col.forEach(function(x){
             var slotY=y,ry=y+CONN*P,sp=x.sp,it=x.it,h=x.h*P;y=ry+h;
             if(x.idx>0&&x.r.drive>0){
-              var lbl="路程 "+x.r.drive+" 分";c.font="400 "+pt(9)+"px "+F;
+              var lbl=driveLbl(x.it,x.r.drive);c.font="400 "+pt(9)+"px "+F;
               var pw=c.measureText(lbl).width+0.3*P;
               box(c,cx+0.02*P,slotY+0.04*P,pw,0.2*P,0.1*P,C.surface);
-              c.save();c.setLineDash([4,3]);c.lineWidth=1;c.strokeStyle=C.main;rr(c,cx+0.02*P,slotY+0.04*P,pw,0.2*P,0.1*P);c.stroke();c.restore();
-              T(c,lbl,cx+0.02*P+pw/2,slotY+0.14*P,9,"400",C.muted,"center");
+                            T(c,lbl,cx+0.02*P+pw/2,slotY+0.14*P,9,"400",C.muted,"center");
             }
             box(c,cx,ry,cw,h,0.12*P,C.surface,C.cardLine);
             c.save();rr(c,cx,ry,cw,h,0.12*P);c.clip();c.fillStyle=sp.cat==="美食"?C.food:C.main;c.fillRect(cx,ry,0.07*P,h);c.restore();
@@ -2279,7 +2280,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       L.push("","【第 "+(i+1)+" 天】");
       if(!d.length)L.push("（尚無行程）");
       var vl=validItems(d),cr=calcDay(vl);
-      vl.forEach(function(it,j){var sp=spot(it.sid),r=cr[j],rg=rangeStr(r,"–"),kn=kidNames(it);if(r.drive!=null)L.push("　↓ 路程 "+r.drive+" 分");L.push((j+1)+". "+(rg?rg+" ":"")+(r.stay!=null?"（停留 "+r.stay+" 分）":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(kn.length?"（含："+kn.join("、")+"）":"")+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(sp.naver?" Naver："+sp.naver:""))});
+      vl.forEach(function(it,j){var sp=spot(it.sid),r=cr[j],rg=rangeStr(r,"–"),kn=kidNames(it);if(r.drive!=null)L.push("　↓ "+driveLbl(it,r.drive));L.push((j+1)+". "+(rg?rg+" ":"")+(r.stay!=null?"（停留 "+r.stay+" 分）":"")+(sp.cat?"["+sp.cat+"] ":"")+(sp.area?"〔"+sp.area+"〕":"")+sp.name+(kn.length?"（含："+kn.join("、")+"）":"")+(sp.ko?" / "+sp.ko:"")+(sp.hours?" 營業："+sp.hours:"")+(sp.addr?"（"+sp.addr+"）":"")+(sp.note?" － "+sp.note.replace(/\n/g," "):"")+(sp.naver?" Naver："+sp.naver:""))});
     });
     return L.join("\n");
   }
@@ -2304,7 +2305,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var accent=mixHex(blue,ink,0.6),muted=mixHex(ink,surface,0.45),hero2=th("--blue2")||mixHex(blue,ink,0.42),halo=mixHex(blue,bgc,0.7),areaBg=mixHex(tagBg,surface,0.55);
     function rgba(h,a){var n=parseInt(h.slice(1),16);return "rgba("+(n>>16&255)+","+(n>>8&255)+","+(n&255)+","+a+")"}
     try{
-      var ftxt="旅遊行程第天個景點班機飯店去程回程路程分站週日一二三四五六0123456789:/–→ "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.area||"")}).join("");
+      var ftxt="旅遊行程第天個景點班機飯店去程回程路程開車走路分站週日一二三四五六0123456789:/–→ "+(s.title||"")+s.spots.map(function(x){return x.name+(x.cat||"")+(x.ko||"")+(x.area||"")}).join("");
       s.days.forEach(function(d){d.forEach(function(it){ftxt+=(it.note||"")+(it.time||"")})});
       await document.fonts.load('700 20px "Huninn"',ftxt);await document.fonts.load('400 15px "Huninn"',ftxt);
     }catch(e){}
@@ -2416,8 +2417,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
         col.rows.forEach(function(r){
           yy+=r.gapA;
           if(r.drive){
-            var lb="路程 "+r.drive+" 分";c.font="400 12px "+F;var pw=c.measureText(lb).width+22,py=yy-r.gapA+ (r.gapA-22)/2;
-            rr(c,cardX+6,py,pw,22,11);c.fillStyle=rgba(surface,.85);c.fill();c.save();c.setLineDash([4,3]);c.lineWidth=1;c.strokeStyle=rgba(accent,.55);c.stroke();c.restore();
+            var lb=driveLbl(r.it,r.drive);c.font="400 12px "+F;var pw=c.measureText(lb).width+22,py=yy-r.gapA+ (r.gapA-22)/2;
+            rr(c,cardX+6,py,pw,22,11);c.fillStyle=rgba(surface,.85);c.fill();
             T(lb,cardX+6+11,py+11,12,"400",accent);
           }
           var sp=r.sp,isFood=sp.cat==="美食";
