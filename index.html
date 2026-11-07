@@ -3173,7 +3173,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       var mk=m.mk[n];if(!mk||!m.map)return;
       m.sel=n;
       [].forEach.call(m.nums.querySelectorAll("button[data-n]"),function(b){b.classList.toggle("on",Number(b.dataset.n)===n)});
-      var ll=mk.getLatLng();m.map.setView(ll,Math.max(m.map.getZoom(),16),{animate:true});
+      var ll=mk.getLatLng(),z=Math.max(m.map.getZoom(),16),ct=ll;
+      try{var pt=m.map.project(ll,z),h=m.map.getSize().y;ct=m.map.unproject(L.point(pt.x,pt.y-h*0.2),z)}catch(e){ct=ll}
+      m.map.setView(ct,z,{animate:true});
       mk.openPopup();
     };
     o.chips.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;m.day=Number(b.dataset.d);m.draw()});
