@@ -643,6 +643,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
 #toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
+.mko span{display:block;width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 55%,var(--surface));border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35);opacity:.85}
 </style>
 </head>
 <body>
@@ -3477,6 +3478,15 @@ body.viewer #mapPanel .mphd .sx{display:none}
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
         c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC(mono)}).addTo(c.map);
+        /* 景點庫裡其他有座標的景點，用小圓點標出來（滑過或點一下顯示店名） */
+        if(!c.others)c.others=L.layerGroup().addTo(c.map);
+        c.others.clearLayers();
+        (s.spots||[]).forEach(function(o){
+          if(!o||o.id===sp.id||!okLL(o.lat,o.lng))return;
+          var mk=L.marker([o.lat,o.lng],{icon:L.divIcon({className:"mko",html:"<span></span>",iconSize:[14,14],iconAnchor:[7,7]}),zIndexOffset:-500,keyboard:false}).addTo(c.others);
+          mk.bindTooltip(String(o.name||"").slice(0,30),{direction:"top",offset:[0,-6]});
+          mk.on("click",function(){mk.openTooltip()});
+        });
         c.map.setView([sp.lat,sp.lng],16);
         return true;
       },function(){st.textContent="地圖載入失敗，請檢查網路。";return false});
