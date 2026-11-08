@@ -111,6 +111,7 @@ label.f span,.lbl{font-weight:600;letter-spacing:.2px}
 .seg button{border:1px solid var(--line);border-radius:999px;background:var(--soft);padding:8px 20px;min-height:40px;color:var(--ink)}
 .seg button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-color:transparent;font-weight:700}.seg.on,.seg button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2))}
 .splist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:52vh;overflow:auto}.spi{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;width:100%;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:9px 12px}.spi b{font-weight:700}.spi span{font-size:.78rem;color:var(--muted)}.spi.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}#fSpots.on{border-color:var(--accent)}
+.pplist{display:flex;flex-direction:column;gap:6px}.pplist .pl{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--soft);border-radius:12px;padding:6px 6px 6px 12px}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;margin:0 -2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.88rem;white-space:nowrap}
 .chip.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-color:transparent;font-weight:700}
@@ -421,8 +422,10 @@ function publishSplitLink(meta){
 }
 function pickMeModal(){
   var L=cur();if(!L||!L.cloud)return;
+  if(L.role!=="owner"&&L.myMember){toast("身分選好後只有擁有者能更改");return}
+  var isOwner=L.role==="owner";
   var taken={};Object.keys(L.people||{}).forEach(function(k){var m=L.people[k].memberId;if(m&&k!==(ME&&ME.uid))taken[m]=1});
-  modal('<h2>你是哪一位？</h2><p class="muted small" style="margin:0">選好之後，「誰先付的」會預設是你。</p><label class="f"><span>我是</span><select id="pmSel">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===L.myMember?" selected":"")+'>'+esc(m.name)+(taken[m.id]?"（已有人選了）":"")+'</option>'}).join('')+'</select></label><div class="row"><button class="btn" type="button" id="pmNo">稍後</button><button class="btn pri" type="button" id="pmOk">確定</button></div>',function(){
+  modal('<h2>你是哪一位？</h2><p class="muted small" style="margin:0">選好之後，「誰先付的」會預設是你。'+(isOwner?'':'<b>選好後無法自行更改</b>，要改請找擁有者。')+'</p><label class="f"><span>我是</span><select id="pmSel">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===L.myMember?" selected":"")+'>'+esc(m.name)+(taken[m.id]?"（已有人選了）":"")+'</option>'}).join('')+'</select></label><div class="row"><button class="btn" type="button" id="pmNo">稍後</button><button class="btn pri" type="button" id="pmOk">確定</button></div>',function(){
     $("pmNo").onclick=closeModal;
     $("pmOk").onclick=function(){
       API.updatePerson(L.id,ME.uid,{memberId:$("pmSel").value}).then(function(){closeModal();S.F=null;toast("已設定")},function(){toast("設定失敗：沒有權限或網路中斷")});
@@ -475,11 +478,12 @@ function shareModal(){
   var link=shareLink(C.meta.id,C.meta.salt),ids=Object.keys(L.people||{});
   var h='<h2>共同編輯</h2><p class="muted small" style="margin:0">把連結傳給朋友，<b>密碼另外告訴他們</b>。朋友只能修改、刪除自己上傳的款項；結算會合併所有人的款項。</p>';
   h+='<span class="lbl">邀請連結</span><div class="linkbox"><input type="text" id="shLink" readonly><button class="btn sm" type="button" id="shCopy">'+ico("copy",14)+' 複製</button></div>';
-  h+='<span class="lbl">已加入（'+ids.length+' 人）</span><div class="ppl">'+(ids.map(function(k){var p=L.people[k];return esc(p.memberId?mname(L,p.memberId):"（還沒選成員）")+(ME&&k===ME.uid?"（你）":"")}).join("、")||"—")+'</div>';
+  h+='<span class="lbl">已加入（'+ids.length+' 人）</span><div class="pplist">'+(ids.map(function(k){var p=L.people[k],self=ME&&k===ME.uid;return '<div class="pl"><span>'+esc(p.memberId?mname(L,p.memberId):"（還沒選成員）")+(self?"（你）":"")+'</span>'+(self?'':'<button type="button" class="btn sm" data-reset="'+esc(k)+'">重設身分</button>')+'</div>'}).join("")||"—")+'</div><p class="muted small" style="margin:4px 0 0">朋友選好身分後無法自行更改；按「重設身分」後，他可以重新選一次。</p>';
   h+='<div class="row"><button class="btn" type="button" id="shPw">變更密碼</button><button class="btn danger" type="button" id="shStop">停止共同編輯</button></div><div class="row"><button class="btn pri" type="button" id="shOk">完成</button></div>';
   modal(h,function(){
     $("shLink").value=link;$("shLink").onfocus=function(){this.select()};
     $("shCopy").onclick=function(){copyText(link,"已複製連結")};
+    document.querySelectorAll("[data-reset]").forEach(function(b){b.onclick=function(){var k=this.dataset.reset;API.updatePerson(L.id,k,{memberId:""}).then(function(){toast("已重設，對方可以重新選身分")},function(){toast("重設失敗：請確認 Firestore 規則已更新")})}});
     $("shOk").onclick=closeModal;
     $("shPw").onclick=pwModal;
     var armed=false;$("shStop").onclick=async function(){
@@ -894,7 +898,7 @@ function drawSum(){
   h+='<div class="rate"><div><span class="k">匯率　1 '+cu.n+' ≈ <b>'+(L.rate?fmtRate(L.rate.r):"—")+'</b> 台幣</span>'+(L.rate?'<span class="k t">'+new Date(L.rate.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+' 更新</span>':'')+'</div><button class="btn sm" type="button" id="btnRate">'+ico("refresh",13)+' 更新</button></div>';
   if(L.cloud){
     var me=L.myMember?mname(L,L.myMember):"";
-    h+='<div class="rate"><div><span class="k">你是 <b>'+esc(me||"（還沒選）")+'</b></span><span class="k t">所有人的款項合併計算，你只能修改自己上傳的</span></div><button class="btn sm" type="button" id="btnMe">'+(me?"更改":"選擇")+'</button></div>';
+    h+='<div class="rate"><div><span class="k">你是 <b>'+esc(me||"（還沒選）")+'</b></span><span class="k t">所有人的款項合併計算，你只能修改自己上傳的</span></div>'+((!me||L.role==="owner")?'<button class="btn sm" type="button" id="btnMe">'+(me?"更改":"選擇")+'</button>':"")+'</div>';
   }
   box.innerHTML=h;
   if($("btnMe"))$("btnMe").onclick=pickMeModal;
