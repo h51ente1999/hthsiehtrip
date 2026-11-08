@@ -405,7 +405,7 @@ async function startListen(meta){
   try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
   if(my!==CLID)return;
   unsubCl=api.listen(meta.id,{
-    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){CLED.err="這個帳本已被擁有者刪除，或你已沒有權限。";CLED.L=null;drawLedgerSel();return}CLED.err="";rebuild()},
+    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){var gone=meta.id;removeMeta(gone);toast("這個帳本已被擁有者刪除，已從這台裝置移除");if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);return}CLED.err="";rebuild()},
     people:function(m){if(my!==CLID)return;CLED.people=m;CLED.pl=true;rebuild()},
     exps:function(a){if(my!==CLID)return;CLED.exps=a.map(cleanExp).filter(Boolean);rebuild()},
     error:function(e){if(my!==CLID)return;CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
@@ -1322,6 +1322,24 @@ $("importIn").onchange=function(){
 };
 
 /* ---------- 啟動 ---------- */
+var TRIPCTX=null;
+function tripFlow(trip,view){
+  var tids=readTrips().map(function(x){return x.id});
+  FREE_LEDGERS=LEDGERS.filter(function(L){return !L.tripId||(!/^s:/.test(L.tripId)&&tids.length&&tids.indexOf(L.tripId)<0)});
+  if(trip&&!LEDGERS.some(function(L){return L.tripId===trip})){
+  PENDING_TRIP=trip;
+  if(view){(async function(){
+    var api=await getApi(),sp=null;
+    try{if(api&&api.getShareSplit)sp=await api.getShareSplit(view)}catch(e){}
+    if(sp&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt)){
+      var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
+      if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
+    }else joinLinkModal(trip);
+  })()}
+  else if(readTrips().some(function(t){return t.id===trip})){if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)}
+  else toast("找不到這個行程，請手動建立帳本。");
+}
+}
 (async function(){
   await dbOpen();
   LEDGERS=(await dbAll()).map(function(x){return x&&x.cloud?cleanMeta(x):cleanLedger(x)}).filter(Boolean);
@@ -1346,19 +1364,8 @@ $("importIn").onchange=function(){
   S.id=pick;drawLedgerSel();
   if(pick)openLedger(pick);
   if(AUTOSHARE&&trip&&!view&&found&&pick===found.id){if(!found.cloud){var ak="split-v1-asked-"+found.id,asked=false;try{asked=!!localStorage.getItem(ak);localStorage.setItem(ak,"1")}catch(e){}if(!asked)enableModal()}}
-  if(trip&&!LEDGERS.some(function(L){return L.tripId===trip})){
-    PENDING_TRIP=trip;
-    if(view){(async function(){
-      var api=await getApi(),sp=null;
-      try{if(api&&api.getShareSplit)sp=await api.getShareSplit(view)}catch(e){}
-      if(sp&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt)){
-        var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
-        if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
-      }else joinLinkModal(trip);
-    })()}
-    else if(readTrips().some(function(t){return t.id===trip})){if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)}
-    else toast("找不到這個行程，請手動建立帳本。");
-  }
+  TRIPCTX={trip:trip,view:view};
+  tripFlow(trip,view);
   var jm=/^#j=([A-Za-z0-9_-]{8,64})\.([A-Za-z0-9_-]{8,64})$/.exec(location.hash||"");
   if(jm){
     var have=LEDGERS.filter(function(x){return x.id===jm[1]})[0];
