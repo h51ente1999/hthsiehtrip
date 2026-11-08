@@ -97,7 +97,7 @@ label.f>span,label.f span,.lbl{font-size:.82rem!important;font-weight:600;line-h
 .hero{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-radius:14px;padding:8px 10px 8px 14px;margin-bottom:12px;border:1px solid var(--line)}
 .hero h1{font-size:1.35rem;font-weight:400;letter-spacing:.5px;margin:0;color:inherit;white-space:nowrap}.hero h1 b{font-weight:800}.hero .sp{flex:1}
 .hero .tools{display:flex;gap:6px}.hero .ib{width:36px;height:36px;border-radius:50%;border:0;padding:0;background:color-mix(in srgb,var(--on-blue) 22%,transparent);color:var(--on-blue);display:inline-grid;place-items:center;text-decoration:none}
-.hero .ib:active{transform:scale(.92)}
+.hero .ib:active{transform:scale(.92)}.hero .ib[hidden]{display:none}.sbi{display:block}.sbi.spin{animation:sbspin 1s linear infinite}@keyframes sbspin{to{transform:rotate(360deg)}}
 .hubsec{padding:16px 0;border-top:1px solid var(--line)}.hubsec h2{font-size:1.05rem;margin:0 0 6px}.hubsec:first-of-type{border-top:0;padding-top:4px}
 .hubhead{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:1.12rem;margin-bottom:6px}
 .ib2{width:34px;height:34px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);display:inline-grid;place-items:center;padding:0}
@@ -156,7 +156,7 @@ try{var q=new URLSearchParams(location.search);if(q.get("embed")==="1")document.
   <div class="hero">
     <a class="ib" id="back" href="index.html" title="回旅遊網" aria-label="回旅遊網"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
     <h1><b>hthsieh</b> Split</h1><span class="sp"></span>
-    <span class="tools"><button class="ib" id="btnMenu" type="button" title="共同編輯・帳本設定・備份" aria-label="共同編輯、帳本設定、備份"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button><button class="ib" id="btnClose" type="button" title="關閉" aria-label="關閉" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button class="ib" id="btnBar" type="button" title="帳本切換／新增" aria-label="展開帳本列" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></span>
+    <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnMenu" type="button" title="共同編輯・帳本設定・備份" aria-label="共同編輯、帳本設定、備份"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button><button class="ib" id="btnClose" type="button" title="關閉" aria-label="關閉" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button class="ib" id="btnBar" type="button" title="帳本切換／新增" aria-label="展開帳本列" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></span>
   </div>
 
   <div class="card" id="ledgerBar" style="padding:8px">
@@ -352,11 +352,25 @@ $("ledgerSel").onchange=function(){
   if(PENDING_TRIP){var L=LEDGERS.filter(function(x){return x.id===this.value},this)[0];
     if(L&&!L.tripId){L.tripId=PENDING_TRIP;PENDING_TRIP="";dbPut(L);toast("已把這本帳連結到該行程，下次會直接開啟")}}
 };
+/* 同步狀態：圖示跟編輯頁一樣（雲朵＋狀態），點一下看說明 */
+var BI={sync:'<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',ok:'%s<path d="m9 12.5 2.2 2.2L15.5 10.5"/>',bad:'%s<path d="M12 10v3M12 15.8h.01"/>',off:'%s<path d="M4 4l16 16"/>'},BTXT="";
+function setBadge(k,txt){
+  var b=$("syncBadge");if(!b)return;
+  if(!k){b.hidden=true;BTXT="";return}
+  var p=BI[k].replace("%s",'<path d="M18 18a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/>');
+  b.innerHTML='<svg class="sbi'+(k==="sync"?" spin":"")+'" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+  BTXT=txt;b.title=txt;b.setAttribute("aria-label",txt);b.hidden=false;
+}
+function hhmm(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#syncBadge"))toast(BTXT||"")});
+window.addEventListener("offline",function(){var L=LEDGERS.filter(function(x){return x.id===S.id})[0];if(L&&L.cloud)setBadge("off","目前離線，恢復連線後會自動同步")});
+window.addEventListener("online",function(){var L=LEDGERS.filter(function(x){return x.id===S.id})[0];if(L&&L.cloud)setBadge("sync","連線中…")});
 function openLedger(id){
   stopListen();
   S.id=id;S.F=null;drawLedgerSel();
   var x0=LEDGERS.filter(function(L){return L.id===id})[0];
-  if(x0&&x0.cloud){startListen(x0);return}
+  if(x0&&x0.cloud){setBadge("sync","連線中…");startListen(x0);return}
+  setBadge(x0?"off":"","這是本機帳本，只存在這台裝置，不會同步");
   if(!cur())return;
   var L=cur();
   if(!L.rate||!(L.rate.r>0)){var ar=appRate(L.cur);if(ar){L.rate=ar;persist()}}
@@ -414,21 +428,22 @@ async function startListen(meta){
   CLED={meta:meta,doc:null,people:{},exps:[],L:null,err:"",sig:"",asked:false,drawn:false,rate:null};
   var my=++CLID;drawCloudMsg();
   var api=await getApi();if(my!==CLID)return;
-  if(!api){CLED.err="連不上雲端服務（網路問題，或這個頁面沒有放在設定好 Firebase 的網域）。";drawLedgerSel();return}
+  if(!api){setBadge("bad","連不上雲端服務");CLED.err="連不上雲端服務（網路問題，或這個頁面沒有放在設定好 Firebase 的網域）。";drawLedgerSel();return}
   API=api;
-  try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
+  try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;setBadge("bad","登入雲端失敗");CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
   if(my!==CLID)return;
   unsubCl=api.listen(meta.id,{
     ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){dropStale(meta,"這個帳本已被擁有者刪除，已從這台裝置移除");return}CLED.err="";rebuild()},
     people:function(m){if(my!==CLID)return;CLED.people=m;CLED.pl=true;rebuild()},
     exps:function(a){if(my!==CLID)return;CLED.exps=a.map(cleanExp).filter(Boolean);rebuild()},
-    error:function(e){if(my!==CLID)return;if(e&&e.code==="permission-denied"){dropStale(meta,"這個帳本已不存在或你已沒有權限，已自動移除並重新對應這個行程");return}CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
+    error:function(e){if(my!==CLID)return;if(e&&e.code==="permission-denied"){dropStale(meta,"這個帳本已不存在或你已沒有權限，已自動移除並重新對應這個行程");return}setBadge("bad","同步失敗："+(e&&e.code||"網路中斷"));CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
   });
 }
 function rebuild(){
   var C=CLED;if(!C||!C.doc)return;
   var d=C.doc,mem=(Array.isArray(d.members)?d.members:[]).filter(function(m){return m&&typeof m.id==="string"&&typeof m.name==="string"&&m.name}).map(function(m){return {id:m.id,name:m.name.slice(0,20)}});
   if(mem.length<2){C.err="帳本資料不完整。";drawLedgerSel();return}
+  setBadge("ok","已同步 "+hhmm()+"（雲端帳本，所有裝置即時更新）");
   var me=ME&&C.people[ME.uid];
   var L={id:C.meta.id,cloud:true,role:ME&&d.owner===ME.uid?"owner":"guest",name:String(d.name||"共同帳本").slice(0,40),cur:CUR[d.cur]?d.cur:"KRW",
     rate:d.rate&&Number(d.rate.r)>0?{r:Number(d.rate.r),t:Number(d.rate.t)||0}:C.rate,members:mem,expenses:C.exps,myMember:(me&&me.memberId&&mem.some(function(m){return m.id===me.memberId}))?me.memberId:"",people:C.people,tripId:C.meta.tripId||"",ts:Date.now(),pinOn:d.pinOn===true};
