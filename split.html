@@ -405,7 +405,7 @@ async function startListen(meta){
   try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
   if(my!==CLID)return;
   unsubCl=api.listen(meta.id,{
-    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){var gone=meta.id;removeMeta(gone);toast("這個帳本已被擁有者刪除，已從這台裝置移除");if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);return}CLED.err="";rebuild()},
+    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){var gone=meta.id;if(meta.tripId&&ME&&!ME.isAnonymous&&API&&API.setTripSplit)API.setTripSplit(ME.uid,meta.tripId,"","").catch(function(){});removeMeta(gone);toast("這個帳本已被擁有者刪除，已從這台裝置移除");if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);return}CLED.err="";rebuild()},
     people:function(m){if(my!==CLID)return;CLED.people=m;CLED.pl=true;rebuild()},
     exps:function(a){if(my!==CLID)return;CLED.exps=a.map(cleanExp).filter(Boolean);rebuild()},
     error:function(e){if(my!==CLID)return;CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
@@ -431,8 +431,25 @@ function rebuild(){
 /* 把「帳本編號＋密碼鹽值」放到行程的分享資料上，朋友從分享頁進來就能直接輸入密碼（鹽值不是祕密，密碼本身不會存放） */
 function publishSplitLink(meta){
   var tr=readTrips().filter(function(x){return x.id===meta.tripId})[0];
-  if(!tr||!tr.shareId||!API||!API.setShareSplit)return;
-  API.setShareSplit(tr.shareId,meta.sid||meta.id,meta.salt).catch(function(){});
+  if(!tr||!API)return;
+  if(tr.shareId&&API.setShareSplit)API.setShareSplit(tr.shareId,meta.sid||meta.id,meta.salt).catch(function(){});
+  if(ME&&!ME.isAnonymous&&API.setTripSplit)API.setTripSplit(ME.uid,meta.tripId,meta.sid||meta.id,meta.salt).catch(function(){});   /* 同一個 Google 帳號的其他裝置，打開這個行程的分帳就能自動接上 */
+}
+/* 擁有者換裝置：用 Google 帳號找出這個行程的帳本，直接開啟（不需密碼，因為你就是擁有者） */
+var LINKTRIED={};
+async function tryOwnLink(trip){
+  if(LINKTRIED[trip])return false;LINKTRIED[trip]=1;
+  try{
+    var api=await getApi();if(!api||!api.getTripSplit)return false;
+    var u=await api.ensureUser();if(!u||u.isAnonymous)return false;
+    var sp=await api.getTripSplit(u.uid,trip);
+    if(!sp||!/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)||!/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt))return false;
+    var tr=readTrips().filter(function(x){return x.id===trip})[0];
+    var meta={id:sp.sid,cloud:true,sid:sp.sid,salt:sp.salt,name:(tr&&tr.name)||"共同帳本",tripId:trip,ts:Date.now()};
+    var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
+    if(have){have.tripId=trip;dbPut(have)}else{LEDGERS.push(meta);dbPut(meta)}
+    S.id=sp.sid;drawLedgerSel();openLedger(sp.sid);return true;
+  }catch(e){return false}
 }
 function pickMeModal(){
   var L=cur();if(!L||!L.cloud)return;
@@ -1336,7 +1353,7 @@ function tripFlow(trip,view){
       if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
     }else joinLinkModal(trip);
   })()}
-  else if(readTrips().some(function(t){return t.id===trip})){if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)}
+  else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return L.tripId===trip}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)})}
   else toast("找不到這個行程，請手動建立帳本。");
 }
 }
@@ -1429,6 +1446,8 @@ try {
     delExpense(sid, id) { return deleteDoc(expRef(sid, id)); },
     updateLedger(sid, patch) { return updateDoc(sp(sid), patch); },
     async getShareSplit(shareId) { const d = await getDoc(doc(db, "shares", shareId)); const s = d.exists() ? d.data().split : null; return s && typeof s.sid === "string" && typeof s.salt === "string" ? { sid: s.sid, salt: s.salt } : null; },
+    async getTripSplit(uid, tripId) { const d = await getDoc(doc(db, "users", uid, "splitlinks", tripId)); const s = d.exists() ? d.data() : null; return s && typeof s.sid === "string" && typeof s.salt === "string" ? { sid: s.sid, salt: s.salt } : null; },
+    setTripSplit(uid, tripId, sid, salt) { const r = doc(db, "users", uid, "splitlinks", tripId); return sid ? setDoc(r, { sid, salt }) : deleteDoc(r); },
     setShareSplit(shareId, sid, salt) { return updateDoc(doc(db, "shares", shareId), { split: { sid, salt } }); },
     updatePerson(sid, uid, patch) { return updateDoc(personRef(sid, uid), patch); },
     setClaim(sid, uid, data) { return setDoc(doc(db, "splits", sid, "claims", uid), data); },
