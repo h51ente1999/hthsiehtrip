@@ -1249,10 +1249,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function okLL(a,b){return typeof a==="number"&&typeof b==="number"&&isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180&&!(a===0&&b===0)}
   function realName(sp){return sp.ko||(sp.name===UNNAMED?"":sp.name)}
   function spotName(sp){return sp.name||sp.ko||"這個景點"}
+  function gCoords(u){
+    var m=u.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m)return [+m[1],+m[2]];
+    m=u.match(/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+(?:\.\d+)?)(z|m)/);
+    if(m){var zz=+m[3];if((m[4]==="z"&&zz>=13)||(m[4]==="m"&&zz<=3000))return [+m[1],+m[2]]}
+    m=u.match(/[?&](?:ll|sll|center|q|query)=(-?\d+\.\d+)(?:,|%2C)(-?\d+\.\d+)/i);if(m)return [+m[1],+m[2]];
+    return null;
+  }
   function coordsOf(sp){
     if(okLL(sp.lat,sp.lng))return Promise.resolve([sp.lat,sp.lng]);
     function got(la,ln){if(okLL(la,ln)){sp.lat=la;sp.lng=ln;save();return [la,ln]}return null}
-    function viaInfo(u){return u?helperInfo(u).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
+    function viaInfo(u){return u?helperInfo(u).then(function(i){
+      var fu=i&&i.finalUrl;
+      if(fu&&/google\./.test(fu)){var g=gCoords(fu);return g?got(g[0],g[1]):null}   /* Google 網址的 @ 常是地圖視窗中心（例如整個日本），要看縮放比例 */
+      return got(i&&i.lat,i&&i.lng);
+    },function(){return null}):Promise.resolve(null)}
     function viaGeo(q){return q?helperFetch("/geo?q="+encodeURIComponent(q)).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
     /* 助手查不到時，直接從瀏覽器問 Photon / Nominatim（不需要重新部署助手） */
     function viaDirect(q){
@@ -1368,8 +1379,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     helperInfo(v).then(function(inf){
       var fin=inf.finalUrl||v,gm=parseMaps(fin),nvf=okNaver(fin);
       var nm=pre[0]||"",ad=pre[1]||"";
-      if(gm&&gm.name){createSpot({name:nm||gm.name,addr:ad,url:gm.url,lat:inf.lat,lng:inf.lng});return}
-      if(inf.name&&/google\./.test(fin)){createSpot({name:nm||inf.name,addr:ad,url:fin,lat:inf.lat,lng:inf.lng});return}
+      if(gm&&gm.name){var gc1=gCoords(fin)||[];createSpot({name:nm||gm.name,addr:ad,url:gm.url,lat:gc1[0],lng:gc1[1]});return}
+      if(inf.name&&/google\./.test(fin)){var gc2=gCoords(fin)||[];createSpot({name:nm||inf.name,addr:ad,url:fin,lat:gc2[0],lng:gc2[1]});return}
       if(nvf||inf.naverId){
         var nu=nvf||inf.finalUrl;
         nm=nm||inf.name||cleanTitle(inf.title);
