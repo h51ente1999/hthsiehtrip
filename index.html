@@ -639,6 +639,10 @@ body:not(.viewer) #mapPanel.pop{display:block;position:fixed;left:50%;top:50%;tr
 #mapPanel .sx{width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);display:inline-grid;place-items:center;padding:0}
 body:not(.viewer) #mapPanel.pop .mapbox{height:min(62vh,520px)}
 body.viewer #mapPanel .mphd .sx{display:none}
+/* 浮動按鈕大小一致 */
+#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
+#toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
+#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
 </style>
 </head>
 <body>
@@ -1412,7 +1416,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   ];
   function suggestCat(txt){for(var i=0;i<CAT_KW.length;i++)if(CAT_KW[i][1].test(txt||""))return CAT_KW[i][0];return ""}
   var AREA_KW=[
-    [/해운대|haeundae|海雲台|海云台/i,"海雲台"],[/광안|gwangan|廣安/i,"廣安里"],[/서면|seomyeon|西面/i,"西面"],[/남포|nampo|南浦/i,"南浦洞"],[/부평|bupyeong|富平/i,"富平"],[/송정|songjeong|松亭/i,"松亭"],[/기장|gijang|機張/i,"機張"],[/영도|yeongdo|影島/i,"影島"],[/감천|gamcheon|甘川/i,"甘川"],[/태종대|taejongdae|太宗台/i,"太宗台"],[/센텀|centum|센텀시티/i,"Centum"],[/전포|jeonpo|田浦/i,"田浦"],[/자갈치|jagalchi|札嘎其/i,"札嘎其"],[/동래|dongnae|東萊/i,"東萊"],
+    [/해운대|haeundae|海雲台|海云台/i,"海雲台"],[/광안|gwangan|廣安/i,"廣安里"],[/서면|seomyeon|seomyun|西面|부전|bujeon|釜田/i,"西面"],[/남포|nampo|南浦/i,"南浦洞"],[/부평|bupyeong|富平/i,"富平"],[/송정|songjeong|松亭/i,"松亭"],[/기장|gijang|機張/i,"機張"],[/영도|yeongdo|影島/i,"影島"],[/감천|gamcheon|甘川/i,"甘川"],[/태종대|taejongdae|太宗台/i,"太宗台"],[/센텀|centum|센텀시티/i,"Centum"],[/전포|jeonpo|田浦/i,"田浦"],[/자갈치|jagalchi|札嘎其/i,"札嘎其"],[/동래|dongnae|東萊/i,"東萊"],
     [/명동|myeongdong|明洞/i,"明洞"],[/홍대|홍익|hongdae|hongik|弘大|弘益/i,"弘大"],[/강남|gangnam|江南/i,"江南"],[/이태원|itaewon|梨泰院/i,"梨泰院"],[/성수|seongsu|聖水/i,"聖水"],[/인사동|insadong|仁寺洞/i,"仁寺洞"],[/북촌|bukchon|北村/i,"北村"],[/종로|jongno|鍾路/i,"鍾路"],[/동대문|dongdaemun|東大門/i,"東大門"],[/남대문|namdaemun|南大門/i,"南大門"],[/여의도|yeouido|汝矣島/i,"汝矣島"],[/잠실|jamsil|蠶室/i,"蠶室"],[/연남|yeonnam|延南/i,"延南"],[/연희|yeonhui/i,"延禧"],[/한남|hannam|漢南/i,"漢南"],[/용산|yongsan|龍山/i,"龍山"],[/압구정|apgujeong|狎鷗亭/i,"狎鷗亭"],[/삼청|samcheong|三清/i,"三清洞"],[/익선|ikseon|益善/i,"益善洞"],[/건대|konkuk|建大/i,"建大"],[/신촌|sinchon|新村/i,"新村"],[/마포|mapo|麻浦/i,"麻浦"],[/을지로|euljiro|乙支路/i,"乙支路"],[/광장시장|gwangjang/i,"廣藏市場"],
     [/서귀포|seogwipo|西歸浦/i,"西歸浦"],[/애월|aewol|涯月/i,"涯月"],[/성산|seongsan|城山/i,"城山"],[/한림|hallim|翰林/i,"翰林"],[/함덕|hamdeok|咸德/i,"咸德"],[/중문|jungmun|中文/i,"中文"],[/협재|hyeopjae|挾才/i,"挾才"],[/구좌|gujwa|舊左/i,"舊左"],[/표선|pyoseon|表善/i,"表善"],[/조천|jocheon|朝天/i,"朝天"],
     [/경주|gyeongju|慶州/i,"慶州"],[/전주|jeonju|全州/i,"全州"],[/강릉|gangneung|江陵/i,"江陵"],[/속초|sokcho|束草/i,"束草"],[/인천|incheon|仁川/i,"仁川"],[/대구|daegu|大邱/i,"大邱"],
