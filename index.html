@@ -4356,8 +4356,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
       return o;
     }
     var rows=lst.map(function(sp){
-      var od=aiOtherDay(sp.id,day),on=sp.id in pk,dis=od>=0;
-      return '<div class="r'+(on?' on':'')+(dis?' dis':'')+'"><label class="ck"><input type="checkbox" data-aisel="'+sp.id+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="th">'+(sp.img?'<img src="'+esc(sp.img)+'" alt="">':'')+'</span><span class="nm"><b>'+esc(spotName(sp))+'</b><small>'+esc([sp.cat,sp.area].filter(Boolean).join(" · "))+(dis?(sp.cat||sp.area?" · ":"")+'已在第 '+(od+1)+' 天':'')+'</small></span></label>'+
+      var od=aiOtherDay(sp.id,day),on=sp.id in pk,dis=false;
+      return '<div class="r'+(on?' on':'')+(dis?' dis':'')+'"><label class="ck"><input type="checkbox" data-aisel="'+sp.id+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="th">'+(sp.img?'<img src="'+esc(sp.img)+'" alt="">':'')+'</span><span class="nm"><b>'+esc(spotName(sp))+'</b><small>'+esc([sp.cat,sp.area].filter(Boolean).join(" · "))+(od>=0?(sp.cat||sp.area?" · ":"")+'也在第 '+(od+1)+' 天':'')+'</small></span></label>'+
         (on?'<span class="ctl"><select data-aipos="'+sp.id+'" aria-label="固定在第幾站" title="固定在第幾站">'+posOpts(sp.id)+'</select><span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span></span>':'')+'</div>';
     }).join("");
     return '<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label><div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
