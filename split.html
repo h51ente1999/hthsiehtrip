@@ -384,7 +384,7 @@ function loadRate(manual){
     var Lx=cur();if(!Lx||Lx.id!==id||Lx.cur!==code)return;
     Lx.rate={r:r,t:Date.now()};persist();
     if(Lx.cloud){if(Lx.role==="owner"&&API)API.updateLedger(Lx.id,{rate:Lx.rate}).catch(function(){});else if(CLED)CLED.rate=Lx.rate}
-    var inp=$("fRate");if(inp&&S.F&&S.F.ccy!=="TWD"&&!S.F.rateTouched&&!S.F.id){S.F.rate=String(+r.toPrecision(5));inp.value=S.F.rate;var rw=$("fRateW");if(rw)rw.hidden=true;drawTwd()}
+    var inp=$("fRate");if(inp&&S.F&&S.F.ccy!=="TWD"&&!S.F.rateTouched&&!S.F.id){S.F.rate=String(+r.toPrecision(5));inp.value=invStr(S.F.rate);var rw=$("fRateW");if(rw)rw.hidden=true;drawTwd()}
     drawSum();if(manual)toast("匯率已更新");
   },function(){if(manual)toast("取不到匯率，請手動輸入。")});
 }
@@ -907,7 +907,7 @@ async function buildInvoiceCanvases(L,c,payee,acct,o){
     T("繳款人數",M+10,y+66,12,false,"#333");T((o.to?1:rows.length)+" 人",M+half,y+66,13,true,"#222","right");
     x.fillStyle="#e3e7ee";x.fillRect(M,y+84,half+10,1);
     T("收款人",M+10,y+104,12,false,"#333");T(pn,M+half,y+104,13,true,"#222","right");
-    var rx=M+CW/2+10,rw=CW/2-10,ev=[["帳單結帳日",ds],["繳款截止日",o.due||"有空再轉就好",1],["帳本",L.name],["旅伴人數",L.members.length+" 人"],["外幣匯率","1 "+cu.n+" ≈ "+(L.rate?fmtRate(L.rate.r):"—")]];
+    var rx=M+CW/2+10,rw=CW/2-10,ev=[["帳單結帳日",ds],["繳款截止日",o.due||"有空再轉就好",1],["帳本",L.name],["旅伴人數",L.members.length+" 人"],["外幣匯率","1 台幣 ≈ "+(L.rate?fmtInv(L.rate.r):"—")+" "+cu.n]];
     ev.forEach(function(it,i){var ry=y+8+i*24;if(it[2])RR(rx,ry,84,20,5,"#cfdff0");T(it[0],rx+8,ry+10,11,!!it[2],"#333");T(it[1],rx+rw,ry+10,12,true,it[2]?"#c0392b":"#222","right")});
     y+=132;
   }else{
@@ -1016,7 +1016,7 @@ function drawSum(){
     if(c.tf.length)c.tf.forEach(function(x){h+='<div class="tf"><b>'+esc(mname(L,x.from))+'</b>'+ico("arrow",16)+'<b>'+esc(mname(L,x.to))+'</b><b>NT$ '+nf(x.v)+'</b></div>'});
     else h+='<div class="muted">大家剛好打平，不需要轉帳。</div>';
   }
-  h+='<div class="rate"><div><span class="k">匯率　1 '+cu.n+' ≈ <b>'+(L.rate?fmtRate(L.rate.r):"—")+'</b> 台幣</span>'+(L.rate?'<span class="k t">'+new Date(L.rate.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+' 更新</span>':'')+'</div><button class="btn sm" type="button" id="btnRate">'+ico("refresh",13)+' 更新</button></div>';
+  h+='<div class="rate"><div><span class="k">匯率　1 台幣 ≈ <b>'+(L.rate?fmtInv(L.rate.r):"—")+'</b> '+cu.n+'</span>'+(L.rate?'<span class="k t">'+new Date(L.rate.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+' 更新</span>':'')+'</div><button class="btn sm" type="button" id="btnRate">'+ico("refresh",13)+' 更新</button></div>';
   if(L.cloud){
     var me=L.myMember?mname(L,L.myMember):"";
     h+='<div class="rate"><div><span class="k">你是 <b>'+esc(me||"（還沒選）")+'</b></span><span class="k t">所有人的款項合併計算，你只能修改自己上傳的</span></div>'+((!me||L.role==="owner")?'<button class="btn sm" type="button" id="btnMe">'+(me?"更改":"選擇")+'</button>':"")+'</div>';
@@ -1032,6 +1032,8 @@ function drawSum(){
     });
   };
 }
+function fmtInv(r){var v=1/r;return v>=100?v.toFixed(1):(v>=1?v.toFixed(2):v.toPrecision(3))}
+function invStr(s){var r=parseFloat(s);return r>0?String(+(1/r).toPrecision(5)):""}
 function fmtRate(r){return r<0.1?r.toFixed(5):(r<1?r.toFixed(4):r.toFixed(2))}
 
 /* ---------- 新增／編輯表單 ---------- */
@@ -1110,7 +1112,7 @@ function drawForm(){
   h+='<span class="lbl">幣別</span><div class="seg full" id="fCcy"><button type="button" data-v="'+L.cur+'">'+cu.n+'（外幣）</button><button type="button" data-v="TWD">台幣</button></div>';
   h+='<div class="g2 pa"><label class="f"><span>誰先付的</span><select id="fPayer">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join('')+'</select></label><label class="f"><span id="fAmL">金額</span><input type="number" id="fAmt" class="big" inputmode="decimal" min="0" step="any" placeholder="0"></label></div>';
   h+='<div class="muted small" id="fTwd" style="margin-top:4px"></div>';
-  h+='<label class="f" id="fRateW"><span>匯率（1 '+cu.n+' = ? 台幣）　目前取不到，請手動輸入</span><input type="number" id="fRate" inputmode="decimal" min="0" step="any"></label>';
+  h+='<label class="f" id="fRateW"><span>匯率（1 台幣 = ? '+cu.n+'）　目前取不到，請手動輸入</span><input type="number" id="fRate" inputmode="decimal" min="0" step="any"></label>';
   h+='<span class="lbl">分攤方式</span><div class="seg full" id="fMode"><button type="button" data-v="equal">均分</button><button type="button" data-v="pct">自訂比例</button></div>';
   h+='<div id="fShares"></div><div class="sum" id="fSum"></div>';
   h+='<span class="lbl">收據／付款截圖（選填）</span><div class="ph"><button class="btn sm" type="button" id="fPick">'+ico("img",15)+' 選擇圖片</button><button class="btn sm" type="button" id="fPaste">'+ico("clip",15)+' 貼上</button><span id="fThumbW"></span></div>';
@@ -1120,7 +1122,7 @@ function drawForm(){
   h+='</div>';
   box.innerHTML=h;
   $("fHead").onclick=function(){if(F.id)return;S.fOpen=!S.fOpen;$("fBody").hidden=!S.fOpen;this.setAttribute("aria-expanded",String(S.fOpen));this.querySelector(".fchev").classList.toggle("on",S.fOpen)};
-  $("fDate").value=F.date;$("fTitle").value=F.title;$("fAmt").value=F.amount;$("fPayer").value=F.payer;$("fRate").value=F.rate;
+  $("fDate").value=F.date;$("fTitle").value=F.title;$("fAmt").value=F.amount;$("fPayer").value=F.payer;$("fRate").value=invStr(F.rate);
   $("fDate").oninput=function(){F.date=this.value};
   $("fTitle").oninput=function(){F.title=this.value;markChips()};
   $("fNote").value=F.note||"";$("fNote").oninput=function(){F.note=this.value};
@@ -1128,7 +1130,7 @@ function drawForm(){
   if($("fSpots"))$("fSpots").onclick=function(){spotPickModal(F.title,function(n){F.title=n;$("fTitle").value=n;markChips()})};
   markChips();
   $("fAmt").oninput=function(){F.amount=this.value;drawTwd();drawShares(true)};
-  $("fRate").oninput=function(){F.rate=this.value;F.rateTouched=true;drawTwd();drawShares(true)};
+  $("fRate").oninput=function(){var q=parseFloat(this.value);F.rate=q>0?String(1/q):"";F.rateTouched=true;drawTwd();drawShares(true)};
   $("fPayer").onchange=function(){F.payer=this.value};
   function segs(id,key,fn){
     var el=$(id);Array.prototype.forEach.call(el.children,function(b){
@@ -1158,7 +1160,7 @@ function drawTwd(){
   var F=S.F,L=cur(),el=$("fTwd");if(!el||!F)return;
   var a=parseFloat(F.amount),r=parseFloat(F.rate);
   if(F.ccy==="TWD"||!(a>0)){el.textContent=F.ccy==="TWD"?"":"";return}
-  el.textContent=r>0?"≈ NT$ "+nf(Math.round(a*r))+"　（匯率 "+fmtRate(r)+"）":"請填匯率才能換算成台幣";
+  el.textContent=r>0?"≈ NT$ "+nf(Math.round(a*r))+"　（1 台幣 ≈ "+fmtInv(r)+" "+CUR[L.cur].n+"）":"請填匯率才能換算成台幣";
 }
 function drawShares(valuesOnly){
   var L=cur(),F=S.F,box=$("fShares");if(!box)return;
