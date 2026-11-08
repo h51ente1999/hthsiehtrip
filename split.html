@@ -332,7 +332,7 @@ function removeMeta(id){
   S.id=LEDGERS.length?LEDGERS[0].id:"";openLedger(S.id);
 }
 $("btnBar").onclick=function(){var c=document.body.classList.toggle("lbar-closed");this.setAttribute("aria-expanded",String(!c));this.setAttribute("aria-label",c?"展開帳本列":"收合帳本列")};
-var PENDING_TRIP="",AUTOSHARE=false,PEND_SHARE=false;   /* 從行程跳來、但還沒有對應帳本時：使用者改選的帳本會自動連結到這個行程 */
+var PENDING_TRIP="",AUTOSHARE=false,PEND_SHARE=false,FREE_LEDGERS=[];   /* 從行程跳來、但還沒有對應帳本時：使用者改選的帳本會自動連結到這個行程 */
 $("ledgerSel").onchange=function(){
   openLedger(this.value);
   if(PENDING_TRIP){var L=LEDGERS.filter(function(x){return x.id===this.value},this)[0];
@@ -601,6 +601,16 @@ function joinModal(sid,salt,tag){
 }
 
 /* ---------- 新增帳本 ---------- */
+/* 這個行程還沒有帳本，但手上有還沒連結的帳本：先讓使用者選擇連結，避免重複建立 */
+function linkExistingModal(trip,list){
+  var tr=readTrips().filter(function(x){return x.id===trip})[0];
+  modal('<h2>連結帳本</h2><p class="muted small" style="margin:0">「'+esc(tr?tr.name:"這個行程")+'」還沒有帳本。要用下面既有的帳本，還是建立新的？</p><div class="splist" id="lkList"></div><div class="row"><button class="btn" type="button" id="lkNew">建立新帳本</button></div>',function(){
+    var box=$("lkList");
+    list.forEach(function(L){var b=document.createElement("button");b.type="button";b.className="spi";var n=document.createElement("b");n.textContent=L.name+(L.cloud?"（共同）":"");b.appendChild(n);var m=document.createElement("span");m.textContent="連結到這個行程";b.appendChild(m);
+      b.onclick=function(){L.tripId=trip;dbPut(L);closeModal();openLedger(L.id);drawLedgerSel();toast("已連結，之後會直接開啟這本帳")};box.appendChild(b)});
+    $("lkNew").onclick=function(){closeModal();newLedgerModal(trip)};
+  });
+}
 function newLedgerModal(presetTrip){
   var trips=readTrips();
   var h='<h2>新帳本</h2>';
@@ -1324,9 +1334,11 @@ $("importIn").onchange=function(){
     if(!found){   /* 舊帳本沒記到行程：名稱以行程名開頭、且只有一本還沒連結的，就自動連結 */
       var tr=readTrips().filter(function(t){return t.id===trip})[0];
       var nz=function(s){return String(s||"").replace(/[\s（）()]|共同/g,"").toLowerCase()};
-      if(tr&&tr.name&&nz(tr.name)){var cand=LEDGERS.filter(function(L){var x=nz(L.name),y=nz(tr.name);return !L.tripId&&x&&(x.indexOf(y)===0||y.indexOf(x)===0)}).sort(function(a,b){return (b.ts||0)-(a.ts||0)});
-        if(!cand.length){var free=LEDGERS.filter(function(L){return !L.tripId});if(free.length===1)cand=free}   /* 名稱對不上，但只有一本還沒連結的帳本，就當成是它 */
+      var tids=readTrips().map(function(x){return x.id});
+      var isFree=function(L){return !L.tripId||(!/^s:/.test(L.tripId)&&tids.length&&tids.indexOf(L.tripId)<0)};   /* 沒連結，或連結的行程已經不存在 */
+      if(tr&&tr.name&&nz(tr.name)){var cand=LEDGERS.filter(function(L){var x=nz(L.name),y=nz(tr.name);return isFree(L)&&x&&(x.indexOf(y)===0||y.indexOf(x)===0)}).sort(function(a,b){return (b.ts||0)-(a.ts||0)});
         if(cand.length){found=cand[0];found.tripId=trip;dbPut(found)}}
+      FREE_LEDGERS=LEDGERS.filter(isFree);
     }
     if(found)pick=found.id;
   }
@@ -1344,7 +1356,7 @@ $("importIn").onchange=function(){
         if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
       }else joinLinkModal(trip);
     })()}
-    else if(readTrips().some(function(t){return t.id===trip}))newLedgerModal(trip);
+    else if(readTrips().some(function(t){return t.id===trip})){if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)}
     else toast("找不到這個行程，請手動建立帳本。");
   }
   var jm=/^#j=([A-Za-z0-9_-]{8,64})\.([A-Za-z0-9_-]{8,64})$/.exec(location.hash||"");
