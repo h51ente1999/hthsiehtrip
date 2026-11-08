@@ -4236,13 +4236,14 @@ body.viewer #mapPanel .mphd .sx{display:none}
   }
   /* ---- 提醒 ---- */
   function aiFoodSuggest(day,P){
-    var taken={};s.days.forEach(function(d){d.forEach(function(it){taken[it.sid]=1;(it.kids||[]).forEach(function(k){taken[k.sid]=1})})});
-    var pk=aiPicks(day),cs=P.filter(function(p){return p.c}).map(function(p){return p.c}),cen=null;
+    var pk=aiPicks(day),cs=P.filter(function(p){return p.c&&!p.isAp}).map(function(p){return p.c}),cen=null;
     if(cs.length)cen=[cs.reduce(function(a,c){return a+c[0]},0)/cs.length,cs.reduce(function(a,c){return a+c[1]},0)/cs.length];
-    var areas={};P.forEach(function(p){if(p.sp.area)areas[p.sp.area]=(areas[p.sp.area]||0)+1});
-    return s.spots.filter(function(sp){return sp.cat==="美食"&&!taken[sp.id]&&!(sp.id in pk)}).map(function(sp){
-      var d=okLL(sp.lat,sp.lng)&&cen?aiHav(cen,[sp.lat,sp.lng]):(sp.area&&areas[sp.area]?3:99);return {sp:sp,d:d};
-    }).sort(function(a,b){return a.d-b.d}).slice(0,2).filter(function(x){return x.d<40}).map(function(x){return x.sp});
+    var areas={};P.forEach(function(p){if(p.sp.area&&!p.isAp)areas[p.sp.area]=(areas[p.sp.area]||0)+1});
+    return s.spots.filter(function(sp){return sp.cat==="美食"&&!(sp.id in pk)}).map(function(sp){
+      var hasC=okLL(sp.lat,sp.lng)&&cen,d=hasC?aiHav(cen,[sp.lat,sp.lng]):(sp.area&&areas[sp.area]?3:999);
+      var od=aiOtherDay(sp.id,day),tag=hasC?"約 "+(d<10?Math.round(d*10)/10:Math.round(d))+" 公里":(d===3?"同區域":"距離未知");
+      return {sp:sp,d:d,label:spotName(sp)+(sp.area?"（"+sp.area+"）":"")+"・"+tag+(od>=0?"・也在第 "+(od+1)+" 天":"")};
+    }).sort(function(a,b){return a.d-b.d}).slice(0,40);
   }
   function aiMoveMeal(day,P,ctx,loose,sid,win){
     var n=P.length,me=-1;P.forEach(function(p,i){if(p.sid===sid)me=i});if(me<0)return;
@@ -4291,8 +4292,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
         var wn=wins[0];if(!wn)return;
         fx.push({label:"把「"+nm(r)+"」排進"+wn[0]+"時段",act:function(){aiMoveMeal(day,P,ctx,loose,r.sid,wn)}});
       });
-      sg.forEach(function(sp){fx.push({label:"＋ "+spotName(sp)+(sp.area?"（"+sp.area+"）":""),act:function(){aiPicks(day)[sp.id]=aiDefStay(sp);aiRun()}})});
-      rem.push({lv:"warn",t:(mr.length?"":"這天沒有排")+(mr.length?w+"時段沒有餐廳":w+"的餐廳")+have,fixes:fx,none:sg.length||mr.length?"":"景點庫裡沒有可加的美食，可以先到景點庫新增。"});
+      var sel=sg.length?{ph:"＋ 從景點庫挑一間美食（"+sg.length+" 間）",hint:"依離這天景點的距離排序，越近越前面",opts:sg.map(function(x){return {label:x.label,act:function(){aiPicks(day)[x.sp.id]=aiDefStay(x.sp);aiRun()}}})}:null;
+      rem.push({lv:"warn",t:(mr.length?"":"這天沒有排")+(mr.length?w+"時段沒有餐廳":w+"的餐廳")+have,fixes:fx,sel:sel,none:sg.length?"":"景點庫裡沒有可加的美食，可以先到景點庫新增。"});
     }
     if(dur>600||nP>7){
       var best=-1,bs=-1;
@@ -4306,7 +4307,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
       else if(r.wait>0)rem.push({lv:"info",t:"「"+spotName(p.sp)+"」"+m2t(p.h[0])+" 才開，會先等約 "+r.wait+" 分（已固定抵達時間）"});
       if(!p.c)rem.push({lv:"info",t:"找不到「"+spotName(p.sp)+"」的位置，移動時間先抓 20 分"});
     });
-    rows.forEach(function(r,k){if(k>0&&r.leg>=50)rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」要 "+r.leg+" 分，路上花很多時間"})});
+    rows.forEach(function(r,k){if(k>0&&r.leg>=50&&!P[r.i].isAp&&!P[rows[k-1].i].isAp)rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」要 "+r.leg+" 分，路上花很多時間"})});
     rows.forEach(function(r,k){if(k>0&&r.alt&&r.mode==="drive")rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」建議搭計程車約 "+r.leg+" 分，大眾運輸要 "+r.alt.min+" 分"})});
     if(end>1290)rem.push({lv:"warn",t:"預計 "+m2t(end)+" 才結束，會很晚",fixes:cutFixes()});
     if(ctx.missAp)rem.push({lv:"info",t:"這天有航班，但景點庫裡沒有機場。把機場加入景點庫後，會自動排在第一站或最後一站。"});
@@ -4469,7 +4470,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
         '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+(P[r.i].isAp?'✈ ':'')+esc(spotName(sp))+'<small>'+(P[r.i].isAp==="last"?'起飛前 2 小時內要抵達':'到 '+m2t(r.leave))+'</small></span>'+(P[r.i].isAp?'':'<span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span>')+'</div>';
     }).join("");
     var rm=pl.rem.length?'<div class="rem">'+pl.rem.map(function(r,j){
-      return '<div class="rm '+r.lv+'"><p>'+esc(r.t)+(r.none?'<small>'+esc(r.none)+'</small>':'')+'</p>'+((r.fixes&&r.fixes.length)?'<div class="fx">'+r.fixes.map(function(f,m){return '<button type="button" data-aifix="'+k+':'+j+':'+m+'">'+esc(f.label)+'</button>'}).join("")+'</div>':'')+'</div>';
+      return '<div class="rm '+r.lv+'"><p>'+esc(r.t)+(r.none?'<small>'+esc(r.none)+'</small>':'')+'</p>'+(r.sel?'<div class="fx"><select class="pick" data-aipick="'+k+':'+j+'" aria-label="挑選美食"><option value="">'+esc(r.sel.ph)+'</option>'+r.sel.opts.map(function(o,m){return '<option value="'+m+'">'+esc(o.label)+'</option>'}).join("")+'</select></div><small>'+esc(r.sel.hint)+'</small>':'')+((r.fixes&&r.fixes.length)?'<div class="fx">'+r.fixes.map(function(f,m){return '<button type="button" data-aifix="'+k+':'+j+':'+m+'">'+esc(f.label)+'</button>'}).join("")+'</div>':'')+'</div>';
     }).join("")+'</div>':'<div class="rem ok"><p>沒有需要注意的地方</p></div>';
     return '<section class="pl"><div class="ph"><h4>'+(pl.id==="route"?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.3 5-6.2"/></svg>')+esc(pl.name)+'</h4><p>'+esc(pl.tag)+'</p></div>'+
       '<div class="stats"><span><b>'+m2t(sim.end)+'</b>結束</span><span><b>'+sim.trav+'</b>移動分</span><span class="'+(warn?'w':'')+'"><b>'+pl.rem.length+'</b>提醒</span></div>'+
@@ -4501,6 +4502,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
     aiEl.addEventListener("change",function(e){
       var t=e.target;
       if(t.dataset.aisel){var pk=aiPicks(ai.day),sp=spot(t.dataset.aisel);if(!sp)return;if(t.checked)pk[sp.id]=aiDefStay(sp);else{delete pk[sp.id];if(ai.pos[ai.day])delete ai.pos[ai.day][sp.id];if(ai.meal[ai.day])delete ai.meal[ai.day][sp.id]}aiDraw();return}
+      if(t.dataset.aipick){var q=t.dataset.aipick.split(":"),pl2=ai.res&&ai.res.plans[+q[0]],r2=pl2&&pl2.rem[+q[1]],o2=r2&&r2.sel&&r2.sel.opts[+t.value];if(o2)o2.act();return}
       if(t.dataset.aimeal){var mp=ai.meal[ai.day]||(ai.meal[ai.day]={});if(t.value)mp[t.dataset.aimeal]=t.value;else delete mp[t.dataset.aimeal];aiDraw();return}
       if(t.dataset.aipos){var pm=ai.pos[ai.day]||(ai.pos[ai.day]={}),v=parseInt(t.value,10);if(v>=1)pm[t.dataset.aipos]=v;else delete pm[t.dataset.aipos];aiDraw();return}
       if(t.id==="aiStart"&&/^\d\d:\d\d$/.test(t.value)){ai.start=t.value;aiSavePref()}
@@ -4620,6 +4622,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiSheet .rem.ok p{background:color-mix(in srgb,#2ea66a 12%,var(--surface));border:1px solid color-mix(in srgb,#2ea66a 35%,transparent);border-radius:12px;padding:8px 10px;font-size:.83rem;margin:0}
 #aiSheet .fx{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 #aiSheet .fx button{border:0;border-radius:999px;padding:5px 12px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff)}
+#aiSheet .fx select.pick{max-width:100%;font:inherit;font-size:.8rem;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 #aiSheet .anote{font-size:.78rem;color:var(--muted);margin:12px 2px 0}
 #aiUndo{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:80;display:flex;align-items:center;gap:14px;background:#12333f;color:#fff;padding:10px 12px 10px 18px;border-radius:999px;box-shadow:0 8px 28px rgba(0,0,0,.3);font-size:.9rem;transition:.25s}
 #aiUndo.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
