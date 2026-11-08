@@ -4095,17 +4095,18 @@ body.viewer #mapPanel .mphd .sx{display:none}
   $("histBtn").onclick=histOpen;
   setTimeout(function(){if(!viewerMode)try{histCommit(IDX.cur)}catch(e){}},2000);
   /* ===== 幫我排（自動排行程）===== */
-  var AIK=KEY+"-ai",AI_STAY={"景點":90,"體驗":120,"美食":60,"購物":90},AI_MODES=[["auto","自動建議"],["transit","大眾運輸"],["drive","開車／計程車"],["walk","步行"]],AI_MN={auto:"自動建議",transit:"大眾運輸",drive:"開車",walk:"步行"};
-  var ai={day:0,start:"09:30",mode:"auto",picks:{},pos:{},filter:"",view:"pick",res:null,seq:0,undo:null,memo:{},msg:""};
-  try{var aip=JSON.parse(localStorage.getItem(AIK)||"{}");if(/^\d\d:\d\d$/.test(aip.start||""))ai.start=aip.start;if(/^(auto|transit|drive|walk)$/.test(aip.mode||""))ai.mode=aip.mode}catch(e){}
+  var AIK=KEY+"-ai",AI_STAY={"景點":90,"體驗":120,"美食":60,"購物":90},AI_MODES=[["auto","最快抵達"],["wt","步行＋大眾交通"],["wd","步行＋計程車"],["walk","全程步行"]],AI_MN={auto:"最快抵達",wt:"步行＋大眾交通",wd:"步行＋計程車",walk:"全程步行"},AI_RN={walk:"步行",transit:"大眾運輸",drive:"計程車"};
+  var ai={day:0,start:"09:30",mode:"auto",picks:{},pos:{},fcat:{},farea:{},fcat:{},farea:{},filter:"",view:"pick",res:null,seq:0,undo:null,memo:{},msg:""};
+  try{var aip=JSON.parse(localStorage.getItem(AIK)||"{}");if(/^\d\d:\d\d$/.test(aip.start||""))ai.start=aip.start;var pm0=aip.mode==="transit"?"wt":aip.mode==="drive"?"wd":aip.mode;if(/^(auto|wt|wd|walk)$/.test(pm0||""))ai.mode=pm0}catch(e){}
   function aiSavePref(){try{localStorage.setItem(AIK,JSON.stringify({start:ai.start,mode:ai.mode}))}catch(e){}}
   function aiDefStay(sp){return AI_STAY[sp.cat]||75}
   function aiHav(a,b){var r=Math.PI/180,dl=(b[0]-a[0])*r,dg=(b[1]-a[1])*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2);return 12742*Math.asin(Math.sqrt(x))}
   function aiEst(a,b,mode){
     if(!a||!b)return 20;
     if(mode==="auto"){var w=aiEst(a,b,"walk");if(w<=15)return w;var tt=aiEst(a,b,"transit"),dd=aiEst(a,b,"drive");return tt<=dd+25?tt:dd}
+    if(mode==="wt"||mode==="wd"){var w2=aiEst(a,b,"walk");return w2<=15?w2:aiEst(a,b,mode==="wt"?"transit":"drive")}
     var km=aiHav(a,b)*1.3,m;
-    if(mode==="walk")m=km/4.5*60*1.15;else if(mode==="drive")m=km/28*60+8;else m=km<0.8?km/4.5*60*1.15:12+km/18*60;
+    if(mode==="walk")m=km/4.5*60*1.15;else if(mode==="drive")m=km/(km<5?25:km<15?35:50)*60+5;else m=km<0.8?km/4.5*60*1.15:12+km/18*60;
     return Math.max(5,Math.ceil(m/5)*5);
   }
   function aiHours(sp){var m=/(\d{2}):(\d{2})-(\d{2}):(\d{2})/.exec(normHours(sp.hours||""));if(!m)return null;var o=+m[1]*60+ +m[2],c=+m[3]*60+ +m[4];if(c<=o)c+=1440;return [o,c]}
@@ -4167,41 +4168,45 @@ body.viewer #mapPanel .mphd .sx{display:none}
     return fill(cur);
   }
   /* ---- 交通時間（真實查詢，失敗就用估算） ---- */
-  function aiTransit(a,b){
+  function aiTransit(a,b,dep){
     var base=helperBase();if(!base)return Promise.resolve({err:"no-helper"});
-    var url=base+"/transit?from="+a.join(",")+"&to="+b.join(",")+"&h="+Math.floor(ai.hour||10);
+    var url=base+"/transit?from="+a.join(",")+"&to="+b.join(",")+"&h="+(Math.floor((dep==null?600:dep)/60)%24)+"&m="+Math.min(55,Math.round(((dep==null?600:dep)%60)/5)*5);
     function once(n){
       var ctl=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort()},15000);
       return fetch(url,{signal:ctl?ctl.signal:undefined}).then(function(r){clearTimeout(tm);return r.json().then(function(j){return {st:r.status,j:j||{}}},function(){return {st:r.status,j:{}}})},function(){clearTimeout(tm);return {st:0,j:{}}}).then(function(o){
         if(o.st===429&&o.j.error==="slow-down"&&n<2)return new Promise(function(ok){setTimeout(ok,5000)}).then(function(){return once(n+1)});
         if(o.st===429)return {err:o.j.error==="monthly-limit"?"limit":"slow"};
-        if(o.st!==200)return {err:"http"};
+        if(o.st!==200)return {err:"http",st:o.st,code:o.j.error||"",detail:o.j.detail||""};
         if(o.j.none||!(o.j.sec>=0))return {err:"none"};
         return {min:Math.max(5,Math.ceil((o.j.sec/60+5)/5)*5),lines:o.j.lines||[]};
       });
     }
     return once(0);
   }
-  function aiAutoLeg(pa,pb){
+  function aiAutoLeg(pa,pb,dep){
     var w=aiEst(pa.c,pb.c,"walk"),d=aiEst(pa.c,pb.c,"drive"),te=aiEst(pa.c,pb.c,"transit");
     if(!pa.c||!pb.c)return Promise.resolve({min:20,mode:"transit",src:"est"});
     if(w<=15)return Promise.resolve({min:w,mode:"walk",src:"calc"});
-    return aiTransit(pa.c,pb.c).then(function(r){
-      if(r.min){
-        if(r.min>d+25)return {min:d,mode:"drive",src:"est",alt:{mode:"transit",min:r.min}};
-        return {min:r.min,mode:"transit",src:"api",lines:r.lines};
-      }
-      if(te>d+25)return {min:d,mode:"drive",src:"est",alt:{mode:"transit",min:te}};
-      return {min:te,mode:"transit",src:"est",why:r.err};
+    function realDrive(){return driveMin(pa.c,pb.c,false).then(function(m){return {min:m,src:"api"}},function(){return {min:d,src:"est"}})}
+    return aiTransit(pa.c,pb.c,dep).then(function(r){
+      var tm=r.min||te;
+      if(tm>d+25)return realDrive().then(function(dr){
+        if(tm>dr.min+25)return {min:dr.min,mode:"drive",src:dr.src,alt:{mode:"transit",min:tm}};
+        return r.min?{min:r.min,mode:"transit",src:"api",lines:r.lines}:{min:te,mode:"transit",src:"est",why:r.err};
+      });
+      return r.min?{min:r.min,mode:"transit",src:"api",lines:r.lines}:{min:te,mode:"transit",src:"est",why:r.err};
     });
   }
-  function aiLeg(pa,pb,mode){
-    var key=mode+"|"+[pa.sid,pb.sid].sort().join("|");
+  function aiLeg(pa,pb,mode,dep){
+    var key=mode+"|"+[pa.sid,pb.sid].sort().join("|")+"|"+Math.floor((dep==null?600:dep)/60);
     if(ai.memo[key])return ai.memo[key];
     var est=aiEst(pa.c,pb.c,mode),p;
-    if(mode==="auto")p=aiAutoLeg(pa,pb);
+    if(mode==="auto")p=aiAutoLeg(pa,pb,dep);
+    else if((mode==="wt"||mode==="wd")&&pa.c&&pb.c&&aiEst(pa.c,pb.c,"walk")<=15)p=Promise.resolve({min:aiEst(pa.c,pb.c,"walk"),mode:"walk",src:"calc"});
+    else if(mode==="wt")p=(!pa.c||!pb.c)?Promise.resolve({min:est,mode:"transit",src:"est"}):aiTransit(pa.c,pb.c,dep).then(function(r){return r.min?{min:r.min,mode:"transit",src:"api",lines:r.lines}:{min:est,mode:"transit",src:"est",why:r.err}});
+    else if(mode==="wd")p=(!pa.c||!pb.c)?Promise.resolve({min:est,mode:"drive",src:"est"}):driveMin(pa.c,pb.c,false).then(function(m){return {min:m,mode:"drive",src:"api"}},function(){return {min:est,mode:"drive",src:"est",why:"http"}});
     else if(!pa.c||!pb.c)p=Promise.resolve({min:est,src:"est"});
-    else if(mode==="transit")p=aiTransit(pa.c,pb.c).then(function(r){return r.min?{min:r.min,src:"api",lines:r.lines}:{min:est,src:"est",why:r.err}});
+    else if(mode==="transit")p=aiTransit(pa.c,pb.c,dep).then(function(r){return r.min?{min:r.min,src:"api",lines:r.lines}:{min:est,src:"est",why:r.err}});
     else p=driveMin(pa.c,pb.c,mode==="walk").then(function(m){return {min:m,src:"api"}},function(){return {min:est,src:"est",why:"http"}});
     ai.memo[key]=p;return p;
   }
@@ -4226,6 +4231,16 @@ body.viewer #mapPanel .mphd .sx{display:none}
     function nm(r){return spotName(P[r.i].sp)}
     function rmFix(i,label){return {label:label||"移除這站",act:function(){delete aiPicks(day)[P[i].sid];aiRun()}}}
     if(ctx.note)rem.push({lv:"info",t:ctx.note});
+    function shortenFix(){
+      var sv=0;rows.forEach(function(r){var p=P[r.i];if(!p.meal&&p.stay>30)sv+=Math.min(15,p.stay-30)});
+      if(sv<=0)return null;
+      return {label:"全部少停 15 分（約省 "+sv+" 分）",act:function(){var pk=aiPicks(day);rows.forEach(function(r){var p=P[r.i];if(!p.meal&&pk[p.sid]>30)pk[p.sid]=Math.max(30,pk[p.sid]-15)});aiRun()}};
+    }
+    function modeFix(){
+      if(ctx.mode==="auto"||sim.trav<45)return null;
+      return {label:"改用「最快抵達」",act:function(){ai.mode="auto";aiSavePref();aiRun()}};
+    }
+    function cutFixes(extra){return [shortenFix(),modeFix()].concat(extra||[]).filter(Boolean)}
     var spanL=start<=780&&end>=750,spanD=start<=1110&&end>=1140;
     var covL=rows.some(function(r){return P[r.i].meal&&r.arr>=660&&r.arr<=870}),covD=rows.some(function(r){return P[r.i].meal&&r.arr>=1020&&r.arr<=1290});
     var needL=spanL&&!covL,needD=spanD&&!covD;
@@ -4237,7 +4252,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
       var best=-1,bs=-1;
       rows.forEach(function(r,k){if(P[r.i].meal)return;var a=k>0?ctx.legIdx(rows[k-1].i,r.i):0,b=k<rows.length-1?ctx.legIdx(r.i,rows[k+1].i):0,c=(k>0&&k<rows.length-1)?ctx.legIdx(rows[k-1].i,rows[k+1].i):0,sv=P[r.i].stay+a+b-c;if(sv>bs){bs=sv;best=r.i}});
       var tx=dur>600?"這天從出發到結束約 "+(Math.round(dur/6)/10)+" 小時，建議 10 小時內":"這天排了 "+P.length+" 站，超過 7 站會比較趕";
-      rem.push({lv:"warn",t:tx,fixes:best>=0?[rmFix(best,"移除「"+spotName(P[best].sp)+"」")]:[]});
+      rem.push({lv:"warn",t:tx,fixes:cutFixes(best>=0?[rmFix(best,"移除「"+spotName(P[best].sp)+"」")]:[])});
     }
     rows.forEach(function(r){
       var p=P[r.i];
@@ -4247,16 +4262,20 @@ body.viewer #mapPanel .mphd .sx{display:none}
     });
     rows.forEach(function(r,k){if(k>0&&r.leg>=50)rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」要 "+r.leg+" 分，路上花很多時間"})});
     rows.forEach(function(r,k){if(k>0&&r.alt&&r.mode==="drive")rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」建議搭計程車約 "+r.leg+" 分，大眾運輸要 "+r.alt.min+" 分"})});
-    if(end>1290)rem.push({lv:"warn",t:"預計 "+m2t(end)+" 才結束，會很晚"});
-    if(ctx.deadline!=null&&end>ctx.deadline)rem.push({lv:"warn",t:"回程班機前建議提早 3 小時結束，這天預計 "+m2t(end)+"，最晚約 "+m2t(ctx.deadline)});
+    if(end>1290)rem.push({lv:"warn",t:"預計 "+m2t(end)+" 才結束，會很晚",fixes:cutFixes()});
+    if(ctx.deadline!=null){
+      var ft="回程班機 "+m2t(ctx.bdep)+"，要在 "+m2t(ctx.bdep-120)+" 前到機場（提前 2 小時），再加上前往機場約 1 小時，行程最晚 "+m2t(ctx.deadline)+" 結束";
+      if(end>ctx.deadline)rem.push({lv:"warn",t:ft+"；這天預計 "+m2t(end)+" 才結束，會來不及",fixes:cutFixes()});
+      else rem.push({lv:"info",t:"已檢查班機："+ft+"，這天預計 "+m2t(end)+" 結束"});
+    }
     if(legInfo.limit)rem.push({lv:"info",t:"本月大眾運輸查詢已達上限，部分路程改用估算"});
     return rem;
   }
   /* ---- 執行 ---- */
-  function aiRun(){
+  function aiRun(quiet){
     var day=ai.day,seq=++ai.seq,pk=aiPicks(day),sids=Object.keys(pk).filter(function(id){return spot(id)});
     if(!sids.length)return;
-    ai.view="load";ai.msg="正在查詢景點位置…";aiDraw();
+    if(!quiet){ai.view="load";ai.msg="正在查詢景點位置…";aiDraw()}
     var t0=t2m(ai.start);if(t0==null)t0=570;
     ai.hour=Math.floor(t0/60);
     var hs=(s.hotelSpots||[])[0],hsp=hs&&spot(hs.sid);
@@ -4265,32 +4284,36 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var hc=null;if(hsp)jobs.push(coordsOf(hsp).then(function(c){hc=c},function(){}));
     Promise.all(jobs).then(function(){
       if(seq!==ai.seq)return;
-      var note="",start=t0,deadline=null,f=s.flights||{},d0=dayDateStr(day).replace(/\//g,"-");
+      var note="",bdep=null,start=t0,deadline=null,f=s.flights||{},d0=dayDateStr(day).replace(/\//g,"-");
       function fm(v){var m=/^(\d{4}-\d\d-\d\d)T(\d\d):(\d\d)/.exec(v||"");return m?{d:m[1],m:+m[2]*60+ +m[3]}:null}
       var fo=fm(f.out&&f.out.arr),fb=fm(f.back&&f.back.dep);
-      if(day===0&&fo&&d0&&fo.d===d0&&start<fo.m+120){start=fo.m+120;note="這天 "+m2t(fo.m)+" 抵達，出發時間已調整為 "+m2t(start)}
-      if(day===s.days.length-1&&fb&&d0&&fb.d===d0)deadline=fb.m-180;
+      if(fo&&d0&&fo.d===d0&&start<fo.m+120){start=fo.m+120;note="這天 "+m2t(fo.m)+" 抵達，出發時間已調整為 "+m2t(start)}
+      if(fb&&d0&&fb.d===d0){deadline=fb.m-180;bdep=fb.m}
       var mode=ai.mode;
       var plans=[["route","最順路","少繞路，移動時間最短",false],["relax","時間寬鬆","每段多留 10 分鐘，午餐不趕",true]].map(function(d){
-        var ctx={start:start,hotel:hc,mode:mode,deadline:deadline,note:note,legIdx:function(i,j){return aiEst(P[i].c,P[j].c,mode)}};
+        var ctx={start:start,hotel:hc,mode:mode,deadline:deadline,bdep:bdep,note:note,legIdx:function(i,j){return aiEst(P[i].c,P[j].c,mode)}};
         return {id:d[0],name:d[1],tag:d[2],loose:d[3],ctx:ctx,order:aiSearch(P,ctx,d[3])};
       });
-      ai.msg="正在查詢交通時間…";aiDraw();
-      var need={};
-      plans.forEach(function(pl){for(var k=1;k<pl.order.length;k++){var a=pl.order[k-1],b=pl.order[k];need[[a,b].sort().join("-")]=[a,b]}});
-      var keys=Object.keys(need),real={},info={limit:false,est:0};
-      var tasks=keys.map(function(k){return function(){var ab=need[k];return aiLeg(P[ab[0]],P[ab[1]],mode).then(function(r){real[k]=r;if(r.why==="limit")info.limit=true;if(r.src==="est")info.est++})}});
+      if(!quiet){ai.msg="正在查詢交通時間…";aiDraw()}
+      var info={limit:false,est:0},tasks=[];
+      plans.forEach(function(pl){
+        var es=aiSim(pl.order,P,pl.ctx,pl.loose);pl.real={};
+        for(var k=1;k<pl.order.length;k++)(function(k){
+          var a=pl.order[k-1],b=pl.order[k],dep=es.rows[k-1].leave,key=[a,b].sort().join("-");
+          tasks.push(function(){return aiLeg(P[a],P[b],mode,dep).then(function(r){pl.real[key]=r;if(r.why==="limit")info.limit=true;if(r.src==="est")info.est++})});
+        })(k);
+      });
       return aiPool2(tasks,3).then(function(){
         if(seq!==ai.seq)return;
         plans.forEach(function(pl){
-          pl.ctx.legIdx=function(i,j){var r=real[[i,j].sort().join("-")];return r?r.min:aiEst(P[i].c,P[j].c,mode)};
+          var real=pl.real;pl.ctx.legIdx=function(i,j){var r=real[[i,j].sort().join("-")];return r?r.min:aiEst(P[i].c,P[j].c,mode)};
           pl.sim=aiSim(pl.order,P,pl.ctx,pl.loose);
-          pl.real=real;pl.est=false;
-          pl.sim.rows.forEach(function(r,k){if(k>0){var rr=real[[pl.sim.rows[k-1].i,r.i].sort().join("-")];r.src=rr?rr.src:"est";r.lines=rr&&rr.lines;r.mode=(rr&&rr.mode)||(mode==="auto"?"transit":mode);r.alt=rr&&rr.alt;if(r.src==="est")pl.est=true}});
+          pl.est=false;
+          pl.sim.rows.forEach(function(r,k){if(k>0){var rr=real[[pl.sim.rows[k-1].i,r.i].sort().join("-")];r.src=rr?rr.src:"est";r.lines=rr&&rr.lines;r.mode=(rr&&rr.mode)||(mode==="walk"?"walk":mode==="wd"?"drive":"transit");r.alt=rr&&rr.alt;if(r.src==="est")pl.est=true}});
           pl.rem=aiRemind(day,P,pl.sim,pl.ctx,info,pl.loose);
         });
         ai.res={day:day,P:P,plans:plans,mode:mode,info:info};ai.view="res";aiDraw();
-        if(helperBase()&&mode==="transit")fetch(helperBase()+"/transit-usage").then(function(r){return r.json()}).then(function(j){if(j&&j.transit&&seq===ai.seq){ai.res.usage=j.transit;aiDraw()}},function(){});
+        if(helperBase()&&(mode==="auto"||mode==="wt"))fetch(helperBase()+"/transit-usage").then(function(r){return r.json()}).then(function(j){if(j&&j.transit&&seq===ai.seq){ai.res.usage=j.transit;aiDraw()}},function(){});
       });
     }).catch(function(){if(seq!==ai.seq)return;ai.view="pick";ai.msg="排行程時發生問題，請再試一次。";aiDraw()});
   }
@@ -4306,7 +4329,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
         var it=map[r.sid]||{uid:uid(),sid:r.sid};
         it.stay=R.P[r.i].stay;
         if(i===0){delete it.drive;delete it.mode;if(!it.fixed)it.time=m2t(r.arr)}
-        else{it.drive=r.leg;it.mode=r.mode||R.mode;if(r.wait>0){it.fixed=true;it.time=m2t(r.arr)}else if(!it.fixed)it.time=""}
+        else{it.drive=r.leg;it.mode=r.mode||(R.mode==="walk"?"walk":R.mode==="wd"?"drive":"transit");if(r.wait>0){it.fixed=true;it.time=m2t(r.arr)}else if(!it.fixed)it.time=""}
         return it;
       });
       s.days[day]=arr;save();render();aiClose();
@@ -4325,7 +4348,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   var aiEl=null;
   function aiClose(){if(aiEl)aiEl.classList.remove("on");ai.seq++;document.documentElement.classList.remove("ai-open")}
   function aiOpen(day){
-    ai.day=day;ai.view="pick";ai.res=null;ai.msg="";ai.memo={};ai.filter="";
+    ai.day=day;ai.view="pick";ai.res=null;ai.msg="";ai.memo={};ai.filter="";ai.fcat={};ai.farea={};
     if(!aiEl){aiEl=document.createElement("div");aiEl.id="aiSheet";document.body.appendChild(aiEl);aiBind()}
     aiEl.classList.add("on","fresh");document.documentElement.classList.add("ai-open");aiDraw();clearTimeout(aiEl._f);aiEl._f=setTimeout(function(){aiEl.classList.remove("fresh")},450);
   }
@@ -4344,9 +4367,13 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var s2=aiEl.querySelector(".bd");if(s2&&ai.view==="pick")s2.scrollTop=st;
   }
   function aiPickHtml(day,pk,keys){
-    var q=ai.filter.trim().toLowerCase(),pool=aiPool(day);
+    var pool=aiPool(day);
+    var cc={},ac={};pool.forEach(function(sp){var c=sp.cat||"未分類";cc[c]=(cc[c]||0)+1;if(sp.area)ac[sp.area]=(ac[sp.area]||0)+1});
+    var cl=CATS.filter(function(c){return cc[c]}).concat(Object.keys(cc).filter(function(c){return CATS.indexOf(c)<0&&c!=="住宿"}));
+    var al=Object.keys(ac).sort(function(a,b){return ac[b]-ac[a]||(a<b?-1:1)});
+    var hasC=Object.keys(ai.fcat).length>0,hasA=Object.keys(ai.farea).length>0;
     var sel=pool.filter(function(sp){return sp.id in pk}),rest=pool.filter(function(sp){return !(sp.id in pk)});
-    var lst=sel.concat(rest).filter(function(sp){if(!q)return true;return (sp.name+(sp.ko||"")+(sp.area||"")+(sp.cat||"")).toLowerCase().indexOf(q)>=0});
+    var lst=sel.concat(rest.filter(function(sp){return (!hasC||ai.fcat[sp.cat||"未分類"])&&(!hasA||ai.farea[sp.area||""])}));
     var tot=keys.reduce(function(a,id){return a+pk[id]},0);
     var pps=ai.pos[day]||{};
     function posOpts(id){
@@ -4361,8 +4388,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
         (on?'<span class="ctl"><select data-aipos="'+sp.id+'" aria-label="固定在第幾站" title="固定在第幾站">'+posOpts(sp.id)+'</select><span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span></span>':'')+'</div>';
     }).join("");
     return '<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label><div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
-      '<div class="sq"><input type="search" id="aiQ" placeholder="搜尋景點、區域" value="'+esc(ai.filter)+'" aria-label="搜尋景點"></div>'+
-      '<div class="bd">'+(ai.msg?'<p class="amsg">'+esc(ai.msg)+'</p>':'')+(rows||'<p class="aempty">'+(pool.length?'沒有符合的景點':'景點庫還沒有景點，先到景點庫新增吧。')+'</p>')+'</div>'+
+      '<div class="fl">'+(cl.length?'<div class="fr" role="group" aria-label="分類">'+cl.map(function(c){return '<button type="button" class="fc" data-aifc="'+esc(c)+'" aria-pressed="'+(!!ai.fcat[c])+'">'+esc(c)+'<i>'+cc[c]+'</i></button>'}).join("")+'</div>':'')+(al.length?'<div class="fr" role="group" aria-label="區域">'+al.map(function(c){return '<button type="button" class="fc" data-aifa="'+esc(c)+'" aria-pressed="'+(!!ai.farea[c])+'">'+esc(c)+'<i>'+ac[c]+'</i></button>'}).join("")+'</div>':'')+'</div>'+
+      '<div class="bd">'+(ai.msg?'<p class="amsg">'+esc(ai.msg)+'</p>':'')+(rows||'<p class="aempty">'+(pool.length?'沒有符合的景點，換個分類或區域看看':'景點庫還沒有景點，先到景點庫新增吧。')+'</p>')+'</div>'+
       '<div class="ft"><span>已選 <b>'+keys.length+'</b> 站 · 停留約 '+aiStayStr(tot)+'</span><button type="button" class="aigo" data-aigo="1"'+(keys.length?'':' disabled')+'>幫我排</button></div>';
   }
   function aiPlanHtml(pl,k,R){
@@ -4371,8 +4398,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var mname=AI_MN[R.mode]||"";
     var tl=rows.map(function(r,i){
       var sp=P[r.i].sp;
-      return (i>0?'<div class="lg">↓ '+esc(AI_MN[r.mode]||mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':r.src==="calc"?'':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
-        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+esc(spotName(sp))+'</span><span class="lv">– '+m2t(r.leave)+'</span></div>';
+      return (i>0?'<div class="lg">↓ '+esc(AI_RN[r.mode]||mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':r.src==="calc"?'':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
+        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+esc(spotName(sp))+'<small>到 '+m2t(r.leave)+'</small></span><span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span></div>';
     }).join("");
     var rm=pl.rem.length?'<div class="rem">'+pl.rem.map(function(r,j){
       return '<div class="rm '+r.lv+'"><p>'+esc(r.t)+(r.none?'<small>'+esc(r.none)+'</small>':'')+'</p>'+((r.fixes&&r.fixes.length)?'<div class="fx">'+r.fixes.map(function(f,m){return '<button type="button" data-aifix="'+k+':'+j+':'+m+'">'+esc(f.label)+'</button>'}).join("")+'</div>':'')+'</div>';
@@ -4394,6 +4421,9 @@ body.viewer #mapPanel .mphd .sx{display:none}
       var b=t.closest("button");if(!b)return;
       if(b.dataset.aitab!==undefined){ai.day=+b.dataset.aitab;ai.view="pick";ai.res=null;ai.msg="";ai.seq++;aiDraw();return}
       if(b.dataset.aistay){var pk=aiPicks(ai.day),id=b.dataset.aistay;pk[id]=Math.max(15,Math.min(480,pk[id]+Number(b.dataset.d)));aiDraw();return}
+      if(b.dataset.aistay2){var pk2=aiPicks(ai.day),id2=b.dataset.aistay2;if(id2 in pk2){pk2[id2]=Math.max(15,Math.min(480,pk2[id2]+Number(b.dataset.d)));aiRun(true)}return}
+      if(b.dataset.aifc!==undefined){var c1=b.dataset.aifc;if(ai.fcat[c1])delete ai.fcat[c1];else ai.fcat[c1]=1;aiDraw();return}
+      if(b.dataset.aifa!==undefined){var a1=b.dataset.aifa;if(ai.farea[a1])delete ai.farea[a1];else ai.farea[a1]=1;aiDraw();return}
       if(b.dataset.aimode){ai.mode=b.dataset.aimode;aiSavePref();aiDraw();return}
       if(b.dataset.aigo){ai.msg="";aiRun();return}
       if(b.dataset.aiback){ai.view="pick";ai.res=null;ai.seq++;aiDraw();return}
@@ -4414,15 +4444,15 @@ body.viewer #mapPanel .mphd .sx{display:none}
     if(b){aiOpen(Number(b.dataset.aiday));return}
     var tb=e.target.closest&&e.target.closest("button[data-esttransit]");
     if(tb){
-      tb.disabled=true;say("正在查詢大眾運輸時間…");
+      tb.disabled=true;say("正在查詢大眾運輸時間（依上一站離開時間）…");
       var f=dayItems(tb.dataset.esttransit);
       if(!f||f.k===0){say("這是第一站，沒有前一站的路程。");tb.disabled=false;return}
       var it=f.vl[f.k],a=spot(f.vl[f.k-1].sid),bb=spot(it.sid);
       Promise.all([coordsOf(a),coordsOf(bb)]).then(function(c){
         if(!c[0]||!c[1]){say("找不到景點的位置，請補上地址，或用 Google／Naver 連結重新加入。");render();return}
-        ai.hour=10;return aiTransit(c[0],c[1]).then(function(r){
+        var cr0=calcDay(f.vl),lv=cr0[f.k-1]&&cr0[f.k-1].leave;return aiTransit(c[0],c[1],lv!=null?lv:600).then(function(r){
           if(r.min){it.drive=r.min;it.mode="transit";save();render();say("已填入大眾運輸時間"+(r.lines&&r.lines.length?"（"+r.lines.slice(0,3).join("→")+"）":"")+"，已多留 5 分鐘。")}
-          else{render();say(r.err==="limit"?"本月大眾運輸查詢已達上限，請改用開車或步行估算。":r.err==="none"?"這段路找不到大眾運輸路線。":"查詢失敗，可能是服務暫時沒回應，請稍後再試。")}
+          else{render();say(r.err==="limit"?"本月大眾運輸查詢已達上限，請改用開車或步行估算。":r.err==="none"?"這段路找不到大眾運輸路線。":r.err==="no-helper"?"還沒設定助手網址，無法查詢。":"查詢失敗（"+(r.st||"無回應")+(r.code?" "+r.code:"")+(r.detail?"："+r.detail:"")+"），請把這行訊息回報。")}
         });
       });
     }
@@ -4453,10 +4483,15 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiSheet .st{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:4px 16px 8px}
 #aiSheet .st label{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted)}
 #aiSheet .st input[type=time]{font:inherit;padding:5px 8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-#aiSheet .seg{display:inline-flex;background:var(--blue-soft);border-radius:999px;padding:3px;gap:2px}
+#aiSheet .seg{display:inline-flex;flex-wrap:wrap;background:var(--blue-soft);border-radius:20px;padding:3px;gap:2px}
 #aiSheet .seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.86rem;padding:5px 14px;border-radius:999px;cursor:pointer}
 #aiSheet .seg button[aria-checked="true"]{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);font-weight:700}
-#aiSheet .sq{padding:0 16px 8px}
+#aiSheet .fl{padding:0 16px 8px;display:flex;flex-direction:column;gap:6px}
+#aiSheet .fr{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:1px 0}
+#aiSheet .fr::-webkit-scrollbar{display:none}
+#aiSheet .fc{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer}
+#aiSheet .fc i{font-style:normal;font-size:.7rem;opacity:.65}
+#aiSheet .fc[aria-pressed="true"]{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);border-color:transparent;font-weight:700}
 #aiSheet .sq input{width:100%;box-sizing:border-box;font:inherit;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 #aiSheet .bd{flex:1 1 auto;overflow-y:auto;padding:4px 16px 14px;min-height:120px;-webkit-overflow-scrolling:touch}
 #aiSheet .r{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:14px;border:1px solid transparent;margin-bottom:4px}
@@ -4501,7 +4536,11 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiSheet .tr{display:flex;align-items:baseline;gap:8px;font-size:.88rem;padding:2px 0}
 #aiSheet .tr .tm{font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent-text)}
 #aiSheet .tr .nmx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#aiSheet .tr .lv{color:var(--muted);font-size:.76rem;font-variant-numeric:tabular-nums}
+#aiSheet .tr{align-items:center}
+#aiSheet .tr .nmx small{display:block;color:var(--muted);font-size:.72rem;font-variant-numeric:tabular-nums}
+#aiSheet .sy2{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
+#aiSheet .sy2 b{font-size:.74rem;min-width:40px;text-align:center;font-weight:600}
+#aiSheet .sy2 button{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font-size:.82rem;line-height:1;padding:0}
 #aiSheet .tr.food .nmx::before{content:"🍴 "}
 #aiSheet .lg{font-size:.76rem;color:var(--muted);padding:2px 0 2px 2px}
 #aiSheet .lg em{font-style:normal;margin-left:6px;padding:0 7px;border-radius:99px;background:var(--blue-soft);font-size:.7rem}
