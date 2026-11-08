@@ -110,6 +110,7 @@ label.f span,.lbl{font-weight:600;letter-spacing:.2px}
 .seg{display:inline-flex;gap:8px;border:0;background:none;border-radius:0;overflow:visible}.seg.full{display:flex}.seg.full button{flex:1}
 .seg button{border:1px solid var(--line);border-radius:999px;background:var(--soft);padding:8px 20px;min-height:40px;color:var(--ink)}
 .seg button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-color:transparent;font-weight:700}.seg.on,.seg button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2))}
+.splist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:52vh;overflow:auto}.spi{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;width:100%;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:9px 12px}.spi b{font-weight:700}.spi span{font-size:.78rem;color:var(--muted)}.spi.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}#fSpots.on{border-color:var(--accent)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 2px;margin:0 -2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.88rem;white-space:nowrap}
 .chip.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-color:transparent;font-weight:700}
@@ -191,7 +192,7 @@ function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&am
 var toastT=null;
 function toast(t){var el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove("on")},2000)}
 var ICO={
-  chevd:'<path d="M6 9l6 6 6-6"/>',plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',chevd:'<path d="M6 9l6 6 6-6"/>',plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
   pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
   trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
   img:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
@@ -916,9 +917,31 @@ function tripSpotNames(L){
   try{
     var d=JSON.parse(localStorage.getItem(APP+"-t-"+L.tripId)||"null"),seen={},out=[];
     (d&&Array.isArray(d.spots)?d.spots:[]).forEach(function(s){var n=s&&typeof s.name==="string"?s.name.trim():"";if(n&&n!=="未命名地點"&&!seen[n]){seen[n]=1;out.push(n.slice(0,60))}});
-    return out.slice(0,60);
+    return out.slice(0,500);
   }catch(e){return []}
 }
+function tripSpots(L){
+  if(!L||!L.tripId||/^s:/.test(L.tripId))return [];
+  try{
+    var d=JSON.parse(localStorage.getItem(APP+"-t-"+L.tripId)||"null"),seen={},out=[];
+    (d&&Array.isArray(d.spots)?d.spots:[]).forEach(function(s){var n=s&&typeof s.name==="string"?s.name.trim():"";if(n&&n!=="未命名地點"&&!seen[n]){seen[n]=1;out.push({n:n.slice(0,60),sub:[s.area,s.cat].filter(function(x){return typeof x==="string"&&x}).join("・").slice(0,30)})}});
+    return out.slice(0,500);
+  }catch(e){return []}
+}
+function spotPickModal(cur,cb){
+  var all=tripSpots(cur_L());
+  modal('<h2>景點庫</h2><label class="f" style="margin-top:6px"><input type="text" id="spQ" placeholder="搜尋景點" autocomplete="off"></label><div id="spList" class="splist"></div><div class="row"><button class="btn" type="button" id="spNo">取消</button></div>',function(){
+    function draw(){
+      var q=$("spQ").value.trim().toLowerCase(),box=$("spList");box.textContent="";
+      var items=all.filter(function(s){return !q||s.n.toLowerCase().indexOf(q)>=0||s.sub.toLowerCase().indexOf(q)>=0});
+      if(!items.length){var e=document.createElement("p");e.className="muted small";e.textContent="找不到符合的景點，可以直接在「項目」自己輸入。";box.appendChild(e);return}
+      items.forEach(function(s){var b=document.createElement("button");b.type="button";b.className="spi"+(s.n===cur?" on":"");b.dataset.n=s.n;var a=document.createElement("b");a.textContent=s.n;b.appendChild(a);if(s.sub){var m=document.createElement("span");m.textContent=s.sub;b.appendChild(m)}box.appendChild(b)});
+    }
+    $("spList").onclick=function(e){var b=e.target.closest(".spi");if(!b)return;var n=b.dataset.n;closeModal();cb(n===cur?"":n)};
+    $("spQ").oninput=draw;$("spNo").onclick=closeModal;draw();
+  });
+}
+function cur_L(){return cur()}
 function newF(L,keep){
   var inc={},pct={};
   L.members.forEach(function(m){inc[m.id]=true;pct[m.id]=""});
@@ -949,7 +972,7 @@ function drawForm(){
   var h='<button type="button" class="fhead" id="fHead" aria-expanded="'+fo+'" aria-controls="fBody"><h2>'+(F.id?"編輯款項":"記一筆代墊")+'</h2><span class="fchev'+(fo?' on':'')+'">'+ico("chevd",20)+'</span></button><div id="fBody"'+(fo?'':' hidden')+'>';
   h+='<div class="g2"><label class="f" style="margin-top:0"><span>日期</span><input type="date" id="fDate"></label><label class="f" style="margin-top:0"><span>項目（選填）</span><input type="text" id="fTitle" maxlength="60" placeholder="例：晚餐、計程車"></label></div>';
   var sn=tripSpotNames(L);
-  if(sn.length)h+='<div class="chips" id="fChips" aria-label="行程裡的景點">'+sn.map(function(n){return '<button type="button" class="chip" data-n="'+esc(n)+'">'+esc(n)+'</button>'}).join("")+'</div>';
+  if(sn.length)h+='<button type="button" class="btn sm" id="fSpots" style="margin-top:8px">'+ico("pin",15)+' 從景點庫選擇（'+sn.length+'）</button>';
   h+='<span class="lbl">付款方式</span><div class="seg full" id="fPay"><button type="button" data-v="cash">現金</button><button type="button" data-v="card">刷卡</button></div>';
   h+='<span class="lbl">幣別</span><div class="seg full" id="fCcy"><button type="button" data-v="'+L.cur+'">'+cu.n+'（外幣）</button><button type="button" data-v="TWD">台幣</button></div>';
   h+='<div class="g2 pa"><label class="f"><span>誰先付的</span><select id="fPayer">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join('')+'</select></label><label class="f"><span id="fAmL">金額</span><input type="number" id="fAmt" class="big" inputmode="decimal" min="0" step="any" placeholder="0"></label></div>';
@@ -968,8 +991,8 @@ function drawForm(){
   $("fDate").oninput=function(){F.date=this.value};
   $("fTitle").oninput=function(){F.title=this.value;markChips()};
   $("fNote").value=F.note||"";$("fNote").oninput=function(){F.note=this.value};
-  function markChips(){var c=$("fChips");if(c)c.querySelectorAll(".chip").forEach(function(b){b.classList.toggle("on",b.dataset.n===F.title)})}
-  if($("fChips"))$("fChips").onclick=function(e){var b=e.target.closest(".chip");if(!b)return;F.title=F.title===b.dataset.n?"":b.dataset.n;$("fTitle").value=F.title;markChips()};
+  function markChips(){var b=$("fSpots");if(b)b.classList.toggle("on",!!F.title&&sn.indexOf(F.title)>=0)}
+  if($("fSpots"))$("fSpots").onclick=function(){spotPickModal(F.title,function(n){F.title=n;$("fTitle").value=n;markChips()})};
   markChips();
   $("fAmt").oninput=function(){F.amount=this.value;drawTwd();drawShares(true)};
   $("fRate").oninput=function(){F.rate=this.value;F.rateTouched=true;drawTwd();drawShares(true)};
