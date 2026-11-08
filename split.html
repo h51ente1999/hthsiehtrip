@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.gstatic.com; style-src 'unsafe-inline'; img-src data: blob:; connect-src https://cdn.jsdelivr.net https://*.googleapis.com https://*.firebaseio.com https://www.gstatic.com; form-action 'none'; base-uri 'none'; frame-src https://*.firebaseapp.com; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>分帳 · 代墊款項</title>
+<script>window.__cloudP=new Promise(function(r){window.__cloudRes=r});</script>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#222a3a;--muted:#667089;--line:#dfe3ec;--accent:#4a7fb5;--accent2:#7b68b0;--on:#fff;--warn:#b3453b;--ok:#2f8f5b;--hit:#e8f0fa;--shadow:0 6px 20px -12px rgba(40,50,90,.35)}
+@media (prefers-color-scheme:dark){:root{--bg:#161a24;--card:#1f2432;--ink:#e8ecf5;--muted:#9aa5bf;--line:#31384b;--accent:#6c9bd0;--accent2:#9b8bd0;--on:#10131b;--warn:#e58b80;--ok:#6fcf97;--hit:#27304a;--shadow:0 6px 20px -12px #000}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%;min-height:100vh;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{width:100%;max-width:760px;margin:0 auto;padding:16px;flex:1}
+h1{font-size:1.25rem;margin:0}
+h2{font-size:1.02rem;margin:0 0 8px}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.top .sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;min-height:40px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on);border-color:transparent;font-weight:600}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.btn.sm{min-height:32px;padding:4px 10px;font-size:.88rem;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.icon{width:40px;padding:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:14px}
+.muted{color:var(--muted)}
+.small{font-size:.84rem}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 11px;font-size:1rem;min-height:40px}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+label.f{display:block;font-size:.82rem;color:var(--muted);margin-top:10px}
+label.f>*:not(span){margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.seg button{border:0;background:transparent;padding:8px 14px;min-height:40px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--on);font-weight:600}
+.seg.full{display:flex}.seg.full button{flex:1}
+.lbl{display:block;font-size:.82rem;color:var(--muted);margin:12px 0 4px}
+.err{color:var(--warn);font-size:.9rem;min-height:1.3em;margin-top:6px}
+.shr{display:flex;align-items:center;gap:8px;margin-top:6px}
+.shr .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shr .chk{width:22px;height:22px}
+.shr .pc{width:88px;flex:none;text-align:right}
+.shr .calc{width:88px;flex:none;text-align:right;color:var(--muted);font-size:.9rem}
+.shr.off .nm,.shr.off .calc{opacity:.4}
+.sum{font-size:.85rem;margin-top:6px}
+.sum.bad{color:var(--warn)}
+.ph{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in;flex:none}
+.exp{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.exp:first-of-type{border-top:0}
+.exp .bd{flex:1;min-width:0}
+.exp .tt{font-weight:600;word-break:break-word}
+.exp .am{text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.exp .am b{display:block}
+.tag{display:inline-block;font-size:.74rem;background:var(--bg);border-radius:99px;padding:0 8px;margin-right:4px;color:var(--muted)}
+.day{font-size:.82rem;color:var(--muted);margin:14px 0 2px;font-weight:600}
+.day:first-child{margin-top:0}
+.bal{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.bal:first-of-type{border-top:0}
+.pos{color:var(--ok);font-weight:600}.neg{color:var(--warn);font-weight:600}
+.tf{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-top:6px;border-radius:10px;background:var(--hit);flex-wrap:wrap}
+.tf b{font-variant-numeric:tabular-nums;margin-left:auto}
+.mask{position:fixed;inset:0;background:rgba(10,14,25,.5);display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}
+.modal{background:var(--card);border-radius:16px;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:18px;border:1px solid var(--line)}
+.mask.img{background:rgba(0,0,0,.85);padding:0}
+.mask.img img{max-width:100%;max-height:100vh;object-fit:contain}
+.row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.row .btn{flex:1}
+.badge{display:inline-block;font-size:.72rem;border-radius:99px;padding:0 8px;margin-left:6px;background:var(--hit);color:var(--accent);font-weight:600;vertical-align:middle}
+.linkbox{display:flex;gap:6px;margin-top:6px}.linkbox input{flex:1;min-width:0;font-size:.85rem}
+.ppl{margin-top:6px;font-size:.92rem}
+.mrow{display:flex;gap:6px;margin-top:6px}.mrow input{flex:1}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;border-radius:99px;padding:9px 18px;font-size:.92rem;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:30}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.empty{text-align:center;color:var(--muted);padding:26px 10px}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:10px 16px 22px;line-height:1.9}
+footer a{color:var(--muted)}
+@media (max-width:420px){.g3{grid-template-columns:1fr 1fr}.shr .pc,.shr .calc{width:74px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="btn icon" id="back" href="index.html" title="回旅遊網" aria-label="回旅遊網"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <h1>分帳</h1><span class="sp"></span>
+    <button class="btn icon" id="btnMenu" type="button" title="備份與更多" aria-label="備份與更多"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+  </div>
+
+  <div class="card" id="ledgerBar">
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="ledgerSel" aria-label="選擇帳本" style="flex:1"></select>
+      <button class="btn" id="btnNewLedger" type="button">＋ 新帳本</button>
+    </div>
+  </div>
+
+  <div class="card" id="cloudMsg" hidden></div>
+  <div id="ledgerView" hidden>
+    <div class="card" id="sumCard"></div>
+    <div class="card" id="formCard"></div>
+    <div class="card" id="listCard"></div>
+  </div>
+  <div class="empty" id="noLedger" hidden>還沒有帳本。按「＋ 新帳本」，可以選一個旅遊網的行程來衍生。</div>
+</div>
+
+<footer>Copyright © 2026 hthsieh. All rights reserved.<br>資料只存在這個瀏覽器，不會上傳。<a href="privacy.html">隱私權說明</a></footer>
+<div id="toast" role="status"></div>
+<div id="modalHost"></div>
+<input type="file" id="fileIn" accept="image/*" hidden>
+<input type="file" id="importIn" accept=".json,application/json" hidden>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var APP="travel-spots-v1";
+var CURS=[["KRW","韓元","₩"],["JPY","日圓","¥"],["USD","美元","$"],["EUR","歐元","€"],["THB","泰銖","฿"],["CNY","人民幣","¥"],["HKD","港幣","HK$"],["SGD","新加坡幣","S$"],["MYR","馬來幣","RM"],["VND","越南盾","₫"],["GBP","英鎊","£"],["AUD","澳幣","A$"],["PHP","披索","₱"],["IDR","印尼盾","Rp"]];
+var CUR={};CURS.forEach(function(c){CUR[c[0]]={c:c[0],n:c[1],s:c[2]}});
+function uid(){var a=crypto.getRandomValues(new Uint8Array(9));return Array.prototype.map.call(a,function(x){return x.toString(36).padStart(2,"0")}).join("").slice(0,12)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var toastT=null;
+function toast(t){var el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove("on")},2000)}
+var ICO={
+  plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
+  img:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  clip:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  refresh:'<path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+};
+function ico(n,sz){return '<svg viewBox="0 0 24 24" width="'+(sz||16)+'" height="'+(sz||16)+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO[n]+'</svg>'}
+
+/* ---------- 儲存：IndexedDB（只在這個瀏覽器；無法使用時退回記憶體） ---------- */
+var DB=null,MEMONLY=false,LEDGERS=[];
+function dbOpen(){
+  return new Promise(function(res){
+    try{
+      var rq=indexedDB.open("split-v1",1);
+      rq.onupgradeneeded=function(){rq.result.createObjectStore("ledgers",{keyPath:"id"})};
+      rq.onsuccess=function(){DB=rq.result;res()};
+      rq.onerror=rq.onblocked=function(){MEMONLY=true;res()};
+    }catch(e){MEMONLY=true;res()}
+  });
+}
+function dbAll(){
+  return new Promise(function(res){
+    if(!DB){res([]);return}
+    try{var rq=DB.transaction("ledgers").objectStore("ledgers").getAll();rq.onsuccess=function(){res(rq.result||[])};rq.onerror=function(){res([])}}catch(e){res([])}
+  });
+}
+function dbPut(L){
+  if(!DB)return Promise.resolve();
+  return new Promise(function(res){
+    try{var tx=DB.transaction("ledgers","readwrite");tx.objectStore("ledgers").put(L);tx.oncomplete=function(){res()};tx.onerror=tx.onabort=function(){toast("儲存失敗，瀏覽器空間可能已滿。");res()}}catch(e){res()}
+  });
+}
+function dbDel(id){
+  if(!DB)return Promise.resolve();
+  return new Promise(function(res){try{var tx=DB.transaction("ledgers","readwrite");tx.objectStore("ledgers").delete(id);tx.oncomplete=function(){res()};tx.onerror=function(){res()}}catch(e){res()}});
+}
+var saveT=null;
+function persist(){var L=cur();if(!L||L.cloud)return;L.ts=Date.now();clearTimeout(saveT);saveT=setTimeout(function(){dbPut(L)},60)}
+
+/* ---------- 讀旅遊網的行程清單（同網域才讀得到；讀不到也能獨立使用） ---------- */
+function readTrips(){
+  try{var x=JSON.parse(localStorage.getItem(APP+"-idx")||"null");if(x&&Array.isArray(x.list))return x.list.filter(function(e){return e&&typeof e.id==="string"}).map(function(e){return {id:e.id,name:String(e.name||"（未命名行程）")}})}catch(e){}
+  return [];
+}
+function tripCur(id){
+  try{var d=JSON.parse(localStorage.getItem(APP+"-t-"+id)||"null");if(d&&CUR[d.cur])return d.cur}catch(e){}
+  try{var f=localStorage.getItem(APP+"-fxdef");if(CUR[f])return f}catch(e){}
+  return "KRW";
+}
+function appRate(code){try{var f=JSON.parse(localStorage.getItem(APP+"-fx")||"null");if(f&&f[code]&&f[code].r>0&&Date.now()-f[code].t<24*3600000)return {r:f[code].r,t:f[code].t}}catch(e){}return null}
+function fetchRate(code){
+  var lc=code.toLowerCase();
+  return fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/"+lc+".json").then(function(r){return r.json()}).then(function(j){var v=j&&j[lc]&&Number(j[lc].twd);if(!(v>0))throw 0;return v});
+}
+
+/* ---------- 狀態與計算 ---------- */
+var S={id:"",F:null};
+function cur(){
+  for(var i=0;i<LEDGERS.length;i++)if(LEDGERS[i].id===S.id){
+    var x=LEDGERS[i];
+    if(x.cloud)return CLED&&CLED.meta.id===x.id?CLED.L:null;
+    return x;
+  }
+  return null;
+}
+function twd(e){return e.ccy==="TWD"?e.amount:e.amount*(e.rate||0)}
+function nf(n,d){return Number(n).toLocaleString("en-US",{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function money(n,ccy){
+  if(ccy==="TWD")return "NT$ "+nf(Math.round(n));
+  var c=CUR[ccy];var dec=(ccy==="USD"||ccy==="EUR"||ccy==="GBP"||ccy==="SGD"||ccy==="AUD"||ccy==="HKD"||ccy==="CNY"||ccy==="MYR"||ccy==="THB")?2:0;
+  var v=Number(n);if(dec===2&&Math.abs(v-Math.round(v))<0.005)dec=0;
+  return (c?c.s:ccy+" ")+" "+nf(v,dec);
+}
+function mname(L,id){for(var i=0;i<L.members.length;i++)if(L.members[i].id===id)return L.members[i].name;return "（已刪除）"}
+function calc(L){
+  var paid={},owed={},tot=0;
+  L.members.forEach(function(m){paid[m.id]=0;owed[m.id]=0});
+  L.expenses.forEach(function(e){
+    var t=twd(e);tot+=t;
+    if(paid[e.payer]!=null)paid[e.payer]+=t;
+    Object.keys(e.shares||{}).forEach(function(id){if(owed[id]!=null)owed[id]+=t*e.shares[id]/100});
+  });
+  var net={},nr={},sum=0,big=null;
+  L.members.forEach(function(m){net[m.id]=paid[m.id]-owed[m.id];nr[m.id]=Math.round(net[m.id]);sum+=nr[m.id];if(big===null||Math.abs(net[m.id])>Math.abs(net[big]))big=m.id});
+  if(sum!==0&&big!==null)nr[big]-=sum;   /* 四捨五入的誤差併入差額最大的人，讓總和歸零 */
+  var deb=[],cre=[];
+  L.members.forEach(function(m){if(nr[m.id]<0)deb.push({id:m.id,v:-nr[m.id]});else if(nr[m.id]>0)cre.push({id:m.id,v:nr[m.id]})});
+  deb.sort(function(a,b){return b.v-a.v});cre.sort(function(a,b){return b.v-a.v});
+  var tf=[],i=0,j=0;
+  while(i<deb.length&&j<cre.length){
+    var x=Math.min(deb[i].v,cre[j].v);if(x>0)tf.push({from:deb[i].id,to:cre[j].id,v:x});
+    deb[i].v-=x;cre[j].v-=x;if(deb[i].v===0)i++;if(cre[j].v===0)j++;
+  }
+  return {paid:paid,owed:owed,net:nr,total:tot,tf:tf};
+}
+
+/* ---------- 彈窗 ---------- */
+function modal(html,onMount,cls){
+  $("modalHost").innerHTML='<div class="mask '+(cls||"")+'" id="mask"><div class="modal" role="dialog" aria-modal="true">'+html+'</div></div>';
+  $("mask").addEventListener("mousedown",function(e){if(e.target===$("mask"))closeModal()});
+  if(onMount)onMount();
+}
+function closeModal(){$("modalHost").textContent=""}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("modalHost").firstChild)closeModal()});
+function viewImg(src){
+  $("modalHost").innerHTML='<div class="mask img" id="mask"><img alt="收據截圖"></div>';
+  $("mask").firstChild.src=src;$("mask").onclick=closeModal;
+}
+
+/* ---------- 帳本選單 ---------- */
+function drawLedgerSel(){
+  var sel=$("ledgerSel");sel.textContent="";
+  LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)}).forEach(function(L){var o=document.createElement("option");o.value=L.id;o.textContent=L.name+(L.cloud?"（共同）":(L.tripId?"":"（未連結行程）"));sel.appendChild(o)});
+  sel.value=S.id;
+  $("ledgerSel").parentNode.parentNode.hidden=false;
+  $("noLedger").hidden=!!LEDGERS.length;
+  $("ledgerView").hidden=!cur();
+  drawCloudMsg();
+}
+function drawCloudMsg(){
+  var x=LEDGERS.filter(function(L){return L.id===S.id})[0],cm=$("cloudMsg");
+  cm.hidden=!(x&&x.cloud&&!cur());
+  if(cm.hidden)return;
+  var err=CLED&&CLED.err;
+  cm.innerHTML='<div class="'+(err?"err":"muted")+'" style="margin:0">'+esc(err||"連線中…")+'</div>'+(err?'<div class="row"><button class="btn danger" type="button" id="cmRm">從這台裝置移除這個帳本</button></div>':'');
+  if(err)$("cmRm").onclick=function(){removeMeta(x.id)};
+}
+function removeMeta(id){
+  stopListen();LEDGERS=LEDGERS.filter(function(L){return L.id!==id});dbDel(id);
+  S.id=LEDGERS.length?LEDGERS[0].id:"";openLedger(S.id);
+}
+$("ledgerSel").onchange=function(){openLedger(this.value)};
+function openLedger(id){
+  stopListen();
+  S.id=id;S.F=null;drawLedgerSel();
+  var x0=LEDGERS.filter(function(L){return L.id===id})[0];
+  if(x0&&x0.cloud){startListen(x0);return}
+  if(!cur())return;
+  var L=cur();
+  if(!L.rate||!(L.rate.r>0)){var ar=appRate(L.cur);if(ar){L.rate=ar;persist()}}
+  if(!L.rate||!(L.rate.r>0)||Date.now()-L.rate.t>12*3600000)loadRate(false);
+  drawAll();
+}
+function loadRate(manual){
+  var L=cur();if(!L)return;var code=L.cur,id=L.id;
+  fetchRate(code).then(function(r){
+    var Lx=cur();if(!Lx||Lx.id!==id||Lx.cur!==code)return;
+    Lx.rate={r:r,t:Date.now()};persist();
+    if(Lx.cloud){if(Lx.role==="owner"&&API)API.updateLedger(Lx.id,{rate:Lx.rate}).catch(function(){});else if(CLED)CLED.rate=Lx.rate}
+    var inp=$("fRate");if(inp&&S.F&&S.F.ccy!=="TWD"&&!S.F.rateTouched&&!S.F.id){S.F.rate=String(+r.toPrecision(5));inp.value=S.F.rate}
+    drawSum();if(manual)toast("匯率已更新");
+  },function(){if(manual)toast("取不到匯率，請手動輸入。")});
+}
+
+/* ---------- 共同編輯（Firebase：Google 登入的擁有者＋匿名登入的朋友） ---------- */
+var CLED=null,ME=null,API=null,unsubCl=null,CLID=0;
+function getApi(){return Promise.race([window.__cloudP,new Promise(function(r){setTimeout(function(){r(null)},12000)})])}
+function b64u(buf){var b=new Uint8Array(buf),t="";for(var i=0;i<b.length;i++)t+=String.fromCharCode(b[i]);return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64u(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var bin=atob(t),b=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return b}
+async function pwHash(pw,salt){
+  var km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  var bits=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:unb64u(salt),iterations:100000},km,256);
+  return Array.prototype.map.call(new Uint8Array(bits),function(x){return x.toString(16).padStart(2,"0")}).join("");
+}
+function shareLink(id,salt){return location.href.split("#")[0].split("?")[0]+"#j="+id+"."+salt}
+function stopListen(){CLID++;if(unsubCl){try{unsubCl()}catch(e){}unsubCl=null}CLED=null}
+function upName(L,uid){var p=L.people&&L.people[uid];return p&&p.memberId?mname(L,p.memberId):"朋友"}
+function cleanExp(e){
+  if(!e||typeof e!=="object")return null;
+  var a=Number(e.amount);if(!(a>0)||typeof e.date!=="string")return null;
+  var ccy=e.ccy==="TWD"||CUR[e.ccy]?e.ccy:null;if(!ccy)return null;
+  var r=ccy==="TWD"?1:Number(e.rate);if(!(r>0))return null;
+  var sh={},ok=false;Object.keys(e.shares||{}).forEach(function(k){var v=Number(e.shares[k]);if(v>0){sh[k]=v;ok=true}});if(!ok)return null;
+  return {id:String(e.id),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:String(e.payer||""),shares:sh,img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",by:typeof e.by==="string"?e.by:"",ts:Number(e.ts)||0};
+}
+async function startListen(meta){
+  CLED={meta:meta,doc:null,people:{},exps:[],L:null,err:"",sig:"",asked:false,drawn:false,rate:null};
+  var my=++CLID;drawCloudMsg();
+  var api=await getApi();if(my!==CLID)return;
+  if(!api){CLED.err="連不上雲端服務（網路問題，或這個頁面沒有放在設定好 Firebase 的網域）。";drawLedgerSel();return}
+  API=api;
+  try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
+  if(my!==CLID)return;
+  unsubCl=api.listen(meta.id,{
+    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){CLED.err="這個帳本已被擁有者刪除，或你已沒有權限。";CLED.L=null;drawLedgerSel();return}CLED.err="";rebuild()},
+    people:function(m){if(my!==CLID)return;CLED.people=m;CLED.pl=true;rebuild()},
+    exps:function(a){if(my!==CLID)return;CLED.exps=a.map(cleanExp).filter(Boolean);rebuild()},
+    error:function(e){if(my!==CLID)return;CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
+  });
+}
+function rebuild(){
+  var C=CLED;if(!C||!C.doc)return;
+  var d=C.doc,mem=(Array.isArray(d.members)?d.members:[]).filter(function(m){return m&&typeof m.id==="string"&&typeof m.name==="string"&&m.name}).map(function(m){return {id:m.id,name:m.name.slice(0,20)}});
+  if(mem.length<2){C.err="帳本資料不完整。";drawLedgerSel();return}
+  var me=ME&&C.people[ME.uid];
+  var L={id:C.meta.id,cloud:true,role:ME&&d.owner===ME.uid?"owner":"guest",name:String(d.name||"共同帳本").slice(0,40),cur:CUR[d.cur]?d.cur:"KRW",
+    rate:d.rate&&Number(d.rate.r)>0?{r:Number(d.rate.r),t:Number(d.rate.t)||0}:C.rate,members:mem,expenses:C.exps,myMember:(me&&me.memberId&&mem.some(function(m){return m.id===me.memberId}))?me.memberId:"",people:C.people,tripId:"",ts:Date.now()};
+  C.L=L;
+  if(C.meta.name!==L.name){C.meta.name=L.name;dbPut(C.meta)}
+  var sig=mem.map(function(m){return m.id+":"+m.name}).join("|")+"|"+L.cur+"|"+L.myMember;
+  if(!C.drawn||sig!==C.sig){C.sig=sig;S.F=null;C.drawn=true;drawAll()}
+  else{drawLedgerSel();drawSum();drawList()}   /* 別人改動時不重畫表單，避免打字被打斷 */
+  if(!L.rate||Date.now()-L.rate.t>12*3600000){if(!C.rateAsked){C.rateAsked=true;loadRate(false)}}
+  if(!L.myMember&&!C.asked&&C.pl){C.asked=true;pickMeModal()}
+}
+function pickMeModal(){
+  var L=cur();if(!L||!L.cloud)return;
+  var taken={};Object.keys(L.people||{}).forEach(function(k){var m=L.people[k].memberId;if(m&&k!==(ME&&ME.uid))taken[m]=1});
+  modal('<h2>你是哪一位？</h2><p class="muted small" style="margin:0">選好之後，「誰先付的」會預設是你。</p><label class="f"><span>我是</span><select id="pmSel">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===L.myMember?" selected":"")+'>'+esc(m.name)+(taken[m.id]?"（已有人選了）":"")+'</option>'}).join('')+'</select></label><div class="row"><button class="btn" type="button" id="pmNo">稍後</button><button class="btn pri" type="button" id="pmOk">確定</button></div>',function(){
+    $("pmNo").onclick=closeModal;
+    $("pmOk").onclick=function(){
+      API.updatePerson(L.id,ME.uid,{memberId:$("pmSel").value}).then(function(){closeModal();S.F=null;toast("已設定")},function(){toast("設定失敗：沒有權限或網路中斷")});
+    };
+  });
+}
+function guestModal(){
+  var L=cur();
+  modal('<h2>共同帳本</h2><p class="muted small" style="margin:0">'+esc(L.name)+'。成員：'+esc(L.members.map(function(m){return m.name}).join("、"))+'。<br>你只能修改、刪除自己上傳的款項；名稱與成員由擁有者管理。</p><div class="row"><button class="btn danger" type="button" id="gRm">從這台裝置移除這個帳本</button><button class="btn pri" type="button" id="gOk">完成</button></div><p class="muted small">移除只會讓這台裝置不再顯示；你已上傳的款項仍保留在帳本裡，之後用連結和密碼可以再加入。</p>',function(){
+    $("gOk").onclick=closeModal;
+    var armed=false;$("gRm").onclick=function(){if(!armed){armed=true;this.textContent="再按一次確認移除";return}closeModal();removeMeta(L.id);toast("已移除")};
+  });
+}
+function copyText(t,msg){
+  (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast(msg)},function(){
+    try{var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast(msg)}catch(e){toast("複製失敗")}
+  });
+}
+/* 擁有者：開啟共同編輯（把本機帳本搬到雲端） */
+async function enableModal(){
+  var L=cur();if(!L||L.cloud)return;
+  var api=await getApi();
+  if(!api){toast("連不上雲端服務。");return}
+  var u=await api.getUser();
+  if(!u||u.isAnonymous){modal('<h2>共同編輯</h2><p>要先登入 Google 帳號才能開啟。請到旅遊網登入（同一個網域會共用登入狀態），再回到這裡。</p><div class="row"><button class="btn pri" type="button" id="enOk">知道了</button></div>',function(){$("enOk").onclick=closeModal});return}
+  modal('<h2>開啟共同編輯</h2><p class="muted small" style="margin:0">帳本與截圖會上傳到雲端，朋友用連結加上密碼加入後，可以新增款項、修改自己上傳的款項，結算會合併所有人的款項。</p>'+
+    '<label class="f"><span>設定密碼（至少 4 個字元）</span><input type="text" id="enPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label>'+
+    '<label class="f"><span>你是哪一位</span><select id="enMe">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join('')+'</select></label>'+
+    '<p class="muted small">連結和密碼要分開傳給朋友。密碼只有 4 到 7 個字元時比較容易被猜到，建議設長一點。</p><div class="err" id="enErr" role="alert"></div>'+
+    '<div class="row"><button class="btn" type="button" id="enNo">取消</button><button class="btn pri" type="button" id="enGo">開啟並上傳</button></div>',function(){
+    $("enNo").onclick=closeModal;
+    $("enGo").onclick=async function(){
+      var pw=$("enPw").value;if(pw.length<4){$("enErr").textContent="密碼至少要 4 個字元。";return}
+      var b=this;b.disabled=true;b.textContent="上傳中…";$("enErr").textContent="";
+      try{
+        var salt=b64u(crypto.getRandomValues(new Uint8Array(16))),hash=await pwHash(pw,salt),sid=b64u(crypto.getRandomValues(new Uint8Array(16)));
+        var exps=L.expenses.map(function(e){return {id:e.id,date:e.date,title:e.title,amount:e.amount,ccy:e.ccy,rate:e.rate,pay:e.pay,payer:e.payer,shares:e.shares,img:e.img||"",ts:e.ts||Date.now(),by:u.uid}});
+        await api.createLedger(sid,{owner:u.uid,name:L.name,cur:L.cur,rate:L.rate||null,members:L.members,pwHash:hash,pwSalt:salt,ts:Date.now(),v:1},{uid:u.uid,data:{memberId:$("enMe").value,pwHash:hash,ts:Date.now()}},exps);
+        var meta={id:sid,cloud:true,sid:sid,salt:salt,name:L.name,ts:Date.now()};
+        var oldId=L.id;LEDGERS=LEDGERS.filter(function(x){return x.id!==oldId});dbDel(oldId);LEDGERS.push(meta);dbPut(meta);
+        closeModal();openLedger(sid);toast("已開啟共同編輯，按「共同編輯」可以拿連結");
+      }catch(e){b.disabled=false;b.textContent="開啟並上傳";$("enErr").textContent="上傳失敗（"+(e&&e.code||"網路或權限")+"）。本機帳本沒有被改動。"}
+    };
+    $("enPw").focus();
+  });
+}
+/* 擁有者：連結、成員、變更密碼、停止共同編輯 */
+function shareModal(){
+  var L=cur(),C=CLED;if(!L||!L.cloud||L.role!=="owner")return;
+  var link=shareLink(C.meta.id,C.meta.salt),ids=Object.keys(L.people||{});
+  var h='<h2>共同編輯</h2><p class="muted small" style="margin:0">把連結傳給朋友，<b>密碼另外告訴他們</b>。朋友只能修改、刪除自己上傳的款項；結算會合併所有人的款項。</p>';
+  h+='<span class="lbl">邀請連結</span><div class="linkbox"><input type="text" id="shLink" readonly><button class="btn sm" type="button" id="shCopy">'+ico("copy",14)+' 複製</button></div>';
+  h+='<span class="lbl">已加入（'+ids.length+' 人）</span><div class="ppl">'+(ids.map(function(k){var p=L.people[k];return esc(p.memberId?mname(L,p.memberId):"（還沒選成員）")+(ME&&k===ME.uid?"（你）":"")}).join("、")||"—")+'</div>';
+  h+='<div class="row"><button class="btn" type="button" id="shPw">變更密碼</button><button class="btn danger" type="button" id="shStop">停止共同編輯</button></div><div class="row"><button class="btn pri" type="button" id="shOk">完成</button></div>';
+  modal(h,function(){
+    $("shLink").value=link;$("shLink").onfocus=function(){this.select()};
+    $("shCopy").onclick=function(){copyText(link,"已複製連結")};
+    $("shOk").onclick=closeModal;
+    $("shPw").onclick=pwModal;
+    var armed=false;$("shStop").onclick=async function(){
+      if(!armed){armed=true;this.textContent="再按一次：轉成本機帳本並刪除雲端資料";return}
+      this.disabled=true;
+      try{
+        var loc={id:uid(),tripId:"",name:L.name,cur:L.cur,rate:L.rate||null,members:L.members.map(function(m){return {id:m.id,name:m.name}}),expenses:L.expenses.map(function(e){var x={};Object.keys(e).forEach(function(k){if(k!=="by")x[k]=e[k]});return x}),ts:Date.now()};
+        await dbPut(loc);LEDGERS.push(loc);
+        await API.deleteLedger(C.meta.id);
+        var mid=C.meta.id;closeModal();removeMeta(mid);openLedger(loc.id);toast("已轉成本機帳本，雲端資料已刪除");
+      }catch(e){this.disabled=false;toast("停止失敗："+(e&&e.code||"網路或權限")+"（本機已留有一份副本）")}
+    };
+  });
+}
+function pwModal(){
+  var L=cur(),C=CLED;
+  modal('<h2>變更密碼</h2><p class="muted small" style="margin:0">變更後舊連結會失效，要把新連結和新密碼重新傳給還沒加入的朋友。已經加入的朋友不受影響。</p><label class="f"><span>新密碼（至少 4 個字元）</span><input type="text" id="pwN" autocomplete="off" spellcheck="false"></label><div class="err" id="pwErr2" role="alert"></div><div class="row"><button class="btn" type="button" id="pwNo">取消</button><button class="btn pri" type="button" id="pwGo">變更</button></div>',function(){
+    $("pwNo").onclick=shareModal;
+    $("pwGo").onclick=async function(){
+      var pw=$("pwN").value;if(pw.length<4){$("pwErr2").textContent="密碼至少要 4 個字元。";return}
+      try{
+        var salt=b64u(crypto.getRandomValues(new Uint8Array(16))),hash=await pwHash(pw,salt);
+        await API.updateLedger(C.meta.id,{pwHash:hash,pwSalt:salt});
+        C.meta.salt=salt;dbPut(C.meta);toast("密碼已變更");shareModal();
+      }catch(e){$("pwErr2").textContent="變更失敗（"+(e&&e.code||"網路或權限")+"）。"}
+    };
+    $("pwN").focus();
+  });
+}
+/* 朋友：用連結加入 */
+function joinModal(sid,salt){
+  modal('<h2>加入共同帳本</h2><p class="muted small" style="margin:0">請輸入擁有者給你的密碼。</p><label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label><div class="err" id="jErr" role="alert"></div><div class="row"><button class="btn" type="button" id="jNo">取消</button><button class="btn pri" type="button" id="jGo">加入</button></div>',function(){
+    $("jNo").onclick=closeModal;
+    function go(){
+      var pw=$("jPw").value;if(!pw){$("jErr").textContent="請輸入密碼。";return}
+      var b=$("jGo");b.disabled=true;b.textContent="加入中…";$("jErr").textContent="";
+      (async function(){
+        var api=await getApi();if(!api)throw {code:"offline"};
+        var u=await api.ensureUser(),hash=await pwHash(pw,salt);
+        try{await api.join(sid,u.uid,{pwHash:hash,ts:Date.now()})}catch(e){if(e&&e.code==="permission-denied")throw {code:"denied"};throw e}
+        var meta={id:sid,cloud:true,sid:sid,salt:salt,name:"共同帳本",ts:Date.now()};
+        if(!LEDGERS.some(function(x){return x.id===sid}))LEDGERS.push(meta);
+        dbPut(meta);closeModal();openLedger(sid);
+      })().catch(function(e){b.disabled=false;b.textContent="加入";$("jErr").textContent=e&&e.code==="denied"?"密碼錯誤，或這個帳本已經被刪除。":(e&&e.code==="offline"?"連不上雲端服務。":"加入失敗（"+(e&&e.code||"網路")+"）。")});
+    }
+    $("jGo").onclick=go;$("jPw").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
+    $("jPw").focus();
+  });
+}
+
+/* ---------- 新增帳本 ---------- */
+function newLedgerModal(presetTrip){
+  var trips=readTrips();
+  var h='<h2>新帳本</h2>';
+  h+='<label class="f"><span>從哪個行程衍生</span><select id="nlTrip"><option value="">不連結行程（自己取名）</option>'+trips.map(function(t){return '<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>'}).join('')+'</select></label>';
+  if(!trips.length)h+='<p class="muted small" style="margin:6px 0 0">讀不到旅遊網的行程（可能不在同一個網域），仍可自己取名使用。</p>';
+  h+='<label class="f"><span>帳本名稱</span><input type="text" id="nlName" maxlength="40"></label>';
+  h+='<label class="f"><span>外幣</span><select id="nlCur">'+CURS.map(function(c){return '<option value="'+c[0]+'">'+c[1]+'（'+c[0]+'）</option>'}).join('')+'</select></label>';
+  h+='<label class="f"><span>成員（用逗號分隔）</span><input type="text" id="nlMem" maxlength="120" value="我, 朋友"></label>';
+  h+='<div class="err" id="nlErr" role="alert"></div><div class="row"><button class="btn" type="button" id="nlCancel">取消</button><button class="btn pri" type="button" id="nlOk">建立</button></div>';
+  modal(h,function(){
+    var t=$("nlTrip"),n=$("nlName"),c=$("nlCur");
+    function sync(){var tr=trips.filter(function(x){return x.id===t.value})[0];if(tr){n.value=tr.name;c.value=tripCur(tr.id)}}
+    t.onchange=sync;
+    if(presetTrip){t.value=presetTrip;sync()}
+    $("nlCancel").onclick=closeModal;
+    $("nlOk").onclick=function(){
+      var name=n.value.trim();if(!name){$("nlErr").textContent="請輸入帳本名稱。";return}
+      var names=$("nlMem").value.split(/[,，、]/).map(function(x){return x.trim()}).filter(Boolean).filter(function(x,i,a){return a.indexOf(x)===i});
+      if(names.length<2){$("nlErr").textContent="至少要兩位成員。";return}
+      var L={id:uid(),tripId:t.value||"",name:name,cur:c.value,rate:null,members:names.map(function(x){return {id:uid(),name:x}}),expenses:[],ts:Date.now()};
+      LEDGERS.push(L);dbPut(L);closeModal();openLedger(L.id);
+    };
+    (presetTrip?$("nlOk"):n).focus();
+  });
+}
+$("btnNewLedger").onclick=function(){newLedgerModal("")};
+
+/* ---------- 帳本設定 ---------- */
+function settingsModal(){
+  var L=cur();if(!L)return;
+  if(L.cloud&&L.role!=="owner"){guestModal();return}
+  var h='<h2>帳本設定</h2><label class="f"><span>名稱</span><input type="text" id="stName" maxlength="40" value="'+esc(L.name)+'"></label>';
+  h+='<label class="f"><span>外幣（只影響之後新增的款項）</span><select id="stCur">'+CURS.map(function(c){return '<option value="'+c[0]+'"'+(c[0]===L.cur?" selected":"")+'>'+c[1]+'（'+c[0]+'）</option>'}).join('')+'</select></label>';
+  h+='<span class="lbl">成員（已有款項用到的成員不能刪除）</span><div id="stMem"></div><div class="mrow"><input type="text" id="stNew" maxlength="20" placeholder="新增成員"><button class="btn" type="button" id="stAdd">加入</button></div>';
+  h+='<div class="err" id="stErr" role="alert"></div><div class="row"><button class="btn danger" type="button" id="stDel">刪除帳本</button><button class="btn pri" type="button" id="stOk">完成</button></div>';
+  modal(h,function(){
+    var used={};L.expenses.forEach(function(e){used[e.payer]=1;Object.keys(e.shares||{}).forEach(function(k){used[k]=1})});
+    var mem=L.members.map(function(m){return {id:m.id,name:m.name}});
+    function drawM(){
+      var box=$("stMem");box.textContent="";
+      mem.forEach(function(m,i){
+        var r=document.createElement("div");r.className="mrow";
+        var inp=document.createElement("input");inp.type="text";inp.value=m.name;inp.maxLength=20;inp.oninput=function(){m.name=inp.value};
+        var b=document.createElement("button");b.type="button";b.className="btn icon";b.style.cssText="width:40px;min-height:40px";b.innerHTML=ico("trash",16);b.title="刪除";b.disabled=!!used[m.id]||mem.length<=2;
+        b.onclick=function(){mem.splice(i,1);drawM()};
+        r.appendChild(inp);r.appendChild(b);box.appendChild(r);
+      });
+    }
+    drawM();
+    function addM(){var v=$("stNew").value.trim();if(!v)return;if(mem.some(function(m){return m.name===v})){$("stErr").textContent="名字重複了。";return}mem.push({id:uid(),name:v});$("stNew").value="";$("stErr").textContent="";drawM()}
+    $("stAdd").onclick=addM;$("stNew").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();addM()}};
+    var armed=false;
+    $("stDel").onclick=function(){
+      if(!armed){armed=true;this.textContent=L.cloud?"再按一次：刪除帳本與所有人的款項":"再按一次確認刪除（無法復原）";return}
+      var id=L.id;
+      if(L.cloud){API.deleteLedger(id).then(function(){closeModal();removeMeta(id);toast("已刪除帳本與所有人的款項")},function(){toast("刪除失敗：沒有權限或網路中斷")});return}
+      LEDGERS=LEDGERS.filter(function(x){return x.id!==id});dbDel(id);closeModal();S.id=LEDGERS.length?LEDGERS[0].id:"";openLedger(S.id);toast("已刪除帳本");
+    };
+    $("stOk").onclick=function(){
+      var name=$("stName").value.trim();if(!name){$("stErr").textContent="名稱不能是空的。";return}
+      var names=mem.map(function(m){return m.name.trim()});
+      if(names.some(function(n){return !n})){$("stErr").textContent="成員名字不能是空的。";return}
+      if(names.some(function(n,i){return names.indexOf(n)!==i})){$("stErr").textContent="成員名字重複了。";return}
+      if(L.cloud){
+        mem.forEach(function(m){m.name=m.name.trim()});
+        var patch={name:name,members:mem};if($("stCur").value!==L.cur){patch.cur=$("stCur").value;patch.rate=null}
+        API.updateLedger(L.id,patch).then(function(){closeModal();S.F=null;toast("已更新")},function(){toast("更新失敗：沒有權限或網路中斷")});
+        return;
+      }
+      L.name=name;mem.forEach(function(m){m.name=m.name.trim()});
+      var curChanged=$("stCur").value!==L.cur;
+      L.members=mem;if(curChanged){L.cur=$("stCur").value;L.rate=null}
+      S.F=null;persist();closeModal();drawLedgerSel();if(curChanged){var ar=appRate(L.cur);if(ar){L.rate=ar}loadRate(false)}drawAll();
+    };
+  });
+}
+
+/* ---------- 結算卡片 ---------- */
+function summaryText(L){
+  var c=calc(L),t=L.name+" 分帳（台幣）\n總花費 NT$ "+nf(Math.round(c.total))+"\n";
+  L.members.forEach(function(m){t+=m.name+"：先付 "+nf(Math.round(c.paid[m.id]))+"，應分攤 "+nf(Math.round(c.owed[m.id]))+"\n"});
+  if(c.tf.length){t+="\n結算：\n";c.tf.forEach(function(x){t+=mname(L,x.from)+" → "+mname(L,x.to)+"　NT$ "+nf(x.v)+"\n"})}else t+="\n不需要轉帳。\n";
+  return t;
+}
+function drawSum(){
+  var L=cur(),box=$("sumCard");if(!L)return;
+  var c=calc(L);
+  var h='<div style="display:flex;align-items:center;gap:8px"><h2 style="margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(L.name)+(L.cloud?'<span class="badge">共同</span>':'')+'</h2>'+(!L.cloud||L.role==="owner"?'<button class="btn sm" type="button" id="btnShare">共同編輯</button>':'')+'<button class="btn sm" type="button" id="btnCopySum">'+ico("copy",14)+' 複製結算</button><button class="btn sm icon" type="button" id="btnSet" aria-label="帳本設定" title="帳本設定" style="width:32px;padding:0">'+ico("gear",16)+'</button></div>';
+  h+='<div class="muted small" style="margin:2px 0 8px">'+(L.tripId?"行程：已連結　":"")+'共 '+L.expenses.length+' 筆，總花費 <b style="color:var(--ink)">NT$ '+nf(Math.round(c.total))+'</b>（一律換算成台幣）</div>';
+  L.members.forEach(function(m){
+    var n=c.net[m.id];
+    h+='<div class="bal"><span>'+esc(m.name)+' <span class="muted small">先付 '+nf(Math.round(c.paid[m.id]))+' · 應分攤 '+nf(Math.round(c.owed[m.id]))+'</span></span><span class="'+(n>0?"pos":n<0?"neg":"muted")+'">'+(n>0?"應收 "+nf(n):n<0?"應付 "+nf(-n):"打平")+'</span></div>';
+  });
+  if(L.expenses.length){
+    h+='<div class="lbl" style="margin-top:12px">怎麼轉帳最省事</div>';
+    if(c.tf.length)c.tf.forEach(function(x){h+='<div class="tf"><span>'+esc(mname(L,x.from))+'</span>'+ico("arrow",16)+'<span>'+esc(mname(L,x.to))+'</span><b>NT$ '+nf(x.v)+'</b></div>'});
+    else h+='<div class="muted">大家剛好打平，不需要轉帳。</div>';
+  }
+  var cu=CUR[L.cur];
+  h+='<div class="muted small" style="margin-top:10px">匯率：1 '+cu.n+' ≈ <b>'+(L.rate?fmtRate(L.rate.r):"—")+'</b> 台幣'+(L.rate?'（'+new Date(L.rate.t).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+'）':'')+' <button class="btn sm" type="button" id="btnRate" style="margin-left:6px">'+ico("refresh",13)+' 更新</button></div>';
+  if(L.cloud){
+    var me=L.myMember?mname(L,L.myMember):"";
+    h+='<div class="muted small" style="margin-top:8px">你是：<b style="color:var(--ink)">'+esc(me||"（還沒選）")+'</b> <button class="btn sm" type="button" id="btnMe" style="margin-left:6px">'+(me?"更改":"選擇")+'</button>　所有人的款項會合併計算，你只能修改自己上傳的。</div>';
+  }
+  box.innerHTML=h;
+  if($("btnShare"))$("btnShare").onclick=function(){L.cloud?shareModal():enableModal()};
+  if($("btnMe"))$("btnMe").onclick=pickMeModal;
+  $("btnSet").onclick=settingsModal;
+  $("btnRate").onclick=function(){loadRate(true)};
+  $("btnCopySum").onclick=function(){
+    var t=summaryText(L);
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("已複製結算")},function(){
+      try{var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("已複製結算")}catch(e){toast("複製失敗")}
+    });
+  };
+}
+function fmtRate(r){return r<0.1?r.toFixed(5):(r<1?r.toFixed(4):r.toFixed(2))}
+
+/* ---------- 新增／編輯表單 ---------- */
+function today(){var d=new Date(),p=function(n){return String(n).padStart(2,"0")};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
+function newF(L,keep){
+  var inc={},pct={};
+  L.members.forEach(function(m){inc[m.id]=true;pct[m.id]=""});
+  var F={id:"",date:today(),title:"",amount:"",pay:"cash",ccy:L.cur,ccyTouched:false,payer:L.myMember||L.members[0].id,mode:"equal",inc:inc,pct:pct,img:"",rate:L.rate?String(+L.rate.r.toPrecision(5)):"",rateTouched:false};
+  if(keep&&keep.mode&&keep.inc){   /* 沿用上一筆的分攤方式，連續記帳比較快 */
+    F.mode=keep.mode;F.payer=keep.payer;
+    L.members.forEach(function(m){if(keep.inc[m.id]!=null)F.inc[m.id]=keep.inc[m.id];if(keep.pct[m.id]!=null)F.pct[m.id]=keep.pct[m.id]});
+  }
+  return F;
+}
+function equalShares(L,F){
+  var ids=L.members.filter(function(m){return F.inc[m.id]}).map(function(m){return m.id}),o={};
+  if(!ids.length)return o;
+  var each=Math.floor(10000/ids.length)/100,left=100;
+  ids.forEach(function(id,i){var v=i===ids.length-1?Math.round(left*100)/100:each;o[id]=v;left-=v});
+  return o;
+}
+function curShares(L,F){
+  if(F.mode==="equal")return equalShares(L,F);
+  var o={};L.members.forEach(function(m){var v=parseFloat(F.pct[m.id]);if(v>0)o[m.id]=v});return o;
+}
+function drawForm(){
+  var L=cur(),box=$("formCard");if(!L)return;
+  if(!S.F)S.F=newF(L,null);
+  var F=S.F,cu=CUR[L.cur];
+  var h='<h2>'+(F.id?"編輯款項":"記一筆代墊")+'</h2>';
+  h+='<div class="g2"><label class="f" style="margin-top:0"><span>日期</span><input type="date" id="fDate"></label><label class="f" style="margin-top:0"><span>項目（選填）</span><input type="text" id="fTitle" maxlength="60" placeholder="例：晚餐、計程車"></label></div>';
+  h+='<span class="lbl">付款方式</span><div class="seg full" id="fPay"><button type="button" data-v="cash">現金</button><button type="button" data-v="card">刷卡</button></div>';
+  h+='<span class="lbl">幣別</span><div class="seg full" id="fCcy"><button type="button" data-v="'+L.cur+'">'+cu.n+'（外幣）</button><button type="button" data-v="TWD">台幣</button></div>';
+  h+='<div class="g2"><label class="f"><span id="fAmL">金額</span><input type="number" id="fAmt" inputmode="decimal" min="0" step="any" placeholder="0"></label><label class="f" id="fRateW"><span>匯率（1 '+cu.n+' = ? 台幣）</span><input type="number" id="fRate" inputmode="decimal" min="0" step="any"></label></div>';
+  h+='<div class="muted small" id="fTwd" style="margin-top:4px"></div>';
+  h+='<label class="f"><span>誰先付的</span><select id="fPayer">'+L.members.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join('')+'</select></label>';
+  h+='<span class="lbl">分攤方式</span><div class="seg full" id="fMode"><button type="button" data-v="equal">平均分（可選誰參與）</button><button type="button" data-v="pct">自訂比例 %</button></div>';
+  h+='<div id="fShares"></div><div class="sum" id="fSum"></div>';
+  h+='<span class="lbl">收據／付款截圖（選填）</span><div class="ph"><button class="btn sm" type="button" id="fPick">'+ico("img",15)+' 選擇圖片</button><button class="btn sm" type="button" id="fPaste">'+ico("clip",15)+' 貼上</button><span id="fThumbW"></span></div>';
+  h+='<div class="err" id="fErr" role="alert"></div>';
+  h+='<div class="row">'+(F.id?'<button class="btn" type="button" id="fCancel">取消編輯</button>':'')+'<button class="btn pri" type="button" id="fOk">'+ico("plus",16)+'<span>'+(F.id?"更新":"加入")+'</span></button></div>';
+  box.innerHTML=h;
+  $("fDate").value=F.date;$("fTitle").value=F.title;$("fAmt").value=F.amount;$("fPayer").value=F.payer;$("fRate").value=F.rate;
+  $("fDate").oninput=function(){F.date=this.value};
+  $("fTitle").oninput=function(){F.title=this.value};
+  $("fAmt").oninput=function(){F.amount=this.value;drawTwd();drawShares(true)};
+  $("fRate").oninput=function(){F.rate=this.value;F.rateTouched=true;drawTwd();drawShares(true)};
+  $("fPayer").onchange=function(){F.payer=this.value};
+  function segs(id,key,fn){
+    var el=$(id);Array.prototype.forEach.call(el.children,function(b){
+      b.classList.toggle("on",b.dataset.v===F[key]);
+      b.onclick=function(){F[key]=b.dataset.v;fn&&fn();Array.prototype.forEach.call(el.children,function(x){x.classList.toggle("on",x.dataset.v===F[key])})};
+    });
+  }
+  segs("fPay","pay",function(){   /* 現金預設外幣、刷卡預設台幣；手動選過幣別就不再自動換 */
+    if(!F.ccyTouched){F.ccy=F.pay==="cash"?L.cur:"TWD";syncCcy()}
+  });
+  segs("fCcy","ccy",function(){F.ccyTouched=true;syncCcy()});
+  segs("fMode","mode",function(){drawShares(false)});
+  function syncCcy(){
+    Array.prototype.forEach.call($("fCcy").children,function(x){x.classList.toggle("on",x.dataset.v===F.ccy)});
+    $("fRateW").hidden=F.ccy==="TWD";$("fAmL").textContent=F.ccy==="TWD"?"金額（台幣）":"金額（"+cu.n+"）";
+    drawTwd();drawShares(true);
+  }
+  $("fPick").onclick=function(){$("fileIn").click()};
+  $("fPaste").onclick=pasteImg;
+  drawThumb();
+  if($("fCancel"))$("fCancel").onclick=function(){S.F=newF(L,F);drawForm()};
+  $("fOk").onclick=submitForm;
+  box.onkeydown=function(e){if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();submitForm()}};
+  syncCcy();
+}
+function drawTwd(){
+  var F=S.F,L=cur(),el=$("fTwd");if(!el||!F)return;
+  var a=parseFloat(F.amount),r=parseFloat(F.rate);
+  if(F.ccy==="TWD"||!(a>0)){el.textContent=F.ccy==="TWD"?"":"";return}
+  el.textContent=r>0?"≈ NT$ "+nf(Math.round(a*r)):"請填匯率才能換算成台幣";
+}
+function drawShares(valuesOnly){
+  var L=cur(),F=S.F,box=$("fShares");if(!box)return;
+  var a=parseFloat(F.amount),r=F.ccy==="TWD"?1:parseFloat(F.rate),total=a>0&&r>0?a*r:0;
+  var eq=equalShares(L,F);
+  if(!valuesOnly){
+    box.textContent="";
+    L.members.forEach(function(m){
+      var row=document.createElement("div");row.className="shr";row.dataset.id=m.id;
+      var cb=document.createElement("input");cb.type="checkbox";cb.className="chk";cb.checked=!!F.inc[m.id];cb.setAttribute("aria-label",m.name+" 參與分攤");
+      cb.onchange=function(){F.inc[m.id]=cb.checked;drawShares(true)};
+      var nm=document.createElement("span");nm.className="nm";nm.textContent=m.name;
+      var pc=document.createElement("input");pc.type="number";pc.className="pc";pc.inputMode="decimal";pc.min="0";pc.max="100";pc.step="any";pc.placeholder="%";pc.value=F.pct[m.id];
+      pc.oninput=function(){F.pct[m.id]=pc.value;drawShares(true)};
+      var cl=document.createElement("span");cl.className="calc";
+      if(F.mode==="equal"){row.appendChild(cb);row.appendChild(nm);row.appendChild(cl)}else{row.appendChild(nm);row.appendChild(pc);row.appendChild(cl)}
+      box.appendChild(row);
+    });
+  }
+  var sh=curShares(L,F),sum=0;
+  Array.prototype.forEach.call(box.children,function(row){
+    var id=row.dataset.id,p=sh[id]||0;sum+=p;
+    row.classList.toggle("off",F.mode==="equal"&&!F.inc[id]);
+    row.querySelector(".calc").textContent=total&&p?"NT$ "+nf(Math.round(total*p/100)):(F.mode==="equal"?(F.inc[id]?nfp(p):"不分攤"):"");
+  });
+  var s=$("fSum");
+  if(F.mode==="equal"){s.className="sum muted";s.textContent=Object.keys(eq).length?"":"至少要有一位參與分攤。"}
+  else{var ok=Math.abs(sum-100)<0.01;s.className="sum"+(ok?" muted":" bad");s.textContent="合計 "+(Math.round(sum*100)/100)+"%"+(ok?"":"（要等於 100%）")}
+}
+function nfp(p){return (Math.round(p*100)/100)+"%"}
+function submitForm(){
+  var L=cur(),F=S.F,err=$("fErr");err.textContent="";
+  var a=parseFloat(F.amount);if(!(a>0)){err.textContent="請輸入金額。";$("fAmt").focus();return}
+  var rate=1;if(F.ccy!=="TWD"){rate=parseFloat(F.rate);if(!(rate>0)){err.textContent="請填匯率。";$("fRate").focus();return}}
+  if(!F.date){err.textContent="請選日期。";return}
+  var sh=curShares(L,F),keys=Object.keys(sh);
+  if(!keys.length){err.textContent="至少要有一位參與分攤。";return}
+  var sum=0;keys.forEach(function(k){sum+=sh[k]});
+  if(Math.abs(sum-100)>=0.01){err.textContent="分攤比例合計要等於 100%（目前 "+(Math.round(sum*100)/100)+"%）。";return}
+  var e={id:F.id||uid(),date:F.date,title:F.title.trim(),amount:a,ccy:F.ccy,rate:rate,pay:F.pay,payer:F.payer,shares:sh,img:F.img||"",ts:Date.now()};
+  if(L.cloud){
+    if(!ME){err.textContent="尚未登入雲端，請重新整理頁面。";return}
+    if(F.id){var old=L.expenses.filter(function(x){return x.id===F.id})[0];if(!old||old.by!==ME.uid){err.textContent="只有上傳者能編輯這筆。";return}}
+    e.by=ME.uid;
+    API.saveExpense(L.id,e).catch(function(){toast("儲存失敗：沒有權限或網路中斷")});
+  }else{
+    if(F.id){L.expenses=L.expenses.map(function(x){return x.id===F.id?e:x})}else L.expenses.push(e);
+    persist();
+  }
+  toast(F.id?"已更新":"已加入");
+  S.F=newF(L,F);drawAll();
+  var amt=$("fAmt");if(amt&&!F.id)amt.focus();
+}
+
+/* ---------- 截圖 ---------- */
+function shrink(file,cb){
+  var url=URL.createObjectURL(file),im=new Image();
+  im.onload=function(){
+    var w=im.naturalWidth,h=im.naturalHeight,tries=[[1280,0.72],[1024,0.62],[800,0.55],[640,0.5]],i=0,d="";
+    for(;i<tries.length;i++){
+      var k=Math.min(1,tries[i][0]/Math.max(w,h));
+      var cv=document.createElement("canvas");cv.width=Math.round(w*k);cv.height=Math.round(h*k);
+      var cx=cv.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);
+      d=cv.toDataURL("image/jpeg",tries[i][1]);
+      if(d.length<=600000)break;   /* 共同編輯時每筆款項要小於 Firestore 的 1MB 上限 */
+    }
+    URL.revokeObjectURL(url);cb(d);
+  };
+  im.onerror=function(){URL.revokeObjectURL(url);toast("這個檔案讀不出圖片")};
+  im.src=url;
+}
+function setImg(file){if(!file||!/^image\//.test(file.type)){toast("不是圖片檔");return}shrink(file,function(d){if(!S.F)return;S.F.img=d;drawThumb()})}
+function drawThumb(){
+  var w=$("fThumbW");if(!w)return;w.textContent="";
+  if(!S.F||!S.F.img)return;
+  var im=document.createElement("img");im.className="thumb";im.src=S.F.img;im.alt="截圖預覽";im.onclick=function(){viewImg(S.F.img)};
+  var x=document.createElement("button");x.type="button";x.className="btn sm icon";x.style.width="32px";x.innerHTML=ico("x",14);x.title="移除圖片";x.setAttribute("aria-label","移除圖片");x.onclick=function(){S.F.img="";drawThumb()};
+  w.appendChild(im);w.appendChild(x);
+}
+$("fileIn").onchange=function(){var f=this.files&&this.files[0];this.value="";if(f)setImg(f)};
+function pasteImg(){
+  if(!navigator.clipboard||!navigator.clipboard.read){toast("這個瀏覽器不支援從剪貼簿讀圖片，請用「選擇圖片」。");return}
+  navigator.clipboard.read().then(function(items){
+    for(var i=0;i<items.length;i++){
+      var t=items[i].types.filter(function(x){return /^image\//.test(x)})[0];
+      if(t){items[i].getType(t).then(function(b){setImg(new File([b],"paste.png",{type:b.type}))});return}
+    }
+    toast("剪貼簿裡沒有圖片，請先複製一張圖片。");
+  },function(){toast("無法讀取剪貼簿，請允許貼上權限，或改用「選擇圖片」。")});
+}
+document.addEventListener("paste",function(e){
+  if(!cur()||$("modalHost").firstChild)return;
+  var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
+  for(var i=0;i<items.length;i++)if(items[i].kind==="file"&&/^image\//.test(items[i].type)){e.preventDefault();setImg(items[i].getAsFile());return}
+});
+
+/* ---------- 款項清單 ---------- */
+function drawList(){
+  var L=cur(),box=$("listCard");if(!L)return;
+  if(!L.expenses.length){box.innerHTML='<h2>款項</h2><div class="empty">還沒有款項。在上面填一筆，按「加入」。</div>';return}
+  var arr=L.expenses.slice().sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(b.ts-a.ts)});
+  box.innerHTML='<h2>款項（'+arr.length+'）</h2>';
+  var last="";
+  arr.forEach(function(e){
+    if(e.date!==last){last=e.date;var d=document.createElement("div");d.className="day";d.textContent=e.date;box.appendChild(d)}
+    var row=document.createElement("div");row.className="exp";
+    var bd=document.createElement("div");bd.className="bd";
+    var tt=document.createElement("div");tt.className="tt";tt.textContent=e.title||"（未命名）";bd.appendChild(tt);
+    var meta=document.createElement("div");meta.className="small muted";
+    var tags=document.createElement("div");
+    tags.innerHTML='<span class="tag">'+(e.pay==="card"?"刷卡":"現金")+'</span><span class="tag">'+esc(mname(L,e.payer))+' 先付</span>'+(L.cloud?'<span class="tag">'+(ME&&e.by===ME.uid?"我上傳":"由 "+esc(upName(L,e.by))+" 上傳")+'</span>':'');
+    bd.appendChild(tags);
+    meta.textContent=Object.keys(e.shares||{}).map(function(id){return mname(L,id)+" "+nfp(e.shares[id])}).join(" · ");
+    bd.appendChild(meta);
+    var acts=document.createElement("div");acts.style.cssText="display:flex;gap:6px;margin-top:6px";
+    var be=document.createElement("button");be.type="button";be.className="btn sm";be.innerHTML=ico("pen",13)+" 編輯";
+    be.onclick=function(){editExp(e.id)};
+    var bx=document.createElement("button");bx.type="button";bx.className="btn sm danger";bx.innerHTML=ico("trash",13)+" 刪除";
+    var armed=false;bx.onclick=function(){if(!armed){armed=true;bx.textContent="再按一次刪除";setTimeout(function(){armed=false;bx.innerHTML=ico("trash",13)+" 刪除"},3000);return}if(L.cloud){API.delExpense(L.id,e.id).then(function(){toast("已刪除")},function(){toast("刪除失敗：沒有權限或網路中斷")});return}
+      L.expenses=L.expenses.filter(function(x){return x.id!==e.id});persist();drawAll();toast("已刪除")};
+    var mine=!L.cloud||(ME&&e.by===ME.uid),canDel=mine||L.role==="owner";
+    if(mine)acts.appendChild(be);if(canDel)acts.appendChild(bx);
+    if(!mine){var nt=document.createElement("span");nt.className="small muted";nt.textContent=canDel?"只有上傳者能編輯（你可以刪除）":"只有上傳者能編輯";acts.appendChild(nt)}
+    bd.appendChild(acts);
+    var am=document.createElement("div");am.className="am";
+    var b1=document.createElement("b");b1.textContent=money(e.amount,e.ccy);am.appendChild(b1);
+    if(e.ccy!=="TWD"){var s2=document.createElement("span");s2.className="small muted";s2.textContent="≈ NT$ "+nf(Math.round(twd(e)));am.appendChild(s2)}
+    row.appendChild(bd);
+    if(e.img){var im=document.createElement("img");im.className="thumb";im.src=e.img;im.alt="收據截圖";im.onclick=function(){viewImg(e.img)};row.appendChild(im)}
+    row.appendChild(am);box.appendChild(row);
+  });
+}
+function editExp(id){
+  var L=cur(),e=L.expenses.filter(function(x){return x.id===id})[0];if(!e)return;
+  if(L.cloud&&!(ME&&e.by===ME.uid)){toast("只有上傳者能編輯這筆");return}
+  var inc={},pct={},eq=true,ids=Object.keys(e.shares||{});
+  L.members.forEach(function(m){inc[m.id]=ids.indexOf(m.id)>=0;pct[m.id]=e.shares[m.id]!=null?String(e.shares[m.id]):""});
+  var ref=equalShares(L,{inc:inc});ids.forEach(function(k){if(Math.abs((ref[k]||0)-e.shares[k])>0.011)eq=false});
+  S.F={id:e.id,date:e.date,title:e.title,amount:String(e.amount),pay:e.pay,ccy:e.ccy,ccyTouched:true,payer:e.payer,mode:eq?"equal":"pct",inc:inc,pct:pct,img:e.img||"",rate:e.ccy==="TWD"?(L.rate?String(+L.rate.r.toPrecision(5)):""):String(e.rate),rateTouched:true};
+  drawForm();$("formCard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function drawAll(){drawLedgerSel();if(!cur())return;drawSum();drawForm();drawList()}
+
+/* ---------- 備份匯出／匯入（JSON，含截圖，未加密） ---------- */
+$("btnMenu").onclick=function(){
+  modal('<h2>備份與還原</h2><p class="muted small" style="margin:0">資料只存在這個瀏覽器。換手機、換電腦或清除瀏覽器資料前，請先匯出備份。備份檔含收據截圖，<b>沒有加密</b>，請自行妥善保管。</p>'+
+    '<div class="row"><button class="btn" type="button" id="mExp">匯出全部帳本</button><button class="btn" type="button" id="mImp">匯入備份檔</button></div>'+
+    (MEMONLY?'<p class="err">這個瀏覽器無法保存資料（可能是無痕模式），關掉頁面就會消失，請記得匯出。</p>':'')+
+    '<div class="row"><button class="btn pri" type="button" id="mOk">完成</button></div>',
+  function(){
+    $("mOk").onclick=closeModal;
+    $("mExp").onclick=function(){
+      var blob=new Blob([JSON.stringify({app:"split",v:1,exported:Date.now(),ledgers:LEDGERS.filter(function(x){return !x.cloud})})],{type:"application/json"});
+      var a=document.createElement("a"),d=new Date(),p=function(n){return String(n).padStart(2,"0")};
+      a.href=URL.createObjectURL(blob);a.download="split-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},4000);toast("已匯出");
+    };
+    $("mImp").onclick=function(){$("importIn").click()};
+  });
+};
+function cleanMeta(x){
+  if(typeof x.id!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.id)||typeof x.salt!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.salt))return null;
+  return {id:x.id,cloud:true,sid:x.id,salt:x.salt,name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"共同帳本",ts:Number(x.ts)||0};
+}
+function cleanLedger(x){
+  if(!x||typeof x!=="object"||typeof x.id!=="string"||!Array.isArray(x.members)||!Array.isArray(x.expenses))return null;
+  var mem=x.members.filter(function(m){return m&&typeof m.id==="string"&&typeof m.name==="string"&&m.name}).map(function(m){return {id:m.id,name:m.name.slice(0,20)}});
+  if(mem.length<2)return null;
+  var ids={};mem.forEach(function(m){ids[m.id]=1});
+  var exp=[];
+  x.expenses.forEach(function(e){
+    if(!e||typeof e!=="object")return;
+    var a=Number(e.amount);if(!(a>0)||typeof e.date!=="string"||!ids[e.payer])return;
+    var sh={},ok=false;Object.keys(e.shares||{}).forEach(function(k){var v=Number(e.shares[k]);if(ids[k]&&v>0){sh[k]=v;ok=true}});if(!ok)return;
+    var ccy=e.ccy==="TWD"||CUR[e.ccy]?e.ccy:null;if(!ccy)return;
+    var r=ccy==="TWD"?1:Number(e.rate);if(!(r>0))return;
+    exp.push({id:typeof e.id==="string"?e.id:uid(),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:e.payer,shares:sh,img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",ts:Number(e.ts)||0});
+  });
+  var rt=x.rate&&Number(x.rate.r)>0?{r:Number(x.rate.r),t:Number(x.rate.t)||0}:null;
+  return {id:x.id,tripId:typeof x.tripId==="string"?x.tripId:"",name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"帳本",cur:CUR[x.cur]?x.cur:"KRW",rate:rt,members:mem,expenses:exp,ts:Number(x.ts)||Date.now()};
+}
+$("importIn").onchange=function(){
+  var f=this.files&&this.files[0];this.value="";if(!f)return;
+  f.text().then(function(t){
+    var o=JSON.parse(t);if(!o||o.app!=="split"||!Array.isArray(o.ledgers))throw 0;
+    var n=0;o.ledgers.forEach(function(x){var L=cleanLedger(x);if(!L)return;
+      var i=LEDGERS.findIndex(function(y){return y.id===L.id});if(i>=0)LEDGERS[i]=L;else LEDGERS.push(L);dbPut(L);n++});
+    closeModal();if(n){openLedger(S.id&&cur()?S.id:LEDGERS[0].id);toast("已匯入 "+n+" 個帳本（同編號的帳本已被覆蓋）")}else toast("備份檔裡沒有可用的帳本");
+  }).catch(function(){toast("這不是分帳備份檔")});
+};
+
+/* ---------- 啟動 ---------- */
+(async function(){
+  await dbOpen();
+  LEDGERS=(await dbAll()).map(function(x){return x&&x.cloud?cleanMeta(x):cleanLedger(x)}).filter(Boolean);
+  var p=new URLSearchParams(location.search),trip=p.get("trip")||"";
+  var pick="";
+  if(trip){
+    var found=LEDGERS.filter(function(L){return L.tripId===trip})[0];
+    if(found)pick=found.id;
+  }
+  if(!pick&&LEDGERS.length)pick=LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)})[0].id;
+  S.id=pick;drawLedgerSel();
+  if(pick)openLedger(pick);
+  if(trip&&!LEDGERS.some(function(L){return L.tripId===trip})){
+    if(readTrips().some(function(t){return t.id===trip}))newLedgerModal(trip);
+    else toast("找不到這個行程，請手動建立帳本。");
+  }
+  var jm=/^#j=([A-Za-z0-9_-]{8,64})\.([A-Za-z0-9_-]{8,64})$/.exec(location.hash||"");
+  if(jm){
+    var have=LEDGERS.filter(function(x){return x.id===jm[1]})[0];
+    if(have)openLedger(have.id);else joinModal(jm[1],jm[2]);
+  }
+  if(history.replaceState&&(trip||jm))try{history.replaceState(null,"",location.pathname+location.search.replace(/[?&]trip=[^&]*/,""))}catch(e){}
+})();
+})();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { initializeFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
+  authDomain: "hthsieh-7b870.firebaseapp.com",
+  projectId: "hthsieh-7b870",
+  storageBucket: "hthsieh-7b870.firebasestorage.app",
+  messagingSenderId: "537319375553",
+  appId: "1:537319375553:web:4fabfc4ee2259776048a40"
+};
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+  const ready = new Promise((res) => { const off = onAuthStateChanged(auth, () => { off(); res(); }); });
+  const pub = (u) => (u ? { uid: u.uid, isAnonymous: u.isAnonymous, displayName: u.displayName || "", email: u.email || "" } : null);
+  const sp = (sid) => doc(db, "splits", sid);
+  const peopleCol = (sid) => collection(db, "splits", sid, "people");
+  const personRef = (sid, uid) => doc(db, "splits", sid, "people", uid);
+  const expCol = (sid) => collection(db, "splits", sid, "expenses");
+  const expRef = (sid, id) => doc(db, "splits", sid, "expenses", id);
+  async function clearCol(col) {
+    const qs = await getDocs(col);
+    for (let i = 0; i < qs.docs.length; i += 100) {
+      const b = writeBatch(db);
+      qs.docs.slice(i, i + 100).forEach((d) => b.delete(d.ref));
+      await b.commit();
+    }
+  }
+  window.__cloudRes({
+    async getUser() { await ready; return pub(auth.currentUser); },
+    async ensureUser() { await ready; if (!auth.currentUser) await signInAnonymously(auth); return pub(auth.currentUser); },
+    async createLedger(sid, led, person, exps) {
+      await setDoc(sp(sid), led);
+      await setDoc(personRef(sid, person.uid), person.data);
+      for (let i = 0; i < exps.length; i += 5) {
+        const b = writeBatch(db);
+        exps.slice(i, i + 5).forEach((e) => b.set(expRef(sid, e.id), e));
+        await b.commit();
+      }
+    },
+    join(sid, uid, data) { return setDoc(personRef(sid, uid), data, { merge: true }); },
+    listen(sid, h) {
+      const a = onSnapshot(sp(sid), (d) => h.ledger(d.exists() ? d.data() : null), (e) => h.error(e));
+      const b = onSnapshot(peopleCol(sid), (qs) => { const m = {}; qs.forEach((d) => { m[d.id] = d.data(); }); h.people(m); }, (e) => h.error(e));
+      const c = onSnapshot(expCol(sid), (qs) => h.exps(qs.docs.map((d) => ({ ...d.data(), id: d.id }))), (e) => h.error(e));
+      return () => { a(); b(); c(); };
+    },
+    saveExpense(sid, e) { return setDoc(expRef(sid, e.id), e); },
+    delExpense(sid, id) { return deleteDoc(expRef(sid, id)); },
+    updateLedger(sid, patch) { return updateDoc(sp(sid), patch); },
+    updatePerson(sid, uid, patch) { return updateDoc(personRef(sid, uid), patch); },
+    async deleteLedger(sid) { await clearCol(expCol(sid)); await clearCol(peopleCol(sid)); await deleteDoc(sp(sid)); }
+  });
+} catch (e) { window.__cloudRes(null); }
+</script>
+</body>
+</html>
