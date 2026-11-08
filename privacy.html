@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>隱私權說明 - hthsieh Trip</title>
+<meta name="description" content="hthsieh Trip 會收集哪些資料、如何使用，以及如何刪除">
+<style>
+:root{--page:#e6ebf5;--surface:#fff;--bg:#f3f5fa;--ink:#232a3c;--muted:#5d6783;--blue:#5a8dbd;--blue2:#8570b4;--warm:#c8805f;--line:#d8deeb;--tipbg:#fff6ee;--tipline:#efc9b3;--shadow:0 10px 30px -14px rgba(60,70,110,.35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#161a26;--surface:#202637;--bg:#1a1f2d;--ink:#e9edf7;--muted:#a3adc7;--line:#323a52;--tipbg:#33271f;--tipline:#6b4a38;--shadow:0 10px 30px -14px #000}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:68px}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--blue)}
+.hero{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:44px 16px 56px;text-align:center}
+.hero h1{margin:0 0 6px;font-size:clamp(1.7rem,6vw,2.4rem);letter-spacing:.02em}
+.hero p{margin:0 auto;max-width:34em;opacity:.92}
+.hero .back{display:inline-block;margin-top:18px;padding:8px 18px;border-radius:99px;background:rgba(255,255,255,.2);color:#fff;text-decoration:none;font-size:.95rem;border:1px solid rgba(255,255,255,.4)}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--page) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:5px 14px;border-radius:99px;font-size:.9rem}
+nav a:hover{border-color:var(--blue);color:var(--blue)}
+main{max-width:860px;margin:-26px auto 0;padding:0 16px 60px}
+section{background:var(--surface);border-radius:22px;padding:24px 20px;margin:0 0 20px;box-shadow:var(--shadow)}
+section>h2{margin:0 0 4px;font-size:1.35rem;display:flex;align-items:center;gap:10px}
+section>h2::before{content:"";width:6px;height:1.3em;border-radius:3px;background:linear-gradient(var(--blue),var(--warm));flex:none}
+.lead{color:var(--muted);margin:2px 0 14px}
+h3{margin:22px 0 6px;font-size:1.05rem}
+p{margin:8px 0}
+ul,ol{padding-left:1.3em;margin:8px 0}
+li{margin:4px 0}
+figure{margin:14px 0;text-align:center}
+figure img{max-width:100%;height:auto;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);background:var(--bg)}
+figure.narrow img{max-width:min(100%,360px)}
+figure.mid img{max-width:min(100%,520px)}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:6px}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;align-items:start}
+.duo figure{margin:6px 0}
+.tip{background:var(--tipbg);border:1px solid var(--tipline);border-radius:14px;padding:12px 14px 12px 14px;margin:14px 0}
+.tip b.t{display:inline-block;background:var(--warm);color:#fff;border-radius:99px;padding:0 10px;font-size:.8rem;margin-right:6px;line-height:1.7}
+kbd{font:600 .85em/1 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-bottom-width:3px;border-radius:7px;padding:3px 7px;white-space:nowrap}
+.num{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:50%;background:#e24a4a;color:#fff;font-size:.8em;font-weight:700;margin-right:6px;flex:none}
+.legend{list-style:none;padding:0;margin:10px 0}
+.legend li{display:flex;align-items:flex-start;margin:7px 0}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps>li{counter-increment:s;position:relative;padding:12px 14px 12px 52px;background:var(--bg);border-radius:14px;margin:10px 0}
+.steps>li::before{content:counter(s);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+table{width:100%;border-collapse:collapse;font-size:.93rem;margin:10px 0}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.82rem}
+td:first-child{white-space:nowrap;font-weight:600}
+.cheat td:first-child{white-space:normal}
+details{background:var(--bg);border-radius:12px;padding:10px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 40px}
+.pill{display:inline-block;padding:0 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:.85em}
+@media(min-width:700px){section{padding:30px 32px}}
+[data-dev="m"] .d-only{display:none!important}
+[data-dev="d"] .m-only{display:none!important}
+.dev{display:inline-flex;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);border-radius:99px;padding:3px;margin-top:18px;gap:2px}
+.dev button{font:inherit;font-size:.95rem;border:0;background:transparent;color:#fff;padding:6px 20px;border-radius:99px;cursor:pointer}
+.dev button[aria-pressed="true"]{background:#fff;color:var(--blue2);font-weight:700}
+.devhint{margin:8px 0 0;font-size:.85rem;opacity:.9}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;line-height:1.6;padding:0 8px;border-radius:99px;color:#fff;background:var(--blue);margin-right:4px;vertical-align:1px}
+.tag.d{background:var(--blue2)}
+.wide img{max-width:100%!important}
+figure.wide{margin:14px 0}
+</style>
+<style>
+.hero{padding:36px 16px 48px}
+.hero h1{font-size:clamp(1.5rem,5vw,2rem)}
+.upd{font-size:.88rem;opacity:.9;margin-top:6px}
+footer.cp{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 40px;line-height:1.9}
+footer.cp a{color:var(--muted)}
+
+td,th{overflow-wrap:anywhere}
+@media(max-width:640px){
+.rt,.rt tbody,.rt tr,.rt td{display:block;width:100%}
+.rt tr:first-child{display:none}
+.rt tr{border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:8px 12px}
+.rt td{border:0;padding:3px 0;white-space:normal!important}
+.rt td::before{content:attr(data-label);display:block;font-size:.74rem;color:var(--muted);font-weight:600}
+.rt td:first-child{font-weight:700;font-size:1rem}
+.rt td:first-child::before{display:none}
+}
+.must{background:var(--bg);border-radius:12px;padding:10px 14px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>隱私權說明</h1>
+  <p>hthsieh Trip 是個人經營的旅遊行程規劃網站。這份說明用白話告訴你：會收集什麼、為什麼收集、資料放在哪裡，以及你怎麼刪掉。</p>
+  <p class="upd">最後更新：2026 年 11 月 8 日</p>
+</header>
+<main>
+
+<section>
+  <h2>一句話重點</h2>
+  <ul>
+    <li>不登入也能使用，資料只存在你這台裝置的瀏覽器。</li>
+    <li>登入 Google 才會把行程同步到雲端。</li>
+    <li>不賣資料、不放廣告。</li>
+    <li>你隨時可以在「設定」按「刪除帳號與雲端資料」，把雲端上的一切刪除。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>我們收集哪些資料</h2>
+  <table class="rt">
+    <tr><th>情境</th><th>資料</th><th>放在哪裡</th></tr>
+    <tr><td data-label="情境">不登入使用</td><td data-label="資料">你輸入的景點、行程、圖片、配色等</td><td data-label="放在哪裡">只存在你裝置的瀏覽器（localStorage），不會傳到我們的伺服器</td></tr>
+    <tr><td data-label="情境">登入 Google</td><td data-label="資料">Google 帳號的信箱與顯示名稱、系統產生的使用者代號</td><td data-label="放在哪裡">Google Firebase Authentication</td></tr>
+    <tr><td data-label="情境">登入後同步</td><td data-label="資料">你的所有行程、景點（含你上傳或貼上的圖片）、配色、編輯紀錄</td><td data-label="放在哪裡">Google Firebase Firestore，只有你自己的帳號能讀寫</td></tr>
+    <tr><td data-label="情境">建立分享連結</td><td data-label="資料">該行程的內容（景點、時間、圖片、配色）的公開副本</td><td data-label="放在哪裡">Firestore；知道連結的人都能看，但不能修改</td></tr>
+    <tr><td data-label="情境">訪客送出景點建議</td><td data-label="資料">訪客填的景點資料、推薦理由、署名（自行填寫的名稱），以及附的圖片</td><td data-label="放在哪裡">Firestore；只有該行程的擁有者能查看與刪除</td></tr>
+  </table>
+  <p>我們不會主動收集你的真實姓名、電話、地址、位置或付款資料。你在景點備註裡自己寫的內容，屬於你輸入的行程資料，請避免寫入不想公開的個人資訊（特別是會被分享出去的行程）。</p>
+</section>
+
+<section>
+  <h2>資料用來做什麼</h2>
+  <ul>
+    <li>讓你在不同裝置看到同一份行程（同步）。</li>
+    <li>讓你把行程用唯讀連結分享給同行的人。</li>
+    <li>讓朋友能對你分享的行程推薦景點，由你決定是否收進景點庫。</li>
+    <li>產生匯出的 PPT、PDF、圖片，這些都在你的瀏覽器裡完成，不會上傳。</li>
+  </ul>
+  <p>我們不會把你的資料出售、出租，也不會用來投放廣告。</p>
+</section>
+
+<section>
+  <h2>會用到的第三方服務</h2>
+  <p>網站運作時，你的瀏覽器或我們的輔助服務會連到下列第三方。這些服務會依自己的規定收到必要的連線資訊（例如 IP 位址）。</p>
+  <table class="rt">
+    <tr><th>服務</th><th>用途</th><th>可能傳送的資料</th></tr>
+    <tr><td data-label="服務">Google Firebase</td><td data-label="用途">Google 登入、雲端同步與分享</td><td data-label="可能傳送的資料">登入資訊、你的行程資料</td></tr>
+    <tr><td data-label="服務">Cloudflare</td><td data-label="用途">網站網域，以及連結助手（Worker）</td><td data-label="可能傳送的資料">你貼上的地圖連結、要查詢的店名或地址、座標；一般連線資訊</td></tr>
+    <tr><td data-label="服務">Cloudflare Workers AI</td><td data-label="用途">把韓文店名轉成中文建議</td><td data-label="可能傳送的資料">店名文字</td></tr>
+    <tr><td data-label="服務">Google 地圖、Naver 地圖</td><td data-label="用途">讀取你貼上的連結，取得店名、地址與座標</td><td data-label="可能傳送的資料">你貼上的連結（由連結助手代為讀取）</td></tr>
+    <tr><td data-label="服務">CARTO、OpenStreetMap</td><td data-label="用途">顯示地圖底圖、查詢座標與路程估算</td><td data-label="可能傳送的資料">你檢視的地圖範圍、查詢的地名或座標，以及 IP 位址</td></tr>
+    <tr><td data-label="服務">匯率資料來源</td><td data-label="用途">匯率換算</td><td data-label="可能傳送的資料">要查詢的幣別代碼</td></tr>
+    <tr><td data-label="服務">Google Fonts、jsDelivr、unpkg、cdnjs</td><td data-label="用途">載入字型與程式元件</td><td data-label="可能傳送的資料">一般連線資訊（IP 位址、瀏覽器種類）</td></tr>
+  </table>
+  <p>目前網站沒有使用廣告服務，也沒有使用流量分析或追蹤工具。若日後加入，會先更新這份說明。</p>
+</section>
+
+<section>
+  <h2>分享連結的公開程度</h2>
+  <ul>
+    <li>分享連結一旦發出，知道網址的人都能看到那個行程的內容，包括景點名稱、地址、備註、時間與圖片。</li>
+    <li>連結沒有密碼，請只傳給你信任的人，並避免在要分享的行程裡寫入敏感資訊。</li>
+    <li>你可以隨時在「設定」按「停止分享此行程」，連結會立刻失效，分享用的公開副本也會一併刪除。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>資料保存與刪除</h2>
+  <ul>
+    <li><b>刪除單一行程：</b>在行程列按垃圾桶，會連同它的雲端副本與分享資料一併刪除。</li>
+    <li><b>刪除整個帳號：</b>登入後到「設定」按「刪除帳號與雲端資料」，確認並重新登入 Google 後，會永久刪除你雲端上的所有行程、分享連結、景點圖片與登入帳號，無法復原。</li>
+    <li><b>這台裝置上的資料：</b>刪除帳號後仍會保留在你的瀏覽器裡。想完全清除，請先「備份下載」留存需要的資料，再到瀏覽器設定清除本網站的資料。</li>
+    <li><b>登出：</b>登出只會停止同步，不會刪除任何資料。</li>
+    <li>以上刪除功能都由你自己在網頁上操作，不需要經過我們，也不需要寄信或提供任何個人資料。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>瀏覽器儲存（類似 Cookie）</h2>
+  <p>為了記住你的行程、配色、欄位寬度、說明書裝置選擇等設定，網站會使用瀏覽器的本機儲存空間。這些資料只在你的裝置上，不會用來追蹤你。登入狀態則由 Google Firebase 的登入機制保存。</p>
+</section>
+
+<section>
+  <h2>說明的修改</h2>
+  <p>功能更新時，這份說明可能會調整。重大變更會更新上方的「最後更新」日期。</p>
+</section>
+
+<section>
+  <h2>關於你的資料請求</h2>
+  <p class="must">本站不提供信箱聯絡。查看、備份與刪除資料，都可以由你自己在網頁上完成：<b>「備份下載」</b>取走你的資料，<b>「刪除帳號與雲端資料」</b>永久刪除雲端上的一切。</p>
+</section>
+
+</main>
+<footer class="cp">Copyright © 2026 hthsieh. All rights reserved.<br><a href="privacy.html">隱私權說明</a> · <a href="manual.html">使用說明書</a> · <a href="./">回到行程規劃</a></footer>
+</body>
+</html>
