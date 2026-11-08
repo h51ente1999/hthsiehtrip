@@ -1695,7 +1695,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   }
   function hotelNightsHtml(it){
     var N=Math.max(1,s.days.length),o=function(v){var h='<option value="">—</option>';for(var i=1;i<=N;i++)h+='<option value="'+i+'"'+(v===i?' selected':'')+'>第 '+i+' 晚</option>';return h};
-    return '<div class="hnight"><span>🌙 住宿晚數</span><select data-hfrom="'+it.uid+'" aria-label="從第幾晚">'+o(it.from)+'</select><span>～</span><select data-hto="'+it.uid+'" aria-label="到第幾晚">'+o(it.to)+'</select><small>不選＝整趟都住</small></div>';
+    return '<div class="hnight"><span>住宿晚數</span><select data-hfrom="'+it.uid+'" aria-label="從第幾晚">'+o(it.from)+'</select><span>～</span><select data-hto="'+it.uid+'" aria-label="到第幾晚">'+o(it.to)+'</select><small>不選＝整趟都住</small></div>';
   }
   document.addEventListener("change",function(e){
     var t=e.target,d=t.dataset;if(!d||(d.hfrom===undefined&&d.hto===undefined))return;
@@ -4484,23 +4484,25 @@ body.viewer #mapPanel .mphd .sx{display:none}
     function kidBlock(sp){
       var mine=(kd[sp.id]||[]).filter(spot),cand=allPool.filter(function(x){return x.id!==sp.id&&!(x.id in pk)&&!kset[x.id]}).sort(function(a,b){var sa=a.area&&a.area===sp.area?0:1,sb=b.area&&b.area===sp.area?0:1;return sa-sb||(spotName(a)<spotName(b)?-1:1)}).slice(0,120);
       if(!mine.length&&!cand.length)return '';
-      return '<div class="kds">'+mine.map(function(k){var ks=spot(k);return '<span class="kc">'+esc(spotName(ks))+(ks.cat==="美食"?' 🍴':'')+'<button type="button" data-aikidx="'+sp.id+':'+ks.id+'" aria-label="移除包含的景點">✕</button></span>'}).join("")+(cand.length?'<select data-aikid="'+sp.id+'" aria-label="加入包含的景點"><option value="">＋ 包含景點…</option>'+cand.map(function(x){return '<option value="'+x.id+'">'+esc(spotName(x)+(x.area||x.cat?"（"+[x.area,x.cat].filter(Boolean).join("・")+"）":""))+'</option>'}).join("")+'</select>':'')+'</div>';
+      return '<div class="kds">'+mine.map(function(k){var ks=spot(k);return '<span class="kc">'+esc(spotName(ks))+''+'<button type="button" data-aikidx="'+sp.id+':'+ks.id+'" aria-label="移除包含的景點">✕</button></span>'}).join("")+(cand.length?'<select data-aikid="'+sp.id+'" aria-label="加入包含的景點"><option value="">＋ 包含景點…</option>'+cand.map(function(x){return '<option value="'+x.id+'">'+esc(spotName(x)+(x.area||x.cat?"（"+[x.area,x.cat].filter(Boolean).join("・")+"）":""))+'</option>'}).join("")+'</select>':'')+'</div>';
     }
     var rows=lst.map(function(sp){
       var od=aiOtherDay(sp.id,day),on=sp.id in pk,dis=false;
       return '<div class="r'+(on?' on':'')+(dis?' dis':'')+'"><label class="ck"><input type="checkbox" data-aisel="'+sp.id+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="th">'+(sp.img?'<img src="'+esc(sp.img)+'" alt="">':'')+'</span><span class="nm"><b>'+esc(spotName(sp))+'</b><small>'+esc([sp.cat,sp.area].filter(Boolean).join(" · "))+(od>=0?(sp.cat||sp.area?" · ":"")+'也在第 '+(od+1)+' 天':'')+'</small></span></label>'+
         (on?'<span class="ctl">'+(isMealCat(sp)?'<select data-aimeal="'+sp.id+'" aria-label="設為哪一餐" title="設為哪一餐">'+mealOpts(sp.id)+'</select>':'')+'<select data-aipos="'+sp.id+'" aria-label="固定在第幾站" title="固定在第幾站">'+posOpts(sp.id)+'</select><span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span></span>':'')+(on?kidBlock(sp):'')+'</div>';
     }).join("");
-    var fb='',fd0=aiFlightDay(day);
-    if(fd0.apFirst)fb+='<div class="fbn">✈ 第一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fo.m)+' 抵達，'+m2t(fd0.fo.m+120)+' 離開機場</div>';
+    var fb='',wn='',tg=[],fd0=aiFlightDay(day);
+    if(fd0.apFirst){fb+='<div class="fbn">第一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fo.m)+' 抵達，'+m2t(fd0.fo.m+120)+' 離開機場</div>';tg.push("機場")}
     var hh0=aiHotels(day);
-    if(hh0.end&&(fd0.apFirst||hh0.move))fb+='<label class="fbn bag"><input type="checkbox" id="aiBag"'+(ai.bag!==false?' checked':'')+'> 🧳 '+(hh0.move?'退房後先到「'+esc(spotName(hh0.end))+'」寄放行李（約 30 分）':'先到「'+esc(spotName(hh0.end))+'」寄放行李（約 30 分），再開始行程')+'</label>';
-    else if(fd0.apFirst&&!hh0.end)fb+='<div class="fbn">🧳 想先寄放行李？在「飯店資訊」加入飯店後，這裡就能選擇先去飯店。</div>';
-    if(fd0.apLast&&!fd0.apFirst&&hh0.start&&!hh0.move)fb+='<label class="fbn bag"><input type="checkbox" id="aiPick"'+(ai.pick!==false?' checked':'')+'> 🧳 先回「'+esc(spotName(hh0.start))+'」退房、領回行李（約 20 分），再去機場</label>';
-    if(hh0.move)fb+='<div class="fbn">🏨 今天換飯店：「'+esc(spotName(hh0.start))+'」→「'+esc(spotName(hh0.end))+'」</div>';
-    if(hh0.end&&!fd0.apLast&&!fd0.fb)fb+='<label class="fbn bag"><input type="checkbox" id="aiHome"'+(ai.home!==false?' checked':'')+'> 🏨 最後一站回「'+esc(spotName(hh0.end))+'」</label>';
-    if(fd0.apLast)fb+='<div class="fbn">✈ 最後一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fb.m)+' 起飛，必須在 '+m2t(fd0.fb.m-120)+' 前抵達</div>';
-    if(fd0.missAp)fb+='<div class="fbn warn">這天有航班，但景點庫裡沒有機場。先把機場加入景點庫，就會自動排在第一站或最後一站。</div>';
+    if(hh0.end&&(fd0.apFirst||hh0.move)){fb+='<label class="fbn bag"><input type="checkbox" id="aiBag"'+(ai.bag!==false?' checked':'')+'> '+(hh0.move?'退房後先到「'+esc(spotName(hh0.end))+'」寄放行李（約 30 分）':'先到「'+esc(spotName(hh0.end))+'」寄放行李（約 30 分），再開始行程')+'</label>';if(ai.bag!==false)tg.push("寄放行李")}
+    else if(fd0.apFirst&&!hh0.end)fb+='<div class="fbn">想先寄放行李？在「飯店資訊」加入飯店後，這裡就能選擇先去飯店。</div>';
+    if(fd0.apLast&&!fd0.apFirst&&hh0.start&&!hh0.move){fb+='<label class="fbn bag"><input type="checkbox" id="aiPick"'+(ai.pick!==false?' checked':'')+'> 先回「'+esc(spotName(hh0.start))+'」退房、領回行李（約 20 分），再去機場</label>';if(ai.pick!==false)tg.push("領回行李")}
+    if(hh0.move){fb+='<div class="fbn">今天換飯店：「'+esc(spotName(hh0.start))+'」→「'+esc(spotName(hh0.end))+'」</div>';tg.push("換飯店")}
+    if(hh0.end&&!fd0.apLast&&!fd0.fb){fb+='<label class="fbn bag"><input type="checkbox" id="aiHome"'+(ai.home!==false?' checked':'')+'> 最後一站回「'+esc(spotName(hh0.end))+'」</label>';if(ai.home!==false)tg.push("回飯店")}
+    if(fd0.apLast){fb+='<div class="fbn">最後一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fb.m)+' 起飛，必須在 '+m2t(fd0.fb.m-120)+' 前抵達</div>';tg.push("機場")}
+    if(fd0.missAp)wn='<div class="fbn warn">這天有航班，但景點庫裡沒有機場。先把機場加入景點庫，就會自動排在第一站或最後一站。</div>';
+    if(fb)fb='<details class="fbd"'+(ai.fbOpen?' open':'')+'><summary><b>機場與飯店</b><span>'+(tg.length?esc(tg.join("・")):"無特別安排")+'</span></summary>'+fb+'</details>';
+    fb+=wn;
     return fb+'<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label>'+(function(){var g=aiStartSug(day),t=m2t(g.m);return t===ai.start?'<span class="sgs ok" title="'+esc(g.why)+'">✓ 已是建議時間（'+esc(g.why)+'）</span>':'<button type="button" class="sgs" data-aistsug="'+t+'" title="'+esc(g.why)+'">建議 '+t+'<small>'+esc(g.why)+'</small></button>'})()+'<div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
       '<div class="fl">'+(cl.length?'<div class="fr" role="group" aria-label="分類">'+cl.map(function(c){return '<button type="button" class="fc" data-aifc="'+esc(c)+'" aria-pressed="'+(!!ai.fcat[c])+'">'+esc(c)+'<i>'+cc[c]+'</i></button>'}).join("")+'</div>':'')+(al.length?'<div class="fr" role="group" aria-label="區域">'+al.map(function(c){return '<button type="button" class="fc" data-aifa="'+esc(c)+'" aria-pressed="'+(!!ai.farea[c])+'">'+esc(c)+'<i>'+ac[c]+'</i></button>'}).join("")+'</div>':'')+'</div>'+
       '<div class="bd">'+(ai.msg?'<p class="amsg">'+esc(ai.msg)+'</p>':'')+(rows||'<p class="aempty">'+(pool.length?'沒有符合的景點，換個分類或區域看看':'景點庫還沒有景點，先到景點庫新增吧。')+'</p>')+'</div>'+
@@ -4513,7 +4515,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var tl=rows.map(function(r,i){
       var sp=P[r.i].sp;
       return (i>0?'<div class="lg">↓ '+esc(AI_RN[r.mode]||mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':r.src==="calc"?'':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
-        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+(P[r.i].isAp==="bag"||P[r.i].isAp==="pick"?'🧳 ':P[r.i].isAp==="home"?'🏨 ':P[r.i].isAp?'✈ ':'')+esc(spotName(sp))+'<small>'+(P[r.i].isAp==="bag"?'寄放行李 · ':P[r.i].isAp==="pick"?'退房、領回行李 · ':'')+(P[r.i].isAp==="home"?'回飯店休息':'')+(P[r.i].isAp==="home"?'':(P[r.i].isAp==="last"?'起飛前 2 小時內要抵達':'到 '+m2t(r.leave)+((P[r.i].kids||[]).length?' · 含：'+esc(P[r.i].kids.map(function(k){return spotName(spot(k))}).join("、")):'')))+'</small></span>'+(P[r.i].isAp?'':'<span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span>')+'</div>';
+        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+''+esc(spotName(sp))+'<small>'+(P[r.i].isAp==="bag"?'寄放行李 · ':P[r.i].isAp==="pick"?'退房、領回行李 · ':'')+(P[r.i].isAp==="home"?'回飯店休息':'')+(P[r.i].isAp==="home"?'':(P[r.i].isAp==="last"?'起飛前 2 小時內要抵達':'到 '+m2t(r.leave)+((P[r.i].kids||[]).length?' · 含：'+esc(P[r.i].kids.map(function(k){return spotName(spot(k))}).join("、")):'')))+'</small></span>'+(P[r.i].isAp?'':'<span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span>')+'</div>';
     }).join("");
     var rm=pl.rem.length?'<div class="rem">'+pl.rem.map(function(r,j){
       return '<div class="rm '+r.lv+'"><p>'+esc(r.t)+(r.none?'<small>'+esc(r.none)+'</small>':'')+'</p>'+(r.sel?'<div class="fx"><select class="pick" data-aipick="'+k+':'+j+'" aria-label="挑選美食"><option value="">'+esc(r.sel.ph)+'</option>'+r.sel.opts.map(function(o,m){return '<option value="'+m+'">'+esc(o.label)+'</option>'}).join("")+'</select></div><small>'+esc(r.sel.hint)+'</small>':'')+((r.fixes&&r.fixes.length)?'<div class="fx">'+r.fixes.map(function(f,m){return '<button type="button" data-aifix="'+k+':'+j+':'+m+'">'+esc(f.label)+'</button>'}).join("")+'</div>':'')+'</div>';
@@ -4557,6 +4559,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
       if(t.id==="aiBag"){ai.bag=t.checked;aiDraw();return}if(t.id==="aiPick"){ai.pick=t.checked;aiDraw();return}if(t.id==="aiHome"){ai.home=t.checked;aiDraw();return}
       if(t.id==="aiStart"&&/^\d\d:\d\d$/.test(t.value)){ai.start=t.value;aiSavePref()}
     });
+    aiEl.addEventListener("toggle",function(e){if(e.target.classList&&e.target.classList.contains("fbd"))ai.fbOpen=e.target.open},true);
     aiEl.addEventListener("input",function(e){if(e.target.id==="aiQ"){ai.filter=e.target.value;var pos=e.target.selectionStart;aiDraw();var q=document.getElementById("aiQ");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(x){}}}});
     document.addEventListener("keydown",function(e){if(e.key==="Escape"&&aiEl&&aiEl.classList.contains("on"))aiClose()});
   }
@@ -4781,7 +4784,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiSheet .sy2{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
 #aiSheet .sy2 b{font-size:.74rem;min-width:40px;text-align:center;font-weight:600}
 #aiSheet .sy2 button{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font-size:.82rem;line-height:1;padding:0}
-#aiSheet .tr.food .nmx::before{content:"🍴 "}
+
 #aiSheet .lg{font-size:.76rem;color:var(--muted);padding:2px 0 2px 2px}
 #aiSheet .lg em{font-style:normal;margin-left:6px;padding:0 7px;border-radius:99px;background:var(--blue-soft);font-size:.7rem}
 #aiSheet .rem{display:flex;flex-direction:column;gap:6px}
@@ -4808,6 +4811,36 @@ body.viewer #mapPanel .mphd .sx{display:none}
 @media (max-width:560px){#aiSheet .ctl{width:100%;justify-content:flex-end;padding-left:48px}#aiSheet .seg button{padding:5px 9px;font-size:.8rem}}
 #aiSheet .sgs{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;border:0;border-radius:999px;padding:4px 12px;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--on-blue);background:linear-gradient(135deg,var(--blue),var(--dayg2));line-height:1.2}#aiSheet .sgs small{font-size:.68rem;font-weight:500;opacity:.92}#aiSheet .sgs.ok{background:none;color:var(--muted);font-weight:500;cursor:default;padding:4px 0}#aiSheet .fbn.bag{display:flex;gap:8px;align-items:center;cursor:pointer}#aiSheet .fbn{margin:0 16px 8px;padding:8px 12px;border-radius:12px;font-size:.84rem;background:color-mix(in srgb,#2b8cc4 10%,var(--surface));border:1px solid color-mix(in srgb,#2b8cc4 28%,transparent)}
 #aiSheet .fbn.warn{background:color-mix(in srgb,#f59e0b 14%,var(--surface));border-color:color-mix(in srgb,#f59e0b 40%,transparent)}
+
+#aiSheet .fbd{margin:0 16px 8px;border:1px solid color-mix(in srgb,#2b8cc4 28%,transparent);border-radius:12px;background:color-mix(in srgb,#2b8cc4 8%,var(--surface))}
+#aiSheet .fbd>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:.84rem}
+#aiSheet .fbd>summary::-webkit-details-marker{display:none}
+#aiSheet .fbd>summary span{flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#aiSheet .fbd>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:-3px 2px 0;flex:none;transition:transform .15s}
+#aiSheet .fbd[open]>summary::after{transform:rotate(-135deg);margin-top:3px}
+#aiSheet .fbd .fbn{margin:0;border:0;border-top:1px solid color-mix(in srgb,#2b8cc4 18%,transparent);border-radius:0;background:none;padding:7px 12px;font-size:.82rem}
+#aiSheet .fbd .fbn.bag{display:flex;gap:8px;align-items:center}
+#aiSheet .th:empty{display:none}
+@media (max-width:560px){
+#aiSheet .hd{padding:10px 14px 2px}
+#aiSheet .dtabs{padding:4px 14px 6px}#aiSheet .dtabs button{padding:5px 12px;font-size:.84rem}
+#aiSheet .fbd{margin:0 14px 6px}
+#aiSheet .st{padding:2px 14px 4px;gap:6px 10px}
+#aiSheet .fl{padding:0 14px 4px;gap:4px}
+#aiSheet .fc{padding:3px 10px;font-size:.78rem}
+#aiSheet .bd{padding:2px 12px 10px}
+#aiSheet .r{padding:5px 8px;margin-bottom:3px;gap:4px;border-radius:12px}
+#aiSheet .ck{gap:8px}
+#aiSheet .th{width:30px;height:30px;border-radius:8px}
+#aiSheet .nm b{font-size:.88rem}
+#aiSheet .nm small{font-size:.72rem}
+#aiSheet .ctl{width:100%;flex-wrap:nowrap;justify-content:flex-start;padding-left:0;gap:6px}
+#aiSheet .ctl select{flex:1 1 0;min-width:0;max-width:none;font-size:.76rem;padding:3px 6px}
+#aiSheet .sy{gap:4px;margin-left:auto}#aiSheet .sy b{min-width:52px;font-size:.78rem}
+#aiSheet .sy button{width:24px;height:24px}
+#aiSheet .kds{padding:2px 0 0 0;gap:5px}
+#aiSheet .ft{padding:8px 14px}
+}
 html.ai-open body{overflow:hidden}
 </style>
 <style>
