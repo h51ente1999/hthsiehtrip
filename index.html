@@ -609,6 +609,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .fk{background:var(--soft);border-color:var(--line)}
 .fk.fo{background:color-mix(in srgb,var(--blue) 22%,var(--surface))}
 .fk.op{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-color:transparent}
+/* ===== 彈出視窗動畫統一：背景淡入、視窗輕輕浮現（比照設定頁） ===== */
+#addSheet.on .bk,#cfmSheet.on .bk,#pickSheet.on .bk,#sugSheet.on .bk,#vLibSheet.on .bk,#vMapSheet.on .bk,#vPosSheet.on .bk,#vSugSheet.on .bk,#tripSheet.on .bk,#histSheet.on .bk,.fxs:not([hidden]){animation:sfade .18s ease}
+#addSheet.on .sh,#cfmSheet.on .sh,#pickSheet.on .sh,#sugSheet.on .sh,#vLibSheet.on .sh,#vMapSheet.on .sh,#vPosSheet.on .sh,#vSugSheet.on .sh{animation:cpop .2s ease}
+#tripSheet.on .sh,#histSheet.on .sh{animation:tpop .2s ease}
+.fxs:not([hidden]) .fxb{animation:fxpop .2s ease}
+@keyframes fxpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+#splitOv:not([hidden]) .bk{animation:sfade .18s ease}
+#splitOv:not([hidden]) iframe{animation:fxpop .22s ease}
+/* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
+@media (max-width:699px){#splitOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 </style>
 </head>
 <body>

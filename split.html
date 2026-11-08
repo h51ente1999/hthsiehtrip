@@ -84,6 +84,7 @@ label.f>span,label.f span,.lbl{font-size:.82rem!important;font-weight:600;line-h
 .mask{position:fixed;inset:0;background:rgba(10,14,25,.5);display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}
 .modal{background:var(--card);border-radius:16px;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:18px;border:1px solid var(--line)}
 .mask.img{background:rgba(0,0,0,.85);padding:0}
+.mask{animation:mfade .18s ease}.modal{animation:mpop .2s ease}@keyframes mfade{from{opacity:0}to{opacity:1}}@keyframes mpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
 .mask.img img{max-width:100%;max-height:100vh;object-fit:contain}
 .row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.row .btn{flex:1}
 .badge{display:inline-block;font-size:.72rem;border-radius:99px;padding:0 8px;margin-left:6px;background:var(--soft);color:var(--accent);font-weight:600;vertical-align:middle}
@@ -1037,17 +1038,25 @@ function fmtRate(r){return r<0.1?r.toFixed(5):(r<1?r.toFixed(4):r.toFixed(2))}
 function today(){var d=new Date(),p=function(n){return String(n).padStart(2,"0")};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
 /* 這本帳連結的行程裡的景點名稱，讓「項目」可以直接點選 */
 function tripSpotNames(L){
-  if(!L||!L.tripId||/^s:/.test(L.tripId))return [];
+  var rid=realTripId(L);if(!rid)return [];
   try{
-    var d=JSON.parse(localStorage.getItem(APP+"-t-"+L.tripId)||"null"),seen={},out=[];
+    var d=JSON.parse(localStorage.getItem(APP+"-t-"+rid)||"null"),seen={},out=[];
     (d&&Array.isArray(d.spots)?d.spots:[]).forEach(function(s){var n=s&&typeof s.name==="string"?s.name.trim():"";if(n&&n!=="未命名地點"&&!seen[n]){seen[n]=1;out.push(n.slice(0,60))}});
     return out.slice(0,500);
   }catch(e){return []}
 }
+function realTripId(L){
+  if(!L)return "";
+  if(L.tripId&&!/^s:/.test(L.tripId))return L.tripId;
+  var ts=readTrips();
+  if(L.tripId){var m=ts.filter(function(x){return x.shareId&&"s:"+x.shareId===L.tripId})[0];if(m)return m.id}
+  if(TRIPCTX&&TRIPCTX.trip&&!/^s:/.test(TRIPCTX.trip)&&sameTrip(L,TRIPCTX.trip))return TRIPCTX.trip;
+  return "";
+}
 function tripSpots(L){
-  if(!L||!L.tripId||/^s:/.test(L.tripId))return [];
+  var rid=realTripId(L);if(!rid)return [];
   try{
-    var d=JSON.parse(localStorage.getItem(APP+"-t-"+L.tripId)||"null"),seen={},out=[];
+    var d=JSON.parse(localStorage.getItem(APP+"-t-"+rid)||"null"),seen={},out=[];
     (d&&Array.isArray(d.spots)?d.spots:[]).forEach(function(s){var n=s&&typeof s.name==="string"?s.name.trim():"";if(n&&n!=="未命名地點"&&!seen[n]){seen[n]=1;out.push({n:n.slice(0,60),sub:[s.area,s.cat].filter(function(x){return typeof x==="string"&&x}).join("・").slice(0,30)})}});
     return out.slice(0,500);
   }catch(e){return []}
