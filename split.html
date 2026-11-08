@@ -241,6 +241,20 @@ function readTrips(){
   try{var x=JSON.parse(localStorage.getItem(APP+"-idx")||"null");if(x&&Array.isArray(x.list))return x.list.filter(function(e){return e&&typeof e.id==="string"}).map(function(e){return {id:e.id,name:String(e.name||"（未命名行程）"),shareId:(typeof e.shareId==="string"&&/^[A-Za-z0-9_-]{10,64}$/.test(e.shareId))?e.shareId:""}})}catch(e){}
   return [];
 }
+/* 判斷帳本是否屬於這個行程：編輯頁的行程編號，和分享頁的 s:分享編號，指的是同一個行程時視為同一本 */
+function tripShareTag(id){var t=readTrips().filter(function(x){return x.id===id})[0];return t&&t.shareId?"s:"+t.shareId:""}
+function sameTrip(L,trip){
+  if(!L||!trip||!L.tripId)return false;
+  if(L.tripId===trip)return true;
+  if(/^s:/.test(trip))return tripShareTag(L.tripId)===trip;
+  var g=tripShareTag(trip);return !!g&&L.tripId===g;
+}
+/* 綁定行程：已經綁到真正行程的帳本，不會被分享頁的 s: 標記蓋掉；s: 標記遇到真正行程編號則升級 */
+function bindTrip(L,trip){
+  if(!L||!trip)return;
+  if(/^s:/.test(trip)&&L.tripId&&!/^s:/.test(L.tripId))return;
+  L.tripId=trip;dbPut(L);
+}
 function tripCur(id){
   try{var d=JSON.parse(localStorage.getItem(APP+"-t-"+id)||"null");if(d&&CUR[d.cur])return d.cur}catch(e){}
   try{var f=localStorage.getItem(APP+"-fxdef");if(CUR[f])return f}catch(e){}
@@ -447,7 +461,7 @@ async function tryOwnLink(trip){
     var tr=readTrips().filter(function(x){return x.id===trip})[0];
     var meta={id:sp.sid,cloud:true,sid:sp.sid,salt:sp.salt,name:(tr&&tr.name)||"共同帳本",tripId:trip,ts:Date.now()};
     var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
-    if(have){have.tripId=trip;dbPut(have)}else{LEDGERS.push(meta);dbPut(meta)}
+    if(have){bindTrip(have,trip)}else{LEDGERS.push(meta);dbPut(meta)}
     S.id=sp.sid;drawLedgerSel();openLedger(sp.sid);return true;
   }catch(e){return false}
 }
@@ -590,7 +604,7 @@ function joinLinkModal(tag){
       var m=/#j=([A-Za-z0-9_-]{8,64})\.([A-Za-z0-9_-]{8,64})/.exec($("jlIn").value);
       if(!m){$("jlErr").textContent="連結格式不對，請完整貼上朋友給的連結。";return}
       var have=LEDGERS.filter(function(x){return x.id===m[1]})[0];
-      if(have){have.tripId=tag;dbPut(have);closeModal();openLedger(have.id);return}
+      if(have){bindTrip(have,tag);closeModal();openLedger(have.id);return}
       closeModal();joinModal(m[1],m[2],tag);
     }
     $("jlGo").onclick=go;$("jlIn").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
@@ -608,7 +622,7 @@ function joinModal(sid,salt,tag){
         var u=await api.ensureUser(),hash=await pwHash(pw,salt);
         try{await api.join(sid,u.uid,{pwHash:hash,ts:Date.now()})}catch(e){if(e&&e.code==="permission-denied")throw {code:"denied"};throw e}
         var meta={id:sid,cloud:true,sid:sid,salt:salt,name:"共同帳本",tripId:tag||"",ts:Date.now()};
-        if(!LEDGERS.some(function(x){return x.id===sid}))LEDGERS.push(meta);else if(tag){LEDGERS.filter(function(x){return x.id===sid})[0].tripId=tag}
+        if(!LEDGERS.some(function(x){return x.id===sid}))LEDGERS.push(meta);else if(tag){bindTrip(LEDGERS.filter(function(x){return x.id===sid})[0],tag)}
         dbPut(meta);closeModal();openLedger(sid);
       })().catch(function(e){b.disabled=false;b.textContent="加入";$("jErr").textContent=e&&e.code==="denied"?"密碼錯誤，或這個帳本已經被刪除。":(e&&e.code==="offline"?"連不上雲端服務。":"加入失敗（"+(e&&e.code||"網路")+"）。")});
     }
@@ -647,7 +661,7 @@ function newLedgerModal(presetTrip){
       var name=n.value.trim();if(!name){$("nlErr").textContent="請輸入帳本名稱。";return}
       var names=$("nlMem").value.split(/[,，、]/).map(function(x){return x.trim()}).filter(Boolean).filter(function(x,i,a){return a.indexOf(x)===i});
       if(names.length<2){$("nlErr").textContent="至少要兩位成員。";return}
-      if(t.value&&LEDGERS.some(function(x){return x.tripId===t.value})){$("nlErr").textContent="這個行程已經有帳本了，一個行程只能有一本。";return}
+      if(t.value&&LEDGERS.some(function(x){return sameTrip(x,t.value)})){$("nlErr").textContent="這個行程已經有帳本了，一個行程只能有一本。";return}
       var L={id:uid(),tripId:t.value||"",name:name,cur:c.value,rate:null,members:names.map(function(x){return {id:uid(),name:x}}),expenses:[],ts:Date.now()};
       LEDGERS.push(L);dbPut(L);closeModal();openLedger(L.id);
       if(AUTOSHARE&&presetTrip&&L.tripId===presetTrip){AUTOSHARE=false;setTimeout(enableModal,0)}
@@ -1344,23 +1358,23 @@ var TRIPCTX=null;
 function dropStale(meta,msg){
   if(meta.tripId&&ME&&!ME.isAnonymous&&API&&API.setTripSplit)API.setTripSplit(ME.uid,meta.tripId,"","").catch(function(){});
   removeMeta(meta.id);toast(msg);
-  if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);
+  if(TRIPCTX&&!LEDGERS.some(function(L){return sameTrip(L,TRIPCTX.trip)}))tripFlow(TRIPCTX.trip,TRIPCTX.view);
 }
 
 function tripFlow(trip,view){
   var tids=readTrips().map(function(x){return x.id});
   FREE_LEDGERS=LEDGERS.filter(function(L){return !L.tripId||(!/^s:/.test(L.tripId)&&tids.length&&tids.indexOf(L.tripId)<0)});
-  if(trip&&!LEDGERS.some(function(L){return L.tripId===trip})){
+  if(trip&&!LEDGERS.some(function(L){return sameTrip(L,trip)})){
   PENDING_TRIP=trip;
   if(view){(async function(){
     var api=await getApi(),sp=null;
     try{if(api&&api.getShareSplit)sp=await api.getShareSplit(view)}catch(e){}
     if(sp&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt)){
       var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
-      if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
+      if(have){bindTrip(have,trip);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
     }else joinLinkModal(trip);
   })()}
-  else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return L.tripId===trip}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)})}
+  else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return sameTrip(L,trip)}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)})}
   else toast("找不到這個行程，請手動建立帳本。");
 }
 }
@@ -1372,7 +1386,7 @@ function tripFlow(trip,view){
   if(view)trip="s:"+view;
   var pick="";
   if(trip){
-    var found=LEDGERS.filter(function(L){return L.tripId===trip})[0];
+    var found=LEDGERS.filter(function(L){return sameTrip(L,trip)})[0];
     if(!found){   /* 舊帳本沒記到行程：名稱以行程名開頭、且只有一本還沒連結的，就自動連結 */
       var tr=readTrips().filter(function(t){return t.id===trip})[0];
       var nz=function(s){return String(s||"").replace(/[\s（）()]|共同/g,"").toLowerCase()};
@@ -1384,7 +1398,7 @@ function tripFlow(trip,view){
     }
     if(found)pick=found.id;
   }
-  if(!pick&&LEDGERS.length)pick=LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)})[0].id;
+  if(!pick&&!trip&&LEDGERS.length)pick=LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)})[0].id;
   S.id=pick;drawLedgerSel();
   if(pick)openLedger(pick);
   if(AUTOSHARE&&trip&&!view&&found&&pick===found.id){if(!found.cloud){var ak="split-v1-asked-"+found.id,asked=false;try{asked=!!localStorage.getItem(ak);localStorage.setItem(ak,"1")}catch(e){}if(!asked)enableModal()}}
