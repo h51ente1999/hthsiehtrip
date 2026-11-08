@@ -4095,14 +4095,15 @@ body.viewer #mapPanel .mphd .sx{display:none}
   $("histBtn").onclick=histOpen;
   setTimeout(function(){if(!viewerMode)try{histCommit(IDX.cur)}catch(e){}},2000);
   /* ===== 幫我排（自動排行程）===== */
-  var AIK=KEY+"-ai",AI_STAY={"景點":90,"體驗":120,"美食":60,"購物":90},AI_MODES=[["transit","大眾運輸"],["drive","開車"],["walk","步行"]];
-  var ai={day:0,start:"09:30",mode:"transit",picks:{},filter:"",view:"pick",res:null,seq:0,undo:null,memo:{},msg:""};
-  try{var aip=JSON.parse(localStorage.getItem(AIK)||"{}");if(/^\d\d:\d\d$/.test(aip.start||""))ai.start=aip.start;if(/^(transit|drive|walk)$/.test(aip.mode||""))ai.mode=aip.mode}catch(e){}
+  var AIK=KEY+"-ai",AI_STAY={"景點":90,"體驗":120,"美食":60,"購物":90},AI_MODES=[["auto","自動建議"],["transit","大眾運輸"],["drive","開車／計程車"],["walk","步行"]],AI_MN={auto:"自動建議",transit:"大眾運輸",drive:"開車",walk:"步行"};
+  var ai={day:0,start:"09:30",mode:"auto",picks:{},pos:{},filter:"",view:"pick",res:null,seq:0,undo:null,memo:{},msg:""};
+  try{var aip=JSON.parse(localStorage.getItem(AIK)||"{}");if(/^\d\d:\d\d$/.test(aip.start||""))ai.start=aip.start;if(/^(auto|transit|drive|walk)$/.test(aip.mode||""))ai.mode=aip.mode}catch(e){}
   function aiSavePref(){try{localStorage.setItem(AIK,JSON.stringify({start:ai.start,mode:ai.mode}))}catch(e){}}
   function aiDefStay(sp){return AI_STAY[sp.cat]||75}
   function aiHav(a,b){var r=Math.PI/180,dl=(b[0]-a[0])*r,dg=(b[1]-a[1])*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2);return 12742*Math.asin(Math.sqrt(x))}
   function aiEst(a,b,mode){
     if(!a||!b)return 20;
+    if(mode==="auto"){var w=aiEst(a,b,"walk");if(w<=15)return w;var tt=aiEst(a,b,"transit"),dd=aiEst(a,b,"drive");return tt<=dd+25?tt:dd}
     var km=aiHav(a,b)*1.3,m;
     if(mode==="walk")m=km/4.5*60*1.15;else if(mode==="drive")m=km/28*60+8;else m=km<0.8?km/4.5*60*1.15:12+km/18*60;
     return Math.max(5,Math.ceil(m/5)*5);
@@ -4138,26 +4139,32 @@ body.viewer #mapPanel .mphd .sx{display:none}
     return {rows:rows,end:t,trav:trav,cost:cost};
   }
   function aiSearch(P,ctx,loose){
-    var n=P.length,idx=[],i;for(i=0;i<n;i++)idx.push(i);
-    if(n<=2){if(n===2){var a=aiSim([0,1],P,ctx,loose).cost,b=aiSim([1,0],P,ctx,loose).cost;return b<a?[1,0]:[0,1]}return idx}
-    var best=idx.slice(),bc=aiSim(best,P,ctx,loose).cost;
-    if(n<=8){
-      var arr=idx.slice();
+    var n=P.length,i,slots=[],free=[];
+    for(i=0;i<n;i++)slots.push(-1);
+    P.forEach(function(p,k){if(p.pos!=null&&p.pos<n&&slots[p.pos]<0)slots[p.pos]=k});
+    var used={};slots.forEach(function(k){if(k>=0)used[k]=1});
+    for(i=0;i<n;i++)if(!used[i])free.push(i);
+    function fill(fo){var q=0;return slots.map(function(k){return k>=0?k:fo[q++]})}
+    var m=free.length;
+    if(m<=1)return fill(free);
+    var best=free.slice(),bc=aiSim(fill(best),P,ctx,loose).cost;
+    if(m<=8){
+      var arr=free.slice();
       (function perm(k){
-        if(k===n){var c=aiSim(arr,P,ctx,loose).cost;if(c<bc){bc=c;best=arr.slice()}return}
-        for(var j=k;j<n;j++){var t=arr[k];arr[k]=arr[j];arr[j]=t;perm(k+1);t=arr[k];arr[k]=arr[j];arr[j]=t}
+        if(k===m){var c=aiSim(fill(arr),P,ctx,loose).cost;if(c<bc){bc=c;best=arr.slice()}return}
+        for(var j=k;j<m;j++){var t=arr[k];arr[k]=arr[j];arr[j]=t;perm(k+1);t=arr[k];arr[k]=arr[j];arr[j]=t}
       })(0);
-      return best;
+      return fill(best);
     }
-    /* 超過 8 站：最近鄰居起手，再用兩兩交換、搬移慢慢改善 */
-    var cur=[],left=idx.slice(),last=null;
+    /* 超過 8 個自由站：最近鄰居起手，再用交換、搬移慢慢改善 */
+    var cur=[],left=free.slice(),last=null;
     while(left.length){var bi=0,bd=Infinity;left.forEach(function(x,q){var d=last==null?(ctx.hotel&&P[x].c?aiEst(ctx.hotel,P[x].c,ctx.mode):0):ctx.legIdx(last,x);if(d<bd){bd=d;bi=q}});last=left.splice(bi,1)[0];cur.push(last)}
-    var cc=aiSim(cur,P,ctx,loose).cost,imp=true,guard=0;
+    var cc=aiSim(fill(cur),P,ctx,loose).cost,imp=true,guard=0;
     while(imp&&guard++<30){imp=false;
-      for(var x=0;x<n;x++)for(var y=x+1;y<n;y++){var t2=cur.slice();var tmp=t2[x];t2[x]=t2[y];t2[y]=tmp;var c2=aiSim(t2,P,ctx,loose).cost;if(c2+0.01<cc){cc=c2;cur=t2;imp=true}}
-      for(var x2=0;x2<n;x2++)for(var y2=0;y2<n;y2++){if(x2===y2)continue;var t3=cur.slice(),mv=t3.splice(x2,1)[0];t3.splice(y2,0,mv);var c3=aiSim(t3,P,ctx,loose).cost;if(c3+0.01<cc){cc=c3;cur=t3;imp=true}}
+      for(var x=0;x<m;x++)for(var y=x+1;y<m;y++){var t2=cur.slice();var tmp=t2[x];t2[x]=t2[y];t2[y]=tmp;var c2=aiSim(fill(t2),P,ctx,loose).cost;if(c2+0.01<cc){cc=c2;cur=t2;imp=true}}
+      for(var x2=0;x2<m;x2++)for(var y2=0;y2<m;y2++){if(x2===y2)continue;var t3=cur.slice(),mv=t3.splice(x2,1)[0];t3.splice(y2,0,mv);var c3=aiSim(fill(t3),P,ctx,loose).cost;if(c3+0.01<cc){cc=c3;cur=t3;imp=true}}
     }
-    return cur;
+    return fill(cur);
   }
   /* ---- 交通時間（真實查詢，失敗就用估算） ---- */
   function aiTransit(a,b){
@@ -4175,11 +4182,25 @@ body.viewer #mapPanel .mphd .sx{display:none}
     }
     return once(0);
   }
+  function aiAutoLeg(pa,pb){
+    var w=aiEst(pa.c,pb.c,"walk"),d=aiEst(pa.c,pb.c,"drive"),te=aiEst(pa.c,pb.c,"transit");
+    if(!pa.c||!pb.c)return Promise.resolve({min:20,mode:"transit",src:"est"});
+    if(w<=15)return Promise.resolve({min:w,mode:"walk",src:"calc"});
+    return aiTransit(pa.c,pb.c).then(function(r){
+      if(r.min){
+        if(r.min>d+25)return {min:d,mode:"drive",src:"est",alt:{mode:"transit",min:r.min}};
+        return {min:r.min,mode:"transit",src:"api",lines:r.lines};
+      }
+      if(te>d+25)return {min:d,mode:"drive",src:"est",alt:{mode:"transit",min:te}};
+      return {min:te,mode:"transit",src:"est",why:r.err};
+    });
+  }
   function aiLeg(pa,pb,mode){
     var key=mode+"|"+[pa.sid,pb.sid].sort().join("|");
     if(ai.memo[key])return ai.memo[key];
     var est=aiEst(pa.c,pb.c,mode),p;
-    if(!pa.c||!pb.c)p=Promise.resolve({min:est,src:"est"});
+    if(mode==="auto")p=aiAutoLeg(pa,pb);
+    else if(!pa.c||!pb.c)p=Promise.resolve({min:est,src:"est"});
     else if(mode==="transit")p=aiTransit(pa.c,pb.c).then(function(r){return r.min?{min:r.min,src:"api",lines:r.lines}:{min:est,src:"est",why:r.err}});
     else p=driveMin(pa.c,pb.c,mode==="walk").then(function(m){return {min:m,src:"api"}},function(){return {min:est,src:"est",why:"http"}});
     ai.memo[key]=p;return p;
@@ -4225,6 +4246,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
       if(!p.c)rem.push({lv:"info",t:"找不到「"+spotName(p.sp)+"」的位置，移動時間先抓 20 分"});
     });
     rows.forEach(function(r,k){if(k>0&&r.leg>=50)rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」要 "+r.leg+" 分，路上花很多時間"})});
+    rows.forEach(function(r,k){if(k>0&&r.alt&&r.mode==="drive")rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」建議搭計程車約 "+r.leg+" 分，大眾運輸要 "+r.alt.min+" 分"})});
     if(end>1290)rem.push({lv:"warn",t:"預計 "+m2t(end)+" 才結束，會很晚"});
     if(ctx.deadline!=null&&end>ctx.deadline)rem.push({lv:"warn",t:"回程班機前建議提早 3 小時結束，這天預計 "+m2t(end)+"，最晚約 "+m2t(ctx.deadline)});
     if(legInfo.limit)rem.push({lv:"info",t:"本月大眾運輸查詢已達上限，部分路程改用估算"});
@@ -4238,7 +4260,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var t0=t2m(ai.start);if(t0==null)t0=570;
     ai.hour=Math.floor(t0/60);
     var hs=(s.hotelSpots||[])[0],hsp=hs&&spot(hs.sid);
-    var P=sids.map(function(id){var sp=spot(id);return {sid:id,sp:sp,stay:pk[id],h:aiHours(sp),meal:sp.cat==="美食",c:null}});
+    var pp=ai.pos[day]||{};var P=sids.map(function(id){var sp=spot(id);return {sid:id,sp:sp,stay:pk[id],h:aiHours(sp),meal:sp.cat==="美食",c:null,pos:pp[id]>=1?pp[id]-1:null}});
     var jobs=P.map(function(p){return coordsOf(p.sp).then(function(c){p.c=c},function(){})});
     var hc=null;if(hsp)jobs.push(coordsOf(hsp).then(function(c){hc=c},function(){}));
     Promise.all(jobs).then(function(){
@@ -4264,7 +4286,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
           pl.ctx.legIdx=function(i,j){var r=real[[i,j].sort().join("-")];return r?r.min:aiEst(P[i].c,P[j].c,mode)};
           pl.sim=aiSim(pl.order,P,pl.ctx,pl.loose);
           pl.real=real;pl.est=false;
-          pl.sim.rows.forEach(function(r,k){if(k>0){var rr=real[[pl.sim.rows[k-1].i,r.i].sort().join("-")];r.src=rr?rr.src:"est";r.lines=rr&&rr.lines;if(r.src==="est")pl.est=true}});
+          pl.sim.rows.forEach(function(r,k){if(k>0){var rr=real[[pl.sim.rows[k-1].i,r.i].sort().join("-")];r.src=rr?rr.src:"est";r.lines=rr&&rr.lines;r.mode=(rr&&rr.mode)||(mode==="auto"?"transit":mode);r.alt=rr&&rr.alt;if(r.src==="est")pl.est=true}});
           pl.rem=aiRemind(day,P,pl.sim,pl.ctx,info,pl.loose);
         });
         ai.res={day:day,P:P,plans:plans,mode:mode,info:info};ai.view="res";aiDraw();
@@ -4284,7 +4306,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
         var it=map[r.sid]||{uid:uid(),sid:r.sid};
         it.stay=R.P[r.i].stay;
         if(i===0){delete it.drive;delete it.mode;if(!it.fixed)it.time=m2t(r.arr)}
-        else{it.drive=r.leg;it.mode=R.mode;if(r.wait>0){it.fixed=true;it.time=m2t(r.arr)}else if(!it.fixed)it.time=""}
+        else{it.drive=r.leg;it.mode=r.mode||R.mode;if(r.wait>0){it.fixed=true;it.time=m2t(r.arr)}else if(!it.fixed)it.time=""}
         return it;
       });
       s.days[day]=arr;save();render();aiClose();
@@ -4305,7 +4327,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   function aiOpen(day){
     ai.day=day;ai.view="pick";ai.res=null;ai.msg="";ai.memo={};ai.filter="";
     if(!aiEl){aiEl=document.createElement("div");aiEl.id="aiSheet";document.body.appendChild(aiEl);aiBind()}
-    aiEl.classList.add("on");document.documentElement.classList.add("ai-open");aiDraw();
+    aiEl.classList.add("on","fresh");document.documentElement.classList.add("ai-open");aiDraw();clearTimeout(aiEl._f);aiEl._f=setTimeout(function(){aiEl.classList.remove("fresh")},450);
   }
   function aiStayStr(m){return m>=60?(Math.floor(m/60)+" 小時"+(m%60?" "+(m%60)+" 分":"")):m+" 分"}
   function aiDraw(){
@@ -4326,10 +4348,17 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var sel=pool.filter(function(sp){return sp.id in pk}),rest=pool.filter(function(sp){return !(sp.id in pk)});
     var lst=sel.concat(rest).filter(function(sp){if(!q)return true;return (sp.name+(sp.ko||"")+(sp.area||"")+(sp.cat||"")).toLowerCase().indexOf(q)>=0});
     var tot=keys.reduce(function(a,id){return a+pk[id]},0);
+    var pps=ai.pos[day]||{};
+    function posOpts(id){
+      var o='<option value="">順序自動</option>',taken={};
+      Object.keys(pps).forEach(function(k){if(k!==id&&(k in pk))taken[pps[k]]=1});
+      for(var q=1;q<=keys.length;q++)o+='<option value="'+q+'"'+(pps[id]===q?' selected':'')+(taken[q]?' disabled':'')+'>固定第 '+q+' 站</option>';
+      return o;
+    }
     var rows=lst.map(function(sp){
       var od=aiOtherDay(sp.id,day),on=sp.id in pk,dis=od>=0;
       return '<div class="r'+(on?' on':'')+(dis?' dis':'')+'"><label class="ck"><input type="checkbox" data-aisel="'+sp.id+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="th">'+(sp.img?'<img src="'+esc(sp.img)+'" alt="">':'')+'</span><span class="nm"><b>'+esc(spotName(sp))+'</b><small>'+esc([sp.cat,sp.area].filter(Boolean).join(" · "))+(dis?(sp.cat||sp.area?" · ":"")+'已在第 '+(od+1)+' 天':'')+'</small></span></label>'+
-        (on?'<span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span>':'')+'</div>';
+        (on?'<span class="ctl"><select data-aipos="'+sp.id+'" aria-label="固定在第幾站" title="固定在第幾站">'+posOpts(sp.id)+'</select><span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span></span>':'')+'</div>';
     }).join("");
     return '<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label><div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
       '<div class="sq"><input type="search" id="aiQ" placeholder="搜尋景點、區域" value="'+esc(ai.filter)+'" aria-label="搜尋景點"></div>'+
@@ -4339,10 +4368,10 @@ body.viewer #mapPanel .mphd .sx{display:none}
   function aiPlanHtml(pl,k,R){
     var P=R.P,sim=pl.sim,rows=sim.rows,start=pl.ctx.start,hrs=(sim.end-start)/60,pct=Math.min(100,Math.round(hrs/10*100)),over=hrs>10;
     var warn=pl.rem.filter(function(r){return r.lv==="warn"}).length;
-    var mname=(AI_MODES.filter(function(m){return m[0]===R.mode})[0]||[])[1]||"";
+    var mname=AI_MN[R.mode]||"";
     var tl=rows.map(function(r,i){
       var sp=P[r.i].sp;
-      return (i>0?'<div class="lg">↓ '+esc(mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
+      return (i>0?'<div class="lg">↓ '+esc(AI_MN[r.mode]||mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':r.src==="calc"?'':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
         '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+esc(spotName(sp))+'</span><span class="lv">– '+m2t(r.leave)+'</span></div>';
     }).join("");
     var rm=pl.rem.length?'<div class="rem">'+pl.rem.map(function(r,j){
@@ -4355,7 +4384,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   }
   function aiResHtml(){
     var R=ai.res;
-    return '<div class="bd"><div class="rtop"><button type="button" class="back" data-aiback="1">← 重新選景點</button><span>第 '+(R.day+1)+' 天 · '+esc((AI_MODES.filter(function(m){return m[0]===R.mode})[0]||[])[1]||"")+'</span></div><div class="plans">'+R.plans.map(function(pl,k){return aiPlanHtml(pl,k,R)}).join("")+'</div>'+
+    return '<div class="bd"><div class="rtop"><button type="button" class="back" data-aiback="1">← 重新選景點</button><span>第 '+(R.day+1)+' 天 · '+esc(AI_MN[R.mode]||"")+'</span></div><div class="plans">'+R.plans.map(function(pl,k){return aiPlanHtml(pl,k,R)}).join("")+'</div>'+
       '<p class="anote">'+(R.plans.some(function(p){return p.est})?'標示「估算」的路程是用距離推估，不是即時查詢。':'')+(R.usage?'本月大眾運輸查詢 '+R.usage.used+' / '+R.usage.limit+' 次。':'')+'套用後，沒勾選的行程會移出這一天，可按「復原」還原。</p></div>';
   }
   function aiBind(){
@@ -4373,7 +4402,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
     });
     aiEl.addEventListener("change",function(e){
       var t=e.target;
-      if(t.dataset.aisel){var pk=aiPicks(ai.day),sp=spot(t.dataset.aisel);if(!sp)return;if(t.checked)pk[sp.id]=aiDefStay(sp);else delete pk[sp.id];aiDraw();return}
+      if(t.dataset.aisel){var pk=aiPicks(ai.day),sp=spot(t.dataset.aisel);if(!sp)return;if(t.checked)pk[sp.id]=aiDefStay(sp);else{delete pk[sp.id];if(ai.pos[ai.day])delete ai.pos[ai.day][sp.id]}aiDraw();return}
+      if(t.dataset.aipos){var pm=ai.pos[ai.day]||(ai.pos[ai.day]={}),v=parseInt(t.value,10);if(v>=1)pm[t.dataset.aipos]=v;else delete pm[t.dataset.aipos];aiDraw();return}
       if(t.id==="aiStart"&&/^\d\d:\d\d$/.test(t.value)){ai.start=t.value;aiSavePref()}
     });
     aiEl.addEventListener("input",function(e){if(e.target.id==="aiQ"){ai.filter=e.target.value;var pos=e.target.selectionStart;aiDraw();var q=document.getElementById("aiQ");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(x){}}}});
@@ -4406,11 +4436,13 @@ body.viewer #mapPanel .mphd .sx{display:none}
 .aib:hover{background:rgba(255,255,255,.34)!important}
 #aiSheet{position:fixed;inset:0;z-index:72;display:none}
 #aiSheet.on{display:block}
-#aiSheet .bk{position:absolute;inset:0;background:rgba(10,14,25,.5);backdrop-filter:blur(2px);animation:sfade .18s ease}
-#aiSheet .pn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(820px,calc(100vw - 24px));max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:aipop .3s var(--pop);overflow:hidden}
+#aiSheet .bk{position:absolute;inset:0;background:rgba(10,14,25,.5);backdrop-filter:blur(2px)}
+#aiSheet.fresh .bk{animation:sfade .18s ease}
+#aiSheet .pn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(820px,calc(100vw - 24px));max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden}
+#aiSheet.fresh .pn{animation:aipop .3s var(--pop)}
 @keyframes aipop{from{opacity:0;transform:translate(-50%,-46%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes aiup{from{transform:translateY(100%)}to{transform:none}}
-@media (max-width:640px){#aiSheet .pn{left:0;right:0;bottom:0;top:auto;transform:none;width:100%;max-height:93vh;border-radius:24px 24px 0 0;animation:aiup .32s cubic-bezier(.2,.9,.3,1)}}
+@media (max-width:640px){#aiSheet .pn{left:0;right:0;bottom:0;top:auto;transform:none;width:100%;max-height:93vh;border-radius:24px 24px 0 0}#aiSheet.fresh .pn{animation:aiup .32s cubic-bezier(.2,.9,.3,1)}}
 #aiSheet .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px}
 #aiSheet .hd h3{margin:0;display:flex;align-items:center;gap:8px;font-size:1.1rem;color:var(--accent-text)}
 #aiSheet .hd .x{width:32px;height:32px;border-radius:50%;border:0;background:var(--blue-soft);color:var(--ink);cursor:pointer;font-size:.95rem}
@@ -4485,6 +4517,10 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiUndo.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #aiUndo button{border:0;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#2EA69A,#4fb3d9);color:#fff}
 #aiSheet .hd,#aiSheet .dtabs,#aiSheet .st,#aiSheet .sq,#aiSheet .ft{flex:0 0 auto}
+#aiSheet .r{flex-wrap:wrap}
+#aiSheet .ctl{display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
+#aiSheet .ctl select{font:inherit;font-size:.78rem;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:104px}
+@media (max-width:560px){#aiSheet .ctl{width:100%;justify-content:flex-end;padding-left:48px}#aiSheet .seg button{padding:5px 9px;font-size:.8rem}}
 html.ai-open body{overflow:hidden}
 </style>
 <div id="toast"></div><script>(function(){var m=document.getElementById("msg"),t=document.getElementById("toast"),tm;new MutationObserver(function(){if(!m.textContent)return;t.textContent=m.textContent;t.classList.add("on");clearTimeout(tm);tm=setTimeout(function(){t.classList.remove("on")},2500+m.textContent.length*70)}).observe(m,{childList:true,characterData:true,subtree:true})})();</script>
