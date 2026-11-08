@@ -1042,7 +1042,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       splitOv.querySelector(".bk").addEventListener("click",closeSplit);
       window.addEventListener("message",function(e){if(e.data&&e.data.splitClose&&splitOv&&e.source===splitOv.querySelector("iframe").contentWindow)closeSplit()});
     }
-    splitOv.querySelector("iframe").src="split.html?embed=1&"+qs;
+    splitOv.querySelector("iframe").src="split.html?embed=1&v=20261108b&"+qs;
     splitOv.hidden=false;document.documentElement.style.overflow="hidden";
   }
   function closeSplit(){
