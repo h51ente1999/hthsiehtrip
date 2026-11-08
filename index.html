@@ -756,7 +756,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   }
   var CPY='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg>';
   document.addEventListener("click",function(e){var b=e.target.closest(".cpy");if(!b)return;e.preventDefault();e.stopPropagation();var tx=b.dataset.ctext!==undefined?b.dataset.ctext:(b.previousElementSibling&&b.previousElementSibling.value)||"";copyText(tx.trim())},true);
-  function mapUrl(sp){var q=(sp.ko||sp.name||"")+(sp.addr?" "+sp.addr:"");return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q.trim())}
+  function mapUrl(sp){var q=(sp.ko||(sp.name===UNNAMED?"":sp.name)||"")+(sp.addr?" "+sp.addr:"");return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q.trim())}
 
   if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
 
@@ -766,7 +766,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return (
       '<div class="chips" role="group" aria-label="分類">'+catChips(sp)+'</div>'+
       '<label class="lf"><span>區域</span><input type="text" data-f="area"'+at+' value="'+esc(sp.area)+'" aria-label="區域"></label>'+(areaList().length?'<div class="chips" role="group" aria-label="既有區域">'+areaChips(sp)+'</div>':'')+
-      '<div class="lf"><span>店名</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc(sp.ko&&sp.name===sp.ko?"":sp.name)+'" placeholder="主標題（例：中文店名）" aria-label="主標題"><button type="button" class="cpy" title="複製主標題" aria-label="複製主標題">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' value="'+esc(sp.ko)+'" placeholder="副標題（例：當地語言店名）" aria-label="副標題"><button type="button" class="cpy" title="複製副標題" aria-label="複製副標題">'+CPY+'</button></div><div class="zhs" data-zid="'+sp.id+'">'+zhHtml(sp)+'</div></div>'+
+      '<div class="lf"><span>店名</span><div class="cprow"><input type="text" data-f="name"'+at+' value="'+esc((sp.ko&&sp.name===sp.ko)||sp.name===UNNAMED?"":sp.name)+'" placeholder="主標題（例：中文店名）" aria-label="主標題"><button type="button" class="cpy" title="複製主標題" aria-label="複製主標題">'+CPY+'</button></div><div class="cprow" style="margin-top:4px"><input type="text" data-f="ko"'+at+' value="'+esc(sp.ko)+'" placeholder="副標題（例：當地語言店名）" aria-label="副標題"><button type="button" class="cpy" title="複製副標題" aria-label="複製副標題">'+CPY+'</button></div><div class="zhs" data-zid="'+sp.id+'">'+zhHtml(sp)+'</div></div>'+
       '<label class="lf"><span>地址</span><input type="text" data-f="addr"'+at+' value="'+esc(sp.addr)+'" aria-label="地址"></label>'+
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
@@ -1247,6 +1247,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   });
   /* coordinates + driving time */
   function okLL(a,b){return typeof a==="number"&&typeof b==="number"&&isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180&&!(a===0&&b===0)}
+  function realName(sp){return sp.ko||(sp.name===UNNAMED?"":sp.name)}
   function spotName(sp){return sp.name||sp.ko||"這個景點"}
   function coordsOf(sp){
     if(okLL(sp.lat,sp.lng))return Promise.resolve([sp.lat,sp.lng]);
@@ -1256,20 +1257,20 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     /* 助手查不到時，直接從瀏覽器問 Photon / Nominatim（不需要重新部署助手） */
     function viaDirect(q){
       if(!q)return Promise.resolve(null);
-      var vs=[q,q.replace(/〒\s?(\d{3})-?(\d{4})/g,"$1-$2").replace(/^(日本|Japan)[,，\s]*/i,"")],pm=q.match(/(\d{3}-\d{4})/);
+      var vs=[q.replace(/〒\s?(\d{3})-?(\d{4})/g,"$1-$2").replace(/^(日本|Japan)[,，\s]*/i,""),q],pm=q.match(/(\d{3}-\d{4})/);
       if(pm)vs.push(pm[1]+" Japan");
       vs=vs.filter(function(x,i){return x&&vs.indexOf(x)===i});
       var p=Promise.resolve(null);
       vs.forEach(function(v){p=p.then(function(c){
         if(c)return c;
-        return fetch("https://photon.komoot.io/api/?limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){var f=j&&j.features&&j.features[0],co=f&&f.geometry&&f.geometry.coordinates;return co?got(+co[1],+co[0]):null},function(){return null}).then(function(c2){
+        return fetch("https://photon.komoot.io/api/?limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){var f=j&&j.features&&j.features[0],co=f&&f.geometry&&f.geometry.coordinates,ty=f&&f.properties&&f.properties.type;return co&&!/^(country|state|county)$/.test(ty||"")?got(+co[1],+co[0]):null},function(){return null}).then(function(c2){
           if(c2)return c2;
-          return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){return j&&j[0]?got(parseFloat(j[0].lat),parseFloat(j[0].lon)):null},function(){return null});
+          return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){return j&&j[0]&&(j[0].place_rank||30)>=16?got(parseFloat(j[0].lat),parseFloat(j[0].lon)):null},function(){return null});
         });
       })});
       return p;
     }
-    return viaInfo(sp.url).then(function(c){return c||viaInfo(sp.naver)}).then(function(c){return c||viaGeo(sp.addr)}).then(function(c){return c||viaGeo(sp.ko||sp.name)}).then(function(c){return c||viaDirect(sp.addr)}).then(function(c){return c||viaDirect(sp.ko||sp.name)});
+    return viaInfo(sp.url).then(function(c){return c||viaInfo(sp.naver)}).then(function(c){return c||viaGeo(sp.addr)}).then(function(c){return c||viaGeo(realName(sp))}).then(function(c){return c||viaDirect(sp.addr)}).then(function(c){return c||viaDirect(realName(sp))});
   }
   function driveMin(a,b,walk){
     return helperFetch("/route?from="+a.join(",")+"&to="+b.join(",")+(walk?"&mode=foot":"")).then(function(j){
@@ -1344,25 +1345,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(/(Chome|丁目|-ro\b|-gil\b|-daero\b|-dong\b|-gu\b|번지)/i.test(t)&&/\d/.test(t))return true;
     return (t.match(/[,，]/g)||[]).length>=2&&/\d+(-\d+)+/.test(t);
   }
-  function splitAddr(t){
-    var full=t.replace(/\s+/g," ").trim(),segs=full.split(/[,，]/).map(function(x){return x.trim()}).filter(Boolean),poi="";
-    for(var i=0;i<segs.length&&!poi;i++){
-      if(/^\d/.test(segs[i])||/〒/.test(segs[i]))continue;
-      if(/(Square|Tower|Building|Bldg|Hills|Station|Hotel|Mall|Park|Temple|Shrine|Castle|Museum|Market|Plaza|Center|Centre|ビル|タワー|ヒルズ|駅|ホテル|神社|寺|公園|市場|타워|빌딩|호텔|시장|공원|센터)/i.test(segs[i]))poi=segs[i].replace(/^(日本|Japan)\s*/i,"");
-    }
-    var short=full.replace(/^(日本|Japan|대한민국|South Korea)\s*/i,"").replace(/^〒?\s?\d{3}-?\d{4}\s*/,"").trim();
-    return {name:(poi||short||full).slice(0,60),addr:full,poi:!!poi};
-  }
+  var UNNAMED="未命名地點";
   function createSpot(o){
     var fromAddr=false;
-    if(o.name&&!o.addr&&addrLike(o.name)){var sa=splitAddr(o.name);o.addr=sa.addr;o.name=sa.name;fromAddr=!sa.poi}
+    if(o.name&&!o.addr&&addrLike(o.name)){o.addr=o.name.replace(/\s+/g," ").trim();o.name=UNNAMED;fromAddr=true}
     var sp={id:uid(),cat:"",name:o.name,ko:o.ko||"",addr:o.addr||"",hours:normHours(o.hours),area:"",note:o.note||"",img:o.img||"",url:"",naver:o.naver||""};
     if(okLL(o.lat,o.lng)){sp.lat=o.lat;sp.lng=o.lng}
     if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
     var g=autoFill(sp);
     s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
     save();render();$("lib").parentNode.scrollTop=0;zhAsk(sp,false);
-    say(fromAddr?"這個 Google 連結只有地址、沒有店名：已把地址填在「地址」欄，店名先用地址代替，請展開改成真正的店名。":"已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
+    say(fromAddr?"這個 Google 連結只有地址、沒有店名：地址已填在「地址」欄，店名請展開後自己填。":"已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
     if(!okLL(sp.lat,sp.lng)&&helperBase()){var sid0=sp.id;coordsOf(sp).then(function(c){if(c&&spot(sid0)){render()}},function(){})}   /* 沒有座標就自動去查，地圖才會出現 */
     return sp;
   }
@@ -2506,7 +2499,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var f=e.target.dataset&&e.target.dataset.f;if(!f)return;
     var sp=spot(e.target.dataset.sid);if(!sp)return;
     var val=e.target.value;
-    if(f==="name"){sp.name=val.trim()?val:(sp.ko||"")}
+    if(f==="name"){sp.name=val.trim()?val:(sp.ko||UNNAMED)}
     else if(f==="ko"){var same=!sp.name||sp.name===sp.ko;sp.ko=val;if(same)sp.name=val}
     else sp[f]=f==="naver"?okNaver(val.trim()):val;
     if(f==="addr"||f==="naver"){delete sp.lat;delete sp.lng}
