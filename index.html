@@ -4096,7 +4096,7 @@ try {
     },
     async pushTrip(uid, id, trip, changed, removed, keep, share) {
       if (share) {
-        await setDoc(shareRef(share.id), share.doc);
+        await setDoc(shareRef(share.id), share.doc, { merge: true });
       }
       const ops = [];
       changed.forEach((sp) => ops.push((b) => b.set(tSpot(uid, id, sp.id), sp)));
