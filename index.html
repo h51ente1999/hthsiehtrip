@@ -4116,9 +4116,16 @@ body.viewer #mapPanel .mphd .sx{display:none}
     return ai.picks[day];
   }
   function aiHotelSids(){var h={};(s.hotelSpots||[]).forEach(function(x){h[x.sid]=1});return h}
+  function aiAirport(){return s.spots.filter(function(sp){return /機場|机场|공항|空港|airport/i.test((sp.name||"")+" "+(sp.ko||""))})[0]||null}
+  function aiFm(v){var m=/^(\d{4}-\d\d-\d\d)T(\d\d):(\d\d)/.exec(v||"");return m?{d:m[1],m:+m[2]*60+ +m[3]}:null}
+  function aiFlightDay(day){
+    var f=s.flights||{},d0=dayDateStr(day).replace(/\//g,"-"),fo=aiFm(f.out&&f.out.arr),fb=aiFm(f.back&&f.back.dep),ap=aiAirport();
+    var isF=!!(fo&&d0&&fo.d===d0),isL=!!(fb&&d0&&fb.d===d0);
+    return {ap:ap,fo:isF?fo:null,fb:isL?fb:null,apFirst:!!(ap&&isF),apLast:!!(ap&&isL),missAp:!ap&&(isF||isL)};
+  }
   function aiPool(day){
-    var hs=aiHotelSids();
-    return s.spots.filter(function(sp){return sp.cat!=="住宿"&&!hs[sp.id]});
+    var hs=aiHotelSids(),fd=aiFlightDay(day),hide=(fd.apFirst||fd.apLast)?fd.ap.id:"";
+    return s.spots.filter(function(sp){return sp.cat!=="住宿"&&!hs[sp.id]&&sp.id!==hide});
   }
   /* ---- 規劃 ---- */
   function aiSim(order,P,ctx,loose){
@@ -4130,8 +4137,9 @@ body.viewer #mapPanel .mphd .sx{display:none}
       var arr=t,w=0;
       if(p.h&&arr<p.h[0]){w=p.h[0]-arr;wait+=w;arr=p.h[0]}
       var leave=arr+p.stay;
+      if(p.isAp==="last"&&ctx.apDead!=null&&arr>ctx.apDead)pen+=(arr-ctx.apDead)*3;
       if(p.h&&leave>p.h[1])pen+=150+(leave-p.h[1]);
-      if(p.meal){var lw=arr>=690&&arr<=840,dw=arr>=1050&&arr<=1230;if(!lw&&!dw){var d1=Math.min(Math.abs(arr-690),Math.abs(arr-840),Math.abs(arr-1050),Math.abs(arr-1230));pen+=40+d1*0.3}}
+      if(p.meal){var lw=arr>=690&&arr<=840,dw=arr>=1050&&arr<=1230;if(dw)pen+=3;if(!lw&&!dw){var d1=Math.min(Math.abs(arr-690),Math.abs(arr-840),Math.abs(arr-1050),Math.abs(arr-1230));pen+=40+d1*0.3}}
       rows.push({i:i,sid:p.sid,arr:arr,leave:leave,leg:leg,wait:w});
       t=leave;
     });
@@ -4172,9 +4180,9 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var base=helperBase();if(!base)return Promise.resolve({err:"no-helper"});
     var url=base+"/transit?from="+a.join(",")+"&to="+b.join(",")+"&h="+(Math.floor((dep==null?600:dep)/60)%24)+"&m="+Math.min(55,Math.round(((dep==null?600:dep)%60)/5)*5);
     function once(n){
-      var ctl=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort()},15000);
+      var ctl=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort()},9000);
       return fetch(url,{signal:ctl?ctl.signal:undefined}).then(function(r){clearTimeout(tm);return r.json().then(function(j){return {st:r.status,j:j||{}}},function(){return {st:r.status,j:{}}})},function(){clearTimeout(tm);return {st:0,j:{}}}).then(function(o){
-        if(o.st===429&&o.j.error==="slow-down"&&n<2)return new Promise(function(ok){setTimeout(ok,5000)}).then(function(){return once(n+1)});
+        if(o.st===429&&o.j.error==="slow-down"&&n<1)return new Promise(function(ok){setTimeout(ok,3000)}).then(function(){return once(n+1)});
         if(o.st===429)return {err:o.j.error==="monthly-limit"?"limit":"slow"};
         if(o.st!==200)return {err:"http",st:o.st,code:o.j.error||"",detail:o.j.detail||""};
         if(o.j.none||!(o.j.sec>=0))return {err:"none"};
@@ -4210,6 +4218,13 @@ body.viewer #mapPanel .mphd .sx{display:none}
     else p=driveMin(pa.c,pb.c,mode==="walk").then(function(m){return {min:m,src:"api"}},function(){return {min:est,src:"est",why:"http"}});
     ai.memo[key]=p;return p;
   }
+  function aiLegEst(pa,pb,mode){
+    var w=aiEst(pa.c,pb.c,"walk"),m;
+    if(mode==="walk"||(w<=15&&pa.c&&pb.c))m="walk";
+    else if(mode==="wd")m="drive";else if(mode==="wt")m="transit";
+    else{var tt=aiEst(pa.c,pb.c,"transit"),dd=aiEst(pa.c,pb.c,"drive");m=tt<=dd+25?"transit":"drive"}
+    return {min:aiEst(pa.c,pb.c,m),mode:m,src:m==="walk"?"calc":"est"};
+  }
   function aiPool2(tasks,n){
     var res=[],i=0;
     function run(){if(i>=tasks.length)return Promise.resolve();var k=i++;return tasks[k]().then(function(r){res[k]=r}).then(run)}
@@ -4226,15 +4241,27 @@ body.viewer #mapPanel .mphd .sx{display:none}
       var d=okLL(sp.lat,sp.lng)&&cen?aiHav(cen,[sp.lat,sp.lng]):(sp.area&&areas[sp.area]?3:99);return {sp:sp,d:d};
     }).sort(function(a,b){return a.d-b.d}).slice(0,2).filter(function(x){return x.d<40}).map(function(x){return x.sp});
   }
+  function aiMoveMeal(day,P,ctx,loose,sid,win){
+    var n=P.length,me=-1;P.forEach(function(p,i){if(p.sid===sid)me=i});if(me<0)return;
+    var taken={};P.forEach(function(p){if(p.sid!==sid&&p.pos!=null)taken[p.pos]=1});
+    var old=P[me].pos;
+    for(var k=0;k<n;k++){
+      if(taken[k])continue;
+      P[me].pos=k;
+      var o=aiSearch(P,ctx,loose),sm=aiSim(o,P,ctx,loose),r=sm.rows.filter(function(x){return x.i===me})[0];
+      if(r&&r.arr>=win[1]&&r.arr<=win[2]){P[me].pos=old;(ai.pos[day]||(ai.pos[day]={}))[sid]=k+1;aiRun(true);return}
+    }
+    P[me].pos=old;say("這家餐廳排不進"+win[0]+"時段，可能是受營業時間或固定站序限制。");
+  }
   function aiRemind(day,P,sim,ctx,legInfo,loose){
-    var rem=[],rows=sim.rows,start=ctx.start,end=sim.end,dur=end-start;
+    var rem=[],rows=sim.rows,start=ctx.start,end=sim.end,dur=end-ctx.astart,nP=P.filter(function(p){return !p.isAp}).length;
     function nm(r){return spotName(P[r.i].sp)}
     function rmFix(i,label){return {label:label||"移除這站",act:function(){delete aiPicks(day)[P[i].sid];aiRun()}}}
     if(ctx.note)rem.push({lv:"info",t:ctx.note});
     function shortenFix(){
-      var sv=0;rows.forEach(function(r){var p=P[r.i];if(!p.meal&&p.stay>30)sv+=Math.min(15,p.stay-30)});
+      var sv=0;rows.forEach(function(r){var p=P[r.i];if(!p.meal&&!p.isAp&&p.stay>30)sv+=Math.min(15,p.stay-30)});
       if(sv<=0)return null;
-      return {label:"全部少停 15 分（約省 "+sv+" 分）",act:function(){var pk=aiPicks(day);rows.forEach(function(r){var p=P[r.i];if(!p.meal&&pk[p.sid]>30)pk[p.sid]=Math.max(30,pk[p.sid]-15)});aiRun()}};
+      return {label:"全部少停 15 分（約省 "+sv+" 分）",act:function(){var pk=aiPicks(day);rows.forEach(function(r){var p=P[r.i];if(!p.meal&&!p.isAp&&pk[p.sid]>30)pk[p.sid]=Math.max(30,pk[p.sid]-15)});aiRun()}};
     }
     function modeFix(){
       if(ctx.mode==="auto"||sim.trav<45)return null;
@@ -4246,12 +4273,22 @@ body.viewer #mapPanel .mphd .sx{display:none}
     var needL=spanL&&!covL,needD=spanD&&!covD;
     if(needL||needD){
       var sg=aiFoodSuggest(day,P),w=(needL&&needD)?"午餐和晚餐":needL?"午餐":"晚餐";
-      rem.push({lv:"warn",t:"這天沒有排"+w+"的餐廳",fixes:sg.map(function(sp){return {label:"＋ "+spotName(sp)+(sp.area?"（"+sp.area+"）":""),act:function(){aiPicks(day)[sp.id]=aiDefStay(sp);aiRun()}}}),none:sg.length?"":"景點庫裡沒有可加的美食，可以先到景點庫新增。"});
+      var mr=rows.filter(function(r){return P[r.i].meal});
+      var have=mr.length?"（你排的美食："+mr.map(function(r){return "「"+nm(r)+"」"+m2t(r.arr)}).join("、")+"）":"";
+      var wins=[];if(needL)wins.push(["午餐",660,870]);if(needD)wins.push(["晚餐",1020,1290]);
+      var fx=[];
+      mr.forEach(function(r){
+        var inL=r.arr>=660&&r.arr<=870,inD=r.arr>=1020&&r.arr<=1290;if(inL||inD)return;
+        var wn=wins[0];if(!wn)return;
+        fx.push({label:"把「"+nm(r)+"」排進"+wn[0]+"時段",act:function(){aiMoveMeal(day,P,ctx,loose,r.sid,wn)}});
+      });
+      sg.forEach(function(sp){fx.push({label:"＋ "+spotName(sp)+(sp.area?"（"+sp.area+"）":""),act:function(){aiPicks(day)[sp.id]=aiDefStay(sp);aiRun()}})});
+      rem.push({lv:"warn",t:(mr.length?"":"這天沒有排")+(mr.length?w+"時段沒有餐廳":w+"的餐廳")+have,fixes:fx,none:sg.length||mr.length?"":"景點庫裡沒有可加的美食，可以先到景點庫新增。"});
     }
-    if(dur>600||P.length>7){
+    if(dur>600||nP>7){
       var best=-1,bs=-1;
-      rows.forEach(function(r,k){if(P[r.i].meal)return;var a=k>0?ctx.legIdx(rows[k-1].i,r.i):0,b=k<rows.length-1?ctx.legIdx(r.i,rows[k+1].i):0,c=(k>0&&k<rows.length-1)?ctx.legIdx(rows[k-1].i,rows[k+1].i):0,sv=P[r.i].stay+a+b-c;if(sv>bs){bs=sv;best=r.i}});
-      var tx=dur>600?"這天從出發到結束約 "+(Math.round(dur/6)/10)+" 小時，建議 10 小時內":"這天排了 "+P.length+" 站，超過 7 站會比較趕";
+      rows.forEach(function(r,k){if(P[r.i].meal||P[r.i].isAp)return;var a=k>0?ctx.legIdx(rows[k-1].i,r.i):0,b=k<rows.length-1?ctx.legIdx(r.i,rows[k+1].i):0,c=(k>0&&k<rows.length-1)?ctx.legIdx(rows[k-1].i,rows[k+1].i):0,sv=P[r.i].stay+a+b-c;if(sv>bs){bs=sv;best=r.i}});
+      var tx=dur>600?"這天從出發到結束約 "+(Math.round(dur/6)/10)+" 小時，建議 10 小時內":"這天排了 "+nP+" 站，超過 7 站會比較趕";
       rem.push({lv:"warn",t:tx,fixes:cutFixes(best>=0?[rmFix(best,"移除「"+spotName(P[best].sp)+"」")]:[])});
     }
     rows.forEach(function(r){
@@ -4263,7 +4300,14 @@ body.viewer #mapPanel .mphd .sx{display:none}
     rows.forEach(function(r,k){if(k>0&&r.leg>=50)rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」要 "+r.leg+" 分，路上花很多時間"})});
     rows.forEach(function(r,k){if(k>0&&r.alt&&r.mode==="drive")rem.push({lv:"info",t:"「"+nm(rows[k-1])+"」到「"+nm(r)+"」建議搭計程車約 "+r.leg+" 分，大眾運輸要 "+r.alt.min+" 分"})});
     if(end>1290)rem.push({lv:"warn",t:"預計 "+m2t(end)+" 才結束，會很晚",fixes:cutFixes()});
-    if(ctx.deadline!=null){
+    if(ctx.missAp)rem.push({lv:"info",t:"這天有航班，但景點庫裡沒有機場。把機場加入景點庫後，會自動排在第一站或最後一站。"});
+    if(ctx.apLast){
+      var ar=rows[rows.length-1],ft2="回程班機 "+m2t(ctx.bdep)+"，必須在 "+m2t(ctx.apDead)+" 前抵達機場（起飛前 2 小時）";
+      if(ar.arr>ctx.apDead){
+        var bi2=-1,bs2=-1;rows.forEach(function(r,k){var p=P[r.i];if(p.meal||p.isAp||k===0&&ctx.apFirst)return;var a=k>0?ctx.legIdx(rows[k-1].i,r.i):0,b=k<rows.length-1?ctx.legIdx(r.i,rows[k+1].i):0,c=(k>0&&k<rows.length-1)?ctx.legIdx(rows[k-1].i,rows[k+1].i):0,sv=p.stay+a+b-c;if(sv>bs2){bs2=sv;bi2=r.i}});
+        rem.push({lv:"warn",t:ft2+"；這天預計 "+m2t(ar.arr)+" 才到，來不及",fixes:cutFixes(bi2>=0?[rmFix(bi2,"移除「"+spotName(P[bi2].sp)+"」")]:[])});
+      }else rem.push({lv:"info",t:"已檢查班機："+ft2+"，預計 "+m2t(ar.arr)+" 抵達機場"});
+    }else if(ctx.deadline!=null){
       var ft="回程班機 "+m2t(ctx.bdep)+"，要在 "+m2t(ctx.bdep-120)+" 前到機場（提前 2 小時），再加上前往機場約 1 小時，行程最晚 "+m2t(ctx.deadline)+" 結束";
       if(end>ctx.deadline)rem.push({lv:"warn",t:ft+"；這天預計 "+m2t(end)+" 才結束，會來不及",fixes:cutFixes()});
       else rem.push({lv:"info",t:"已檢查班機："+ft+"，這天預計 "+m2t(end)+" 結束"});
@@ -4273,37 +4317,44 @@ body.viewer #mapPanel .mphd .sx{display:none}
   }
   /* ---- 執行 ---- */
   function aiRun(quiet){
-    var day=ai.day,seq=++ai.seq,pk=aiPicks(day),sids=Object.keys(pk).filter(function(id){return spot(id)});
+    var day=ai.day,seq=++ai.seq,pk=aiPicks(day),fd=aiFlightDay(day),apId=(fd.apFirst||fd.apLast)?fd.ap.id:"";
+    var sids=Object.keys(pk).filter(function(id){return spot(id)&&id!==apId});
     if(!sids.length)return;
     if(!quiet){ai.view="load";ai.msg="正在查詢景點位置…";aiDraw()}
     var t0=t2m(ai.start);if(t0==null)t0=570;
     ai.hour=Math.floor(t0/60);
     var hs=(s.hotelSpots||[])[0],hsp=hs&&spot(hs.sid);
     var pp=ai.pos[day]||{};var P=sids.map(function(id){var sp=spot(id);return {sid:id,sp:sp,stay:pk[id],h:aiHours(sp),meal:sp.cat==="美食",c:null,pos:pp[id]>=1?pp[id]-1:null}});
+    if(fd.apFirst){P.forEach(function(p){if(p.pos!=null)p.pos+=1});P.unshift({sid:fd.ap.id,sp:fd.ap,stay:120,h:null,meal:false,c:null,pos:0,isAp:"first"})}
+    if(fd.apLast){P.push({sid:fd.ap.id+"",sp:fd.ap,stay:0,h:null,meal:false,c:null,pos:P.length,isAp:"last"});P.forEach(function(p){if(!p.isAp&&p.pos!=null&&p.pos>=P.length-1)p.pos=null})}
     var jobs=P.map(function(p){return coordsOf(p.sp).then(function(c){p.c=c},function(){})});
     var hc=null;if(hsp)jobs.push(coordsOf(hsp).then(function(c){hc=c},function(){}));
     Promise.all(jobs).then(function(){
       if(seq!==ai.seq)return;
-      var note="",bdep=null,start=t0,deadline=null,f=s.flights||{},d0=dayDateStr(day).replace(/\//g,"-");
-      function fm(v){var m=/^(\d{4}-\d\d-\d\d)T(\d\d):(\d\d)/.exec(v||"");return m?{d:m[1],m:+m[2]*60+ +m[3]}:null}
-      var fo=fm(f.out&&f.out.arr),fb=fm(f.back&&f.back.dep);
-      if(fo&&d0&&fo.d===d0&&start<fo.m+120){start=fo.m+120;note="這天 "+m2t(fo.m)+" 抵達，出發時間已調整為 "+m2t(start)}
-      if(fb&&d0&&fb.d===d0){deadline=fb.m-180;bdep=fb.m}
+      var note="",bdep=null,start=t0,deadline=null,apDead=null,astart=null;
+      if(fd.apFirst){start=fd.fo.m;astart=start+120;note="第一站是「"+spotName(fd.ap)+"」：班機 "+m2t(fd.fo.m)+" 抵達，"+m2t(astart)+" 離開機場（抵達後 2 小時）"}
+      else if(fd.fo&&start<fd.fo.m+120){start=fd.fo.m+120;note="這天 "+m2t(fd.fo.m)+" 抵達，出發時間已調整為 "+m2t(start)}
+      if(fd.apLast){bdep=fd.fb.m;apDead=bdep-120}
+      else if(fd.fb){deadline=fd.fb.m-180;bdep=fd.fb.m}
       var mode=ai.mode;
       var plans=[["route","最順路","少繞路，移動時間最短",false],["relax","時間寬鬆","每段多留 10 分鐘，午餐不趕",true]].map(function(d){
-        var ctx={start:start,hotel:hc,mode:mode,deadline:deadline,bdep:bdep,note:note,legIdx:function(i,j){return aiEst(P[i].c,P[j].c,mode)}};
+        var ctx={start:start,astart:astart!=null?astart:start,apFirst:fd.apFirst,apLast:fd.apLast,apDead:apDead,missAp:fd.missAp,hotel:fd.apFirst?null:hc,mode:mode,deadline:deadline,bdep:bdep,note:note,legIdx:function(i,j){return aiEst(P[i].c,P[j].c,mode)}};
         return {id:d[0],name:d[1],tag:d[2],loose:d[3],ctx:ctx,order:aiSearch(P,ctx,d[3])};
       });
       if(!quiet){ai.msg="正在查詢交通時間…";aiDraw()}
-      var info={limit:false,est:0},tasks=[];
+      var info={limit:false,est:0},tasks=[],done=0;ai.skip=false;
       plans.forEach(function(pl){
         var es=aiSim(pl.order,P,pl.ctx,pl.loose);pl.real={};
         for(var k=1;k<pl.order.length;k++)(function(k){
           var a=pl.order[k-1],b=pl.order[k],dep=es.rows[k-1].leave,key=[a,b].sort().join("-");
-          tasks.push(function(){return aiLeg(P[a],P[b],mode,dep).then(function(r){pl.real[key]=r;if(r.why==="limit")info.limit=true;if(r.src==="est")info.est++})});
+          tasks.push(function(){
+            function fin(r){pl.real[key]=r;if(r.why==="limit")info.limit=true;if(r.src==="est")info.est++;done++;if(!quiet&&ai.view==="load"&&seq===ai.seq){ai.msg="正在查詢交通時間（"+done+"/"+tasks.length+"）…";aiDraw()}}
+            if(ai.skip){fin(aiLegEst(P[a],P[b],mode));return Promise.resolve()}
+            return aiLeg(P[a],P[b],mode,dep).then(fin);
+          });
         })(k);
       });
-      return aiPool2(tasks,3).then(function(){
+      return aiPool2(tasks,5).then(function(){
         if(seq!==ai.seq)return;
         plans.forEach(function(pl){
           var real=pl.real;pl.ctx.legIdx=function(i,j){var r=real[[i,j].sort().join("-")];return r?r.min:aiEst(P[i].c,P[j].c,mode)};
@@ -4312,7 +4363,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
           pl.sim.rows.forEach(function(r,k){if(k>0){var rr=real[[pl.sim.rows[k-1].i,r.i].sort().join("-")];r.src=rr?rr.src:"est";r.lines=rr&&rr.lines;r.mode=(rr&&rr.mode)||(mode==="walk"?"walk":mode==="wd"?"drive":"transit");r.alt=rr&&rr.alt;if(r.src==="est")pl.est=true}});
           pl.rem=aiRemind(day,P,pl.sim,pl.ctx,info,pl.loose);
         });
-        ai.res={day:day,P:P,plans:plans,mode:mode,info:info};ai.view="res";aiDraw();
+        ai.res={day:day,P:P,plans:plans,mode:mode,info:info};ai.view="res";ai.msg="";aiDraw();
         if(helperBase()&&(mode==="auto"||mode==="wt"))fetch(helperBase()+"/transit-usage").then(function(r){return r.json()}).then(function(j){if(j&&j.transit&&seq===ai.seq){ai.res.usage=j.transit;aiDraw()}},function(){});
       });
     }).catch(function(){if(seq!==ai.seq)return;ai.view="pick";ai.msg="排行程時發生問題，請再試一次。";aiDraw()});
@@ -4321,12 +4372,12 @@ body.viewer #mapPanel .mphd .sx{display:none}
   function aiApply(k){
     var R=ai.res;if(!R||R.day!==ai.day)return;
     var pl=R.plans[k],day=R.day,old=s.days[day]||[],snap=JSON.stringify(old),map={};
-    old.forEach(function(it){map[it.sid]=it});
+    old.forEach(function(it){(map[it.sid]||(map[it.sid]=[])).push(it)});
     var keep={};pl.sim.rows.forEach(function(r){keep[r.sid]=1});
     var dropped=validItems(old).filter(function(it){return !keep[it.sid]}).length;
     function go(){
       var arr=pl.sim.rows.map(function(r,i){
-        var it=map[r.sid]||{uid:uid(),sid:r.sid};
+        var it=(map[r.sid]&&map[r.sid].shift())||{uid:uid(),sid:r.sid};
         it.stay=R.P[r.i].stay;
         if(i===0){delete it.drive;delete it.mode;if(!it.fixed)it.time=m2t(r.arr)}
         else{it.drive=r.leg;it.mode=r.mode||(R.mode==="walk"?"walk":R.mode==="wd"?"drive":"transit");if(r.wait>0){it.fixed=true;it.time=m2t(r.arr)}else if(!it.fixed)it.time=""}
@@ -4355,12 +4406,12 @@ body.viewer #mapPanel .mphd .sx{display:none}
   function aiStayStr(m){return m>=60?(Math.floor(m/60)+" 小時"+(m%60?" "+(m%60)+" 分":"")):m+" 分"}
   function aiDraw(){
     if(!aiEl)return;
-    var day=ai.day,pk=aiPicks(day),keys=Object.keys(pk).filter(function(id){return spot(id)});
+    var day=ai.day,pk=aiPicks(day),fd0=aiFlightDay(day),apx=(fd0.apFirst||fd0.apLast)?fd0.ap.id:"",keys=Object.keys(pk).filter(function(id){return spot(id)&&id!==apx});
     var scr=aiEl.querySelector(".bd"),st=scr?scr.scrollTop:0;
     var h='<div class="bk" data-aix="1"></div><div class="pn" role="dialog" aria-modal="true" aria-label="幫我排行程"><div class="hd"><h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18 9.4l-4.2 1.8L12 16l-1.8-4.8L6 9.4l4.2-1.8z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>幫我排行程</h3><button type="button" class="x" data-aix="1" aria-label="關閉">✕</button></div>';
     h+='<div class="dtabs" role="tablist">'+s.days.map(function(d,i){return '<button type="button" role="tab" aria-selected="'+(i===day)+'" data-aitab="'+i+'">第 '+(i+1)+' 天</button>'}).join("")+'</div>';
     if(ai.view==="pick")h+=aiPickHtml(day,pk,keys);
-    else if(ai.view==="load")h+='<div class="bd"><div class="aload"><div class="spin"></div><p>'+esc(ai.msg||"排行程中…")+'</p></div></div>';
+    else if(ai.view==="load")h+='<div class="bd"><div class="aload"><div class="spin"></div><p>'+esc(ai.msg||"排行程中…")+'</p>'+(/交通/.test(ai.msg||"")?'<button type="button" class="back" data-aiskip="1">不等了，改用估算</button>':'')+'</div></div>';
     else h+=aiResHtml();
     h+='</div>';
     aiEl.innerHTML=h;
@@ -4387,19 +4438,23 @@ body.viewer #mapPanel .mphd .sx{display:none}
       return '<div class="r'+(on?' on':'')+(dis?' dis':'')+'"><label class="ck"><input type="checkbox" data-aisel="'+sp.id+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="th">'+(sp.img?'<img src="'+esc(sp.img)+'" alt="">':'')+'</span><span class="nm"><b>'+esc(spotName(sp))+'</b><small>'+esc([sp.cat,sp.area].filter(Boolean).join(" · "))+(od>=0?(sp.cat||sp.area?" · ":"")+'也在第 '+(od+1)+' 天':'')+'</small></span></label>'+
         (on?'<span class="ctl"><select data-aipos="'+sp.id+'" aria-label="固定在第幾站" title="固定在第幾站">'+posOpts(sp.id)+'</select><span class="sy"><button type="button" data-aistay="'+sp.id+'" data-d="-15" aria-label="少 15 分鐘">−</button><b>'+aiStayStr(pk[sp.id])+'</b><button type="button" data-aistay="'+sp.id+'" data-d="15" aria-label="多 15 分鐘">＋</button></span></span>':'')+'</div>';
     }).join("");
-    return '<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label><div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
+    var fb='',fd0=aiFlightDay(day);
+    if(fd0.apFirst)fb+='<div class="fbn">✈ 第一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fo.m)+' 抵達，'+m2t(fd0.fo.m+120)+' 離開機場</div>';
+    if(fd0.apLast)fb+='<div class="fbn">✈ 最後一站：'+esc(spotName(fd0.ap))+'　班機 '+m2t(fd0.fb.m)+' 起飛，必須在 '+m2t(fd0.fb.m-120)+' 前抵達</div>';
+    if(fd0.missAp)fb+='<div class="fbn warn">這天有航班，但景點庫裡沒有機場。先把機場加入景點庫，就會自動排在第一站或最後一站。</div>';
+    return fb+'<div class="st"><label>出發時間<input type="time" id="aiStart" value="'+esc(ai.start)+'"></label><div class="seg" role="radiogroup" aria-label="交通方式">'+AI_MODES.map(function(m){return '<button type="button" role="radio" aria-checked="'+(ai.mode===m[0])+'" data-aimode="'+m[0]+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
       '<div class="fl">'+(cl.length?'<div class="fr" role="group" aria-label="分類">'+cl.map(function(c){return '<button type="button" class="fc" data-aifc="'+esc(c)+'" aria-pressed="'+(!!ai.fcat[c])+'">'+esc(c)+'<i>'+cc[c]+'</i></button>'}).join("")+'</div>':'')+(al.length?'<div class="fr" role="group" aria-label="區域">'+al.map(function(c){return '<button type="button" class="fc" data-aifa="'+esc(c)+'" aria-pressed="'+(!!ai.farea[c])+'">'+esc(c)+'<i>'+ac[c]+'</i></button>'}).join("")+'</div>':'')+'</div>'+
       '<div class="bd">'+(ai.msg?'<p class="amsg">'+esc(ai.msg)+'</p>':'')+(rows||'<p class="aempty">'+(pool.length?'沒有符合的景點，換個分類或區域看看':'景點庫還沒有景點，先到景點庫新增吧。')+'</p>')+'</div>'+
       '<div class="ft"><span>已選 <b>'+keys.length+'</b> 站 · 停留約 '+aiStayStr(tot)+'</span><button type="button" class="aigo" data-aigo="1"'+(keys.length?'':' disabled')+'>幫我排</button></div>';
   }
   function aiPlanHtml(pl,k,R){
-    var P=R.P,sim=pl.sim,rows=sim.rows,start=pl.ctx.start,hrs=(sim.end-start)/60,pct=Math.min(100,Math.round(hrs/10*100)),over=hrs>10;
+    var P=R.P,sim=pl.sim,rows=sim.rows,start=pl.ctx.astart,hrs=(sim.end-start)/60,pct=Math.min(100,Math.round(hrs/10*100)),over=hrs>10;
     var warn=pl.rem.filter(function(r){return r.lv==="warn"}).length;
     var mname=AI_MN[R.mode]||"";
     var tl=rows.map(function(r,i){
       var sp=P[r.i].sp;
       return (i>0?'<div class="lg">↓ '+esc(AI_RN[r.mode]||mname)+' '+r.leg+' 分'+(r.src==="est"?'<em>估算</em>':r.src==="calc"?'':(r.lines&&r.lines.length?'<em class="ln">'+esc(r.lines.slice(0,3).join("→"))+'</em>':''))+'</div>':'')+
-        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+esc(spotName(sp))+'<small>到 '+m2t(r.leave)+'</small></span><span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span></div>';
+        '<div class="tr'+(P[r.i].meal?' food':'')+'"><span class="tm">'+m2t(r.arr)+'</span><span class="nmx">'+(P[r.i].isAp?'✈ ':'')+esc(spotName(sp))+'<small>'+(P[r.i].isAp==="last"?'起飛前 2 小時內要抵達':'到 '+m2t(r.leave))+'</small></span>'+(P[r.i].isAp?'':'<span class="sy2"><button type="button" data-aistay2="'+r.sid+'" data-d="-15" aria-label="少停 15 分鐘">−</button><b>'+P[r.i].stay+' 分</b><button type="button" data-aistay2="'+r.sid+'" data-d="15" aria-label="多停 15 分鐘">＋</button></span>')+'</div>';
     }).join("");
     var rm=pl.rem.length?'<div class="rem">'+pl.rem.map(function(r,j){
       return '<div class="rm '+r.lv+'"><p>'+esc(r.t)+(r.none?'<small>'+esc(r.none)+'</small>':'')+'</p>'+((r.fixes&&r.fixes.length)?'<div class="fx">'+r.fixes.map(function(f,m){return '<button type="button" data-aifix="'+k+':'+j+':'+m+'">'+esc(f.label)+'</button>'}).join("")+'</div>':'')+'</div>';
@@ -4426,7 +4481,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
       if(b.dataset.aifa!==undefined){var a1=b.dataset.aifa;if(ai.farea[a1])delete ai.farea[a1];else ai.farea[a1]=1;aiDraw();return}
       if(b.dataset.aimode){ai.mode=b.dataset.aimode;aiSavePref();aiDraw();return}
       if(b.dataset.aigo){ai.msg="";aiRun();return}
-      if(b.dataset.aiback){ai.view="pick";ai.res=null;ai.seq++;aiDraw();return}
+      if(b.dataset.aiskip){ai.skip=true;b.disabled=true;b.textContent="改用估算中…";return}
+      if(b.dataset.aiback){ai.msg="";ai.view="pick";ai.res=null;ai.seq++;aiDraw();return}
       if(b.dataset.aiapply){aiApply(Number(b.dataset.aiapply));return}
       if(b.dataset.aifix){var p=b.dataset.aifix.split(":"),pl=ai.res&&ai.res.plans[+p[0]],r=pl&&pl.rem[+p[1]],f=r&&r.fixes[+p[2]];if(f)f.act();return}
     });
@@ -4560,6 +4616,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #aiSheet .ctl{display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
 #aiSheet .ctl select{font:inherit;font-size:.78rem;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:104px}
 @media (max-width:560px){#aiSheet .ctl{width:100%;justify-content:flex-end;padding-left:48px}#aiSheet .seg button{padding:5px 9px;font-size:.8rem}}
+#aiSheet .fbn{margin:0 16px 8px;padding:8px 12px;border-radius:12px;font-size:.84rem;background:color-mix(in srgb,#2b8cc4 10%,var(--surface));border:1px solid color-mix(in srgb,#2b8cc4 28%,transparent)}
+#aiSheet .fbn.warn{background:color-mix(in srgb,#f59e0b 14%,var(--surface));border-color:color-mix(in srgb,#f59e0b 40%,transparent)}
 html.ai-open body{overflow:hidden}
 </style>
 <div id="toast"></div><script>(function(){var m=document.getElementById("msg"),t=document.getElementById("toast"),tm;new MutationObserver(function(){if(!m.textContent)return;t.textContent=m.textContent;t.classList.add("on");clearTimeout(tm);tm=setTimeout(function(){t.classList.remove("on")},2500+m.textContent.length*70)}).observe(m,{childList:true,characterData:true,subtree:true})})();</script>
