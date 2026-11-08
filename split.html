@@ -1272,7 +1272,8 @@ $("importIn").onchange=function(){
     if(!found){   /* 舊帳本沒記到行程：名稱以行程名開頭、且只有一本還沒連結的，就自動連結 */
       var tr=readTrips().filter(function(t){return t.id===trip})[0];
       var nz=function(s){return String(s||"").replace(/[\s（）()]|共同/g,"").toLowerCase()};
-      if(tr&&tr.name&&nz(tr.name)){var cand=LEDGERS.filter(function(L){return !L.tripId&&nz(L.name).indexOf(nz(tr.name))===0}).sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+      if(tr&&tr.name&&nz(tr.name)){var cand=LEDGERS.filter(function(L){var x=nz(L.name),y=nz(tr.name);return !L.tripId&&x&&(x.indexOf(y)===0||y.indexOf(x)===0)}).sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+        if(!cand.length){var free=LEDGERS.filter(function(L){return !L.tripId});if(free.length===1)cand=free}   /* 名稱對不上，但只有一本還沒連結的帳本，就當成是它 */
         if(cand.length){found=cand[0];found.tripId=trip;dbPut(found)}}
     }
     if(found)pick=found.id;
@@ -1291,7 +1292,8 @@ $("importIn").onchange=function(){
         if(have){have.tripId=trip;dbPut(have);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
       }else joinLinkModal(trip);
     })()}
-    else if(readTrips().some(function(t){return t.id===trip}))newLedgerModal(trip);
+    else if(readTrips().some(function(t){return t.id===trip})){var sk="split-v1-skip-"+trip,skipped=false;try{skipped=!!localStorage.getItem(sk);localStorage.setItem(sk,"1")}catch(e){}   /* 只在第一次提醒，之後想建立請按「＋」 */
+      if(!skipped)newLedgerModal(trip)}
     else toast("找不到這個行程，請手動建立帳本。");
   }
   var jm=/^#j=([A-Za-z0-9_-]{8,64})\.([A-Za-z0-9_-]{8,64})$/.exec(location.hash||"");
