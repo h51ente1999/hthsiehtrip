@@ -3345,7 +3345,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       if(m.day<0||!s.days[m.day]){el.hidden=true;el.innerHTML="";return}
       var cnt=validItems(s.days[m.day]).length;
       if(!cnt){el.hidden=true;el.innerHTML="";return}
-      var pal=mapPal(s.days.length),col=o.mono?th("--blue","#5a8dbd"):pal[m.day%pal.length],h='<span class="mn-l">站點</span>';
+      var pal=mapPal(s.days.length),col=o.mono?th("--blue","#5a8dbd"):pal[m.day%pal.length],h='<span class="mn-l">地點</span>';
       for(var i=1;i<=cnt;i++)h+='<button type="button" data-n="'+i+'" style="--c:'+col+';--oc:'+onCol(col)+'"'+(m.mk[i]?"":" disabled title=\"這個景點還沒有座標\"")+'>'+i+'</button>';
       el.innerHTML=h;el.hidden=false;
     }
