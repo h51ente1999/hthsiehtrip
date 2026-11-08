@@ -1253,7 +1253,23 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     function got(la,ln){if(okLL(la,ln)){sp.lat=la;sp.lng=ln;save();return [la,ln]}return null}
     function viaInfo(u){return u?helperInfo(u).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
     function viaGeo(q){return q?helperFetch("/geo?q="+encodeURIComponent(q)).then(function(i){return got(i&&i.lat,i&&i.lng)},function(){return null}):Promise.resolve(null)}
-    return viaInfo(sp.url).then(function(c){return c||viaInfo(sp.naver)}).then(function(c){return c||viaGeo(sp.addr)}).then(function(c){return c||viaGeo(sp.ko||sp.name)});
+    /* 助手查不到時，直接從瀏覽器問 Photon / Nominatim（不需要重新部署助手） */
+    function viaDirect(q){
+      if(!q)return Promise.resolve(null);
+      var vs=[q,q.replace(/〒\s?(\d{3})-?(\d{4})/g,"$1-$2").replace(/^(日本|Japan)[,，\s]*/i,"")],pm=q.match(/(\d{3}-\d{4})/);
+      if(pm)vs.push(pm[1]+" Japan");
+      vs=vs.filter(function(x,i){return x&&vs.indexOf(x)===i});
+      var p=Promise.resolve(null);
+      vs.forEach(function(v){p=p.then(function(c){
+        if(c)return c;
+        return fetch("https://photon.komoot.io/api/?limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){var f=j&&j.features&&j.features[0],co=f&&f.geometry&&f.geometry.coordinates;return co?got(+co[1],+co[0]):null},function(){return null}).then(function(c2){
+          if(c2)return c2;
+          return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(v)).then(function(r){return r.json()}).then(function(j){return j&&j[0]?got(parseFloat(j[0].lat),parseFloat(j[0].lon)):null},function(){return null});
+        });
+      })});
+      return p;
+    }
+    return viaInfo(sp.url).then(function(c){return c||viaInfo(sp.naver)}).then(function(c){return c||viaGeo(sp.addr)}).then(function(c){return c||viaGeo(sp.ko||sp.name)}).then(function(c){return c||viaDirect(sp.addr)}).then(function(c){return c||viaDirect(sp.ko||sp.name)});
   }
   function driveMin(a,b,walk){
     return helperFetch("/route?from="+a.join(",")+"&to="+b.join(",")+(walk?"&mode=foot":"")).then(function(j){
@@ -1321,14 +1337,33 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     return guess;
   }
   function normHours(v){var m=/(\d{1,2}):(\d{2})\s*[-~–—]\s*(\d{1,2}):(\d{2})/.exec(v||"");if(!m)return "";function p(x){return ("0"+x).slice(-2)}return p(m[1])+":"+m[2]+"-"+p(m[3])+":"+m[4]}
+  /* Google 連結有時只有地址（沒有店名）：地址要放進「地址」欄，不是店名 */
+  function addrLike(t){
+    t=t||"";
+    if(/〒\s?\d{3}-?\d{4}/.test(t))return true;
+    if(/(Chome|丁目|-ro\b|-gil\b|-daero\b|-dong\b|-gu\b|번지)/i.test(t)&&/\d/.test(t))return true;
+    return (t.match(/[,，]/g)||[]).length>=2&&/\d+(-\d+)+/.test(t);
+  }
+  function splitAddr(t){
+    var full=t.replace(/\s+/g," ").trim(),segs=full.split(/[,，]/).map(function(x){return x.trim()}).filter(Boolean),poi="";
+    for(var i=0;i<segs.length&&!poi;i++){
+      if(/^\d/.test(segs[i])||/〒/.test(segs[i]))continue;
+      if(/(Square|Tower|Building|Bldg|Hills|Station|Hotel|Mall|Park|Temple|Shrine|Castle|Museum|Market|Plaza|Center|Centre|ビル|タワー|ヒルズ|駅|ホテル|神社|寺|公園|市場|타워|빌딩|호텔|시장|공원|센터)/i.test(segs[i]))poi=segs[i].replace(/^(日本|Japan)\s*/i,"");
+    }
+    var short=full.replace(/^(日本|Japan|대한민국|South Korea)\s*/i,"").replace(/^〒?\s?\d{3}-?\d{4}\s*/,"").trim();
+    return {name:(poi||short||full).slice(0,60),addr:full,poi:!!poi};
+  }
   function createSpot(o){
+    var fromAddr=false;
+    if(o.name&&!o.addr&&addrLike(o.name)){var sa=splitAddr(o.name);o.addr=sa.addr;o.name=sa.name;fromAddr=!sa.poi}
     var sp={id:uid(),cat:"",name:o.name,ko:o.ko||"",addr:o.addr||"",hours:normHours(o.hours),area:"",note:o.note||"",img:o.img||"",url:"",naver:o.naver||""};
     if(okLL(o.lat,o.lng)){sp.lat=o.lat;sp.lng=o.lng}
     if(o.hint){var hc=suggestCat(o.hint);if(hc)sp.cat=hc}
     var g=autoFill(sp);
     s.spots.unshift(sp);openKey=sp.id;filterCat="";filterArea="";$("gm").value="";
     save();render();$("lib").parentNode.scrollTop=0;zhAsk(sp,false);
-    say("已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
+    say(fromAddr?"這個 Google 連結只有地址、沒有店名：已把地址填在「地址」欄，店名先用地址代替，請展開改成真正的店名。":"已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
+    if(!okLL(sp.lat,sp.lng)&&helperBase()){var sid0=sp.id;coordsOf(sp).then(function(c){if(c&&spot(sid0)){render()}},function(){})}   /* 沒有座標就自動去查，地圖才會出現 */
     return sp;
   }
   function cleanTitle(t){
