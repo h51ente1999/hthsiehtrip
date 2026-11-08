@@ -405,10 +405,10 @@ async function startListen(meta){
   try{ME=await api.ensureUser()}catch(e){if(my!==CLID)return;CLED.err="登入雲端失敗（"+(e&&e.code||"error")+"）。";drawLedgerSel();return}
   if(my!==CLID)return;
   unsubCl=api.listen(meta.id,{
-    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){var gone=meta.id;if(meta.tripId&&ME&&!ME.isAnonymous&&API&&API.setTripSplit)API.setTripSplit(ME.uid,meta.tripId,"","").catch(function(){});removeMeta(gone);toast("這個帳本已被擁有者刪除，已從這台裝置移除");if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);return}CLED.err="";rebuild()},
+    ledger:function(d){if(my!==CLID)return;CLED.doc=d;if(!d){dropStale(meta,"這個帳本已被擁有者刪除，已從這台裝置移除");return}CLED.err="";rebuild()},
     people:function(m){if(my!==CLID)return;CLED.people=m;CLED.pl=true;rebuild()},
     exps:function(a){if(my!==CLID)return;CLED.exps=a.map(cleanExp).filter(Boolean);rebuild()},
-    error:function(e){if(my!==CLID)return;CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
+    error:function(e){if(my!==CLID)return;if(e&&e.code==="permission-denied"){dropStale(meta,"這個帳本已不存在或你已沒有權限，已自動移除並重新對應這個行程");return}CLED.err=(e&&e.code==="permission-denied")?"這個帳本可能已被擁有者刪除，或你已沒有權限。如果換過瀏覽器或清除過資料，請用朋友給的連結重新加入。":"網路中斷或讀取失敗（"+(e&&e.code||"error")+"），請稍後再試。";CLED.L=null;drawLedgerSel()}
   });
 }
 function rebuild(){
@@ -1340,6 +1340,13 @@ $("importIn").onchange=function(){
 
 /* ---------- 啟動 ---------- */
 var TRIPCTX=null;
+/* 帳本已被刪除或無權限：自動移除，並重新對應這個行程的帳本（一個行程只對應一本） */
+function dropStale(meta,msg){
+  if(meta.tripId&&ME&&!ME.isAnonymous&&API&&API.setTripSplit)API.setTripSplit(ME.uid,meta.tripId,"","").catch(function(){});
+  removeMeta(meta.id);toast(msg);
+  if(TRIPCTX&&!LEDGERS.some(function(L){return L.tripId===TRIPCTX.trip}))tripFlow(TRIPCTX.trip,TRIPCTX.view);
+}
+
 function tripFlow(trip,view){
   var tids=readTrips().map(function(x){return x.id});
   FREE_LEDGERS=LEDGERS.filter(function(L){return !L.tripId||(!/^s:/.test(L.tripId)&&tids.length&&tids.indexOf(L.tripId)<0)});
