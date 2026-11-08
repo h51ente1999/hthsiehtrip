@@ -3484,8 +3484,8 @@ body.viewer #mapPanel .mphd .sx{display:none}
         (s.spots||[]).forEach(function(o){
           if(!o||o.id===sp.id||!okLL(o.lat,o.lng))return;
           var mk=L.marker([o.lat,o.lng],{icon:L.divIcon({className:"mko",html:"<span></span>",iconSize:[14,14],iconAnchor:[7,7]}),zIndexOffset:-500,keyboard:false}).addTo(c.others);
-          mk.bindTooltip(String(o.name||"").slice(0,30),{direction:"top",offset:[0,-6]});
-          mk.on("click",function(){mk.openTooltip()});
+          var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[o.cat,o.area].filter(Boolean).join(" · ");
+          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>景點庫'+(sub?" · "+esc(sub):"")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
         });
         c.map.setView([sp.lat,sp.lng],16);
         return true;
