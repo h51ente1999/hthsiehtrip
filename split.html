@@ -327,7 +327,7 @@ function rebuild(){
   if(mem.length<2){C.err="帳本資料不完整。";drawLedgerSel();return}
   var me=ME&&C.people[ME.uid];
   var L={id:C.meta.id,cloud:true,role:ME&&d.owner===ME.uid?"owner":"guest",name:String(d.name||"共同帳本").slice(0,40),cur:CUR[d.cur]?d.cur:"KRW",
-    rate:d.rate&&Number(d.rate.r)>0?{r:Number(d.rate.r),t:Number(d.rate.t)||0}:C.rate,members:mem,expenses:C.exps,myMember:(me&&me.memberId&&mem.some(function(m){return m.id===me.memberId}))?me.memberId:"",people:C.people,tripId:"",ts:Date.now()};
+    rate:d.rate&&Number(d.rate.r)>0?{r:Number(d.rate.r),t:Number(d.rate.t)||0}:C.rate,members:mem,expenses:C.exps,myMember:(me&&me.memberId&&mem.some(function(m){return m.id===me.memberId}))?me.memberId:"",people:C.people,tripId:C.meta.tripId||"",ts:Date.now()};
   C.L=L;
   if(C.meta.name!==L.name){C.meta.name=L.name;dbPut(C.meta)}
   var sig=mem.map(function(m){return m.id+":"+m.name}).join("|")+"|"+L.cur+"|"+L.myMember;
@@ -378,7 +378,7 @@ async function enableModal(){
         var salt=b64u(crypto.getRandomValues(new Uint8Array(16))),hash=await pwHash(pw,salt),sid=b64u(crypto.getRandomValues(new Uint8Array(16)));
         var exps=L.expenses.map(function(e){return {id:e.id,date:e.date,title:e.title,amount:e.amount,ccy:e.ccy,rate:e.rate,pay:e.pay,payer:e.payer,shares:e.shares,img:e.img||"",ts:e.ts||Date.now(),by:u.uid}});
         await api.createLedger(sid,{owner:u.uid,name:L.name,cur:L.cur,rate:L.rate||null,members:L.members,pwHash:hash,pwSalt:salt,ts:Date.now(),v:1},{uid:u.uid,data:{memberId:$("enMe").value,pwHash:hash,ts:Date.now()}},exps);
-        var meta={id:sid,cloud:true,sid:sid,salt:salt,name:L.name,ts:Date.now()};
+        var meta={id:sid,cloud:true,sid:sid,salt:salt,name:L.name,tripId:L.tripId||"",ts:Date.now()};
         var oldId=L.id;LEDGERS=LEDGERS.filter(function(x){return x.id!==oldId});dbDel(oldId);LEDGERS.push(meta);dbPut(meta);
         closeModal();openLedger(sid);toast("已開啟共同編輯，按「共同編輯」可以拿連結");
       }catch(e){b.disabled=false;b.textContent="開啟並上傳";$("enErr").textContent="上傳失敗（"+(e&&e.code||"網路或權限")+"）。本機帳本沒有被改動。"}
@@ -403,7 +403,7 @@ function shareModal(){
       if(!armed){armed=true;this.textContent="再按一次：轉成本機帳本並刪除雲端資料";return}
       this.disabled=true;
       try{
-        var loc={id:uid(),tripId:"",name:L.name,cur:L.cur,rate:L.rate||null,members:L.members.map(function(m){return {id:m.id,name:m.name}}),expenses:L.expenses.map(function(e){var x={};Object.keys(e).forEach(function(k){if(k!=="by")x[k]=e[k]});return x}),ts:Date.now()};
+        var loc={id:uid(),tripId:C.meta.tripId||"",name:L.name,cur:L.cur,rate:L.rate||null,members:L.members.map(function(m){return {id:m.id,name:m.name}}),expenses:L.expenses.map(function(e){var x={};Object.keys(e).forEach(function(k){if(k!=="by")x[k]=e[k]});return x}),ts:Date.now()};
         await dbPut(loc);LEDGERS.push(loc);
         await API.deleteLedger(C.meta.id);
         var mid=C.meta.id;closeModal();removeMeta(mid);openLedger(loc.id);toast("已轉成本機帳本，雲端資料已刪除");
@@ -803,7 +803,7 @@ $("btnMenu").onclick=function(){
 };
 function cleanMeta(x){
   if(typeof x.id!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.id)||typeof x.salt!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.salt))return null;
-  return {id:x.id,cloud:true,sid:x.id,salt:x.salt,name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"共同帳本",ts:Number(x.ts)||0};
+  return {id:x.id,cloud:true,sid:x.id,salt:x.salt,name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"共同帳本",tripId:typeof x.tripId==="string"?x.tripId:"",ts:Number(x.ts)||0};
 }
 function cleanLedger(x){
   if(!x||typeof x!=="object"||typeof x.id!=="string"||!Array.isArray(x.members)||!Array.isArray(x.expenses))return null;
@@ -840,6 +840,11 @@ $("importIn").onchange=function(){
   var pick="";
   if(trip){
     var found=LEDGERS.filter(function(L){return L.tripId===trip})[0];
+    if(!found){   /* 舊帳本沒記到行程：名稱以行程名開頭、且只有一本還沒連結的，就自動連結 */
+      var tr=readTrips().filter(function(t){return t.id===trip})[0];
+      if(tr&&tr.name){var cand=LEDGERS.filter(function(L){return !L.tripId&&L.name.indexOf(tr.name)===0});
+        if(cand.length===1){found=cand[0];found.tripId=trip;dbPut(found)}}
+    }
     if(found)pick=found.id;
   }
   if(!pick&&LEDGERS.length)pick=LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)})[0].id;
