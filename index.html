@@ -195,6 +195,18 @@ body.viewer main{display:none}
 #tripSheet .ls button.cur{background:var(--blue);color:var(--on-blue)}
 @keyframes tpop{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translateX(-50%)}}
 @media (max-width:460px){.presets{grid-template-columns:repeat(3,1fr)}}
+#plSheet{position:fixed;inset:0;z-index:95;display:none}#plSheet.on{display:block}
+#plSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.45);backdrop-filter:blur(2px)}
+#plSheet .sh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 40px);overflow:auto;background:var(--surface);color:var(--ink);border-radius:20px;padding:20px 18px 16px;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+#plSheet h3{margin:0 0 6px;font-size:1.1rem}#plSheet .pn{font-size:.85rem;opacity:.7;margin:0 0 12px;line-height:1.5}
+#plSheet .pc{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+#plSheet .pc button{text-align:left;padding:9px 11px;border-radius:12px;font:inherit;border:1.5px solid var(--line,rgba(128,128,128,.35));background:transparent;color:inherit}
+#plSheet .pc button.cur{border-color:var(--accent,#2f6df6);box-shadow:0 0 0 1px var(--accent,#2f6df6) inset}
+#plSheet .pc small{display:block;opacity:.65;font-size:.78rem;overflow-wrap:anywhere}
+#plSheet .pf{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid rgba(128,128,128,.2);font-size:.9rem}
+#plSheet .pf input{margin-top:3px}#plSheet .pf b{display:block;font-size:.78rem;opacity:.65;font-weight:600}
+#plSheet .pf span{overflow-wrap:anywhere;min-width:0}#plSheet .pf s{display:block;opacity:.5;font-size:.78rem}
+#plSheet .btns{display:flex;gap:10px;margin-top:12px}#plSheet .btns button{flex:1;padding:11px 8px;border-radius:12px;font:inherit;font-weight:700}
 #cfmSheet{position:fixed;inset:0;z-index:90;display:none}#cfmSheet.on{display:block}
 #cfmSheet .bk{position:absolute;inset:0;background:rgba(20,30,50,.45);backdrop-filter:blur(2px)}
 #cfmSheet .sh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border-radius:20px;padding:22px 20px 18px;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:cpop .2s ease}
@@ -589,7 +601,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <main>
 <div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><rect x="1.5" y="1.5" width="61" height="61" rx="15" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".75" stroke-width="3"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname"><b>hthsieh</b> Trip</span><span class="tools"><button type="button" id="splitBtn" class="ib" title="分帳（代墊款項）" aria-label="分帳（代墊款項）"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><circle cx="16.5" cy="16.5" r="3.2"/><path d="M5 20 19 4"/></svg></button><button type="button" id="fxBtn" class="ib" hidden title="匯率" aria-label="匯率計算機"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button></span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><div class="setback" id="setBack" hidden></div>
 <div id="spotBack" hidden></div>
-<div class="settings spotm" id="spotModal" hidden role="dialog" aria-modal="true" aria-label="景點資料"><div class="shead"><h2 id="spotTitle"></h2><span id="spotBtns"></span><button type="button" class="sx" id="spotX" aria-label="關閉">✕</button></div><div class="spotmap"><div id="spotMapBox" class="mapbox"></div><div class="mapst" id="spotMapSt"></div><button type="button" class="mapfill" id="spotLocate" hidden>查詢位置</button></div><div class="d" id="spotEd"></div></div>
+<div class="settings spotm" id="spotModal" hidden role="dialog" aria-modal="true" aria-label="景點資料"><div class="shead"><h2 id="spotTitle"></h2><span id="spotBtns"></span><button type="button" class="sx" id="spotX" aria-label="關閉">✕</button></div><div class="spotmap"><div id="spotMapBox" class="mapbox"></div><div class="mapst" id="spotMapSt"></div><button type="button" class="mapfill" id="spotLocate" hidden>查詢位置</button><button type="button" class="mapfill" id="spotPlace">查店家資料（Google）</button></div><div class="d" id="spotEd"></div></div>
 <div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><a href="manual.html" target="_blank" rel="noopener" style="margin-left:auto;margin-right:10px;font-size:.9rem;color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:99px;padding:2px 12px;white-space:nowrap">使用說明</a><button type="button" class="sx" id="sx" aria-label="關閉設定">✕</button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="acctDel" hidden title="永久刪除雲端上的所有行程、分享連結與登入帳號">刪除帳號與雲端資料</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享此行程</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
 
 </div></section></div>
@@ -3528,6 +3540,78 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       drawSpotMap(cur);
       if(!c)$("spotMapSt").textContent="找不到位置。請確認地址，或貼上 Naver 連結再試。";
     },function(){spotBusy=false;$("spotLocate").disabled=false;$("spotMapSt").textContent="查詢失敗，請稍後再試。"});
+  };
+  /* 查店家資料：Google Places（經連結助手），讓使用者確認要填哪些欄位 */
+  var plBusy=false,plSt=null;
+  function plErr(e){
+    var m=String(e&&e.message||"");
+    if(m==="no-helper")return "要先設定連結助手才能查店家資料。";
+    if(m==="http-404")return "連結助手還沒更新，請重新部署 Worker。";
+    if(m==="http-501")return "連結助手還沒設定 Google 金鑰。";
+    if(m==="http-429")return "查詢太頻繁或今天額度用完，請稍後再試。";
+    return "查詢失敗，請稍後再試。";
+  }
+  function plFields(sp,c){
+    var f=[],emptyName=!sp.name||sp.name===UNNAMED;
+    if(c.name)f.push({k:"name",l:"名稱",v:c.name,old:emptyName?"":sp.name,on:emptyName});
+    if(c.addr)f.push({k:"addr",l:"地址",v:c.addr,old:sp.addr||"",on:!sp.addr});
+    if(okLL(c.lat,c.lng)){var has=okLL(sp.lat,sp.lng);f.push({k:"ll",l:"座標",v:(+c.lat).toFixed(5)+", "+(+c.lng).toFixed(5),old:has?(+sp.lat).toFixed(5)+", "+(+sp.lng).toFixed(5):"",on:!has})}
+    var h=normHours(c.hours);if(h)f.push({k:"hours",l:"營業時間（常態）",v:h+(c.weekly&&c.weekly.length?"　"+c.weekly[0]:""),raw:h,old:sp.hours||"",on:!sp.hours});
+    if(c.phone&&(sp.note||"").indexOf(c.phone)<0)f.push({k:"phone",l:"電話（加到備註）",v:c.phone,old:"",on:true});
+    if(c.mapsUri&&!sp.url)f.push({k:"url",l:"Google 地圖連結",v:c.mapsUri,old:"",on:true});
+    return f;
+  }
+  function plDraw(){
+    var a=$("plSheet"),st=plSt,sp=spot(st.id);if(!sp){a.classList.remove("on");return}
+    var c=st.list[st.i],fs=plFields(sp,c);st.fs=fs;
+    a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="店家資料"><h3>店家資料</h3><p class="pn">資料來自 Google 地圖，請確認是同一家店。已有內容的欄位預設不覆蓋。</p>'+
+      '<div class="pc">'+st.list.map(function(x,i){return '<button type="button" data-pi="'+i+'"'+(i===st.i?' class="cur"':'')+'>'+esc(x.name||"（無名稱）")+(x.type?' · '+esc(x.type):'')+'<small>'+esc(x.addr||"")+'</small></button>'}).join("")+'</div>'+
+      (fs.length?fs.map(function(x,i){return '<label class="pf"><input type="checkbox" data-pk="'+i+'"'+(x.on?' checked':'')+'><span><b>'+esc(x.l)+'</b>'+esc(x.v)+(x.old?'<s>目前：'+esc(x.old)+'</s>':'')+'</span></label>'}).join(""):'<p class="pn">這筆沒有可填入的資料。</p>')+
+      '<div class="btns"><button type="button" data-pno="1">取消</button><button type="button" data-pok="1" class="primary"'+(fs.length?'':' disabled')+'>填入選取欄位</button></div></div>';
+    a.classList.add("on");
+  }
+  function plApply(){
+    var st=plSt,sp=spot(st.id);if(!sp)return;
+    var c=st.list[st.i],boxes=$("plSheet").querySelectorAll("input[data-pk]"),n=0;
+    boxes.forEach(function(b){
+      if(!b.checked)return;var f=st.fs[+b.dataset.pk];n++;
+      if(f.k==="name"){sp.name=c.name;if(/[가-힣]/.test(c.name)&&!sp.ko)sp.ko=c.name}
+      else if(f.k==="addr")sp.addr=c.addr;
+      else if(f.k==="ll"){sp.lat=+(+c.lat).toFixed(6);sp.lng=+(+c.lng).toFixed(6)}
+      else if(f.k==="hours")sp.hours=f.raw;
+      else if(f.k==="phone")sp.note=(sp.note?sp.note+"\n":"")+"電話："+c.phone;
+      else if(f.k==="url"){var u=okUrl(c.mapsUri);if(u)sp.url=u}
+    });
+    $("plSheet").classList.remove("on");
+    if(!n)return;
+    var g=autoFill(sp);save();render();
+    var cur=openKey?findOpen():null;if(cur&&cur.id===sp.id)drawSpotMap(cur);
+    say("已填入 "+n+" 項店家資料"+(g.length?"，並猜了"+g.join("、"):"")+"。");
+  }
+  (function(){
+    var a=document.createElement("div");a.id="plSheet";document.body.appendChild(a);
+    a.addEventListener("click",function(e){
+      if(e.target.classList.contains("bk")||e.target.closest("[data-pno]")){a.classList.remove("on");return}
+      var pb=e.target.closest("[data-pi]");if(pb){plSt.i=+pb.dataset.pi;plDraw();return}
+      if(e.target.closest("[data-pok]"))plApply();
+    });
+    document.addEventListener("keydown",function(e){if(e.key==="Escape")a.classList.remove("on")});
+  })();
+  $("spotPlace").onclick=function(){
+    var sp=openKey?findOpen():null;if(!sp||plBusy)return;
+    if(!helperBase()){$("spotMapSt").textContent=plErr(new Error("no-helper"));return}
+    var q=(realName(sp)+" "+(sp.addr||"")).trim();
+    if(!q){$("spotMapSt").textContent="請先填景點名稱或地址再查。";return}
+    var path="/place?q="+encodeURIComponent(q)+(okLL(sp.lat,sp.lng)?"&lat="+sp.lat+"&lng="+sp.lng:"");
+    plBusy=true;$("spotPlace").disabled=true;$("spotMapSt").textContent="查店家資料中…";
+    helperFetch(path).then(function(r){
+      plBusy=false;$("spotPlace").disabled=false;
+      var cur=openKey?findOpen():null;if(!cur||cur.id!==sp.id)return;
+      var l=r&&r.places||[];
+      $("spotMapSt").textContent=okLL(cur.lat,cur.lng)?"":"還沒有這個景點的座標。";
+      if(!l.length){$("spotMapSt").textContent="Google 找不到這個店家，請改用更完整的名稱或地址再試。";return}
+      plSt={id:sp.id,list:l,i:0,fs:[]};plDraw();
+    },function(e){plBusy=false;$("spotPlace").disabled=false;$("spotMapSt").textContent=plErr(e)});
   };
   $("spotX").onclick=closeSpotModal;
   $("spotBack").addEventListener("click",closeSpotModal);
