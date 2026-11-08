@@ -1380,6 +1380,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     save();render();$("lib").parentNode.scrollTop=0;zhAsk(sp,false);
     say(fromAddr?"這個 Google 連結只有地址、沒有店名：地址已填在「地址」欄，店名請展開後自己填。":"已加入「"+sp.name+"」"+(g.length?"，自動帶入"+g.join("、")+"（可展開修改）":"，可在下方展開補上分類、區域和備註。"));
     if(!okLL(sp.lat,sp.lng)&&helperBase()){var sid0=sp.id;coordsOf(sp).then(function(c){if(c&&spot(sid0)){render()}},function(){})}   /* 沒有座標就自動去查，地圖才會出現 */
+    if(o.google&&helperBase())autoPlace(sp.id);
     return sp;
   }
   function cleanTitle(t){
@@ -1391,8 +1392,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     helperInfo(v).then(function(inf){
       var fin=inf.finalUrl||v,gm=parseMaps(fin),nvf=okNaver(fin);
       var nm=pre[0]||"",ad=pre[1]||"";
-      if(gm&&gm.name){var gc1=gCoords(fin)||[];createSpot({name:nm||gm.name,addr:ad,url:gm.url,lat:gc1[0],lng:gc1[1]});return}
-      if(inf.name&&/google\./.test(fin)){var gc2=gCoords(fin)||[];createSpot({name:nm||inf.name,addr:ad,url:fin,lat:gc2[0],lng:gc2[1]});return}
+      if(gm&&gm.name){var gc1=gCoords(fin)||[];createSpot({name:nm||gm.name,addr:ad,url:gm.url,lat:gc1[0],lng:gc1[1],google:1});return}
+      if(inf.name&&/google\./.test(fin)){var gc2=gCoords(fin)||[];createSpot({name:nm||inf.name,addr:ad,url:fin,lat:gc2[0],lng:gc2[1],google:1});return}
       if(nvf||inf.naverId){
         var nu=nvf||inf.finalUrl;
         nm=nm||inf.name||cleanTitle(inf.title);
@@ -1432,7 +1433,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
       say("這是短網址，無法自動讀出名稱（可在「設定」開啟連結助手）。已先保留這個連結，請在下方輸入名稱，按「加入景點庫」就會連同定位一起存起來。");return
     }
     if(r.empty){if(pre.length){addFromLink(pre[0],pre[1]||"",v);return}say("連結裡找不到景點名稱。請改貼包含 /maps/place/ 的完整連結，或手動輸入。");return}
-    createSpot({name:r.name,url:r.url});
+    createSpot({name:r.name,url:r.url,google:1});
   }
   function shrink(file,cb){
     var rd=new FileReader();
@@ -3561,6 +3562,30 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(c.mapsUri&&!sp.url)f.push({k:"url",l:"Google 地圖連結",v:c.mapsUri,old:"",on:true});
     return f;
   }
+  function plSet(sp,c,f){
+    if(f.k==="name"){sp.name=c.name;if(/[가-힣]/.test(c.name)&&!sp.ko)sp.ko=c.name}
+    else if(f.k==="addr")sp.addr=c.addr;
+    else if(f.k==="ll"){sp.lat=+(+c.lat).toFixed(6);sp.lng=+(+c.lng).toFixed(6)}
+    else if(f.k==="hours")sp.hours=f.raw;
+    else if(f.k==="phone")sp.note=(sp.note?sp.note+"\n":"")+"電話："+c.phone;
+    else if(f.k==="url"){var u=okUrl(c.mapsUri);if(u)sp.url=u}
+  }
+  /* 貼上 Google 連結建立景點後：自動查 Google 店家資料，只填空白欄位，不再跳確認 */
+  function autoPlace(id){
+    var sp=spot(id);if(!sp)return;
+    var q=(realName(sp)+" "+(sp.addr||"")).trim();if(!q)return;
+    var path="/place?q="+encodeURIComponent(q)+(okLL(sp.lat,sp.lng)?"&lat="+sp.lat+"&lng="+sp.lng:"");
+    helperFetch(path).then(function(r){
+      var cur=spot(id),c=r&&r.places&&r.places[0];if(!cur||!c)return;
+      if(okLL(cur.lat,cur.lng)&&okLL(c.lat,c.lng)&&Math.abs(cur.lat-c.lat)+Math.abs(cur.lng-c.lng)>0.03)return;   /* 差太遠，多半不是同一家 */
+      var fs=plFields(cur,c).filter(function(f){return f.on}),n=0;
+      fs.forEach(function(f){plSet(cur,c,f);n++});
+      if(!n)return;
+      var g=autoFill(cur);save();render();
+      var o=openKey?findOpen():null;if(o&&o.id===id)drawSpotMap(o);
+      say("已從 Google 補上 "+fs.map(function(f){return f.l.replace(/（.*/,"")}).join("、")+"。");
+    },function(){})
+  }
   function plDraw(){
     var a=$("plSheet"),st=plSt,sp=spot(st.id);if(!sp){a.classList.remove("on");return}
     var c=st.list[st.i],fs=plFields(sp,c);st.fs=fs;
@@ -3575,12 +3600,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     var c=st.list[st.i],boxes=$("plSheet").querySelectorAll("input[data-pk]"),n=0;
     boxes.forEach(function(b){
       if(!b.checked)return;var f=st.fs[+b.dataset.pk];n++;
-      if(f.k==="name"){sp.name=c.name;if(/[가-힣]/.test(c.name)&&!sp.ko)sp.ko=c.name}
-      else if(f.k==="addr")sp.addr=c.addr;
-      else if(f.k==="ll"){sp.lat=+(+c.lat).toFixed(6);sp.lng=+(+c.lng).toFixed(6)}
-      else if(f.k==="hours")sp.hours=f.raw;
-      else if(f.k==="phone")sp.note=(sp.note?sp.note+"\n":"")+"電話："+c.phone;
-      else if(f.k==="url"){var u=okUrl(c.mapsUri);if(u)sp.url=u}
+      plSet(sp,c,f);
     });
     $("plSheet").classList.remove("on");
     if(!n)return;
