@@ -455,9 +455,21 @@ async function tryOwnLink(trip){
   if(LINKTRIED[trip])return false;LINKTRIED[trip]=1;
   try{
     var api=await getApi();if(!api||!api.getTripSplit)return false;
-    var u=await api.ensureUser();if(!u||u.isAnonymous)return false;
+    var u=await api.ensureUser();if(!u)return false;if(u.isAnonymous){toast("這台裝置還沒登入 Google，無法自動找到你的帳本（請先在編輯頁登入）");return false}
     var sp=await api.getTripSplit(u.uid,trip);
-    if(!sp||!/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)||!/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt))return false;
+    if(!sp&&api.listMine){   /* 沒有記錄：找出你擁有的雲端帳本，用名稱對應這個行程 */
+      var tr0=readTrips().filter(function(x){return x.id===trip})[0];
+      var nz=function(s){return String(s||"").replace(/[\s（）()]|共同/g,"").toLowerCase()},y=tr0&&nz(tr0.name);
+      var mine=await api.listMine(u.uid);
+      var taken=LEDGERS.filter(function(L){return L.tripId&&L.tripId!==trip&&!/^s:/.test(L.tripId)}).map(function(L){return L.id});
+      var c=mine.filter(function(m){var x=nz(m.name);return y&&x&&(x.indexOf(y)===0||y.indexOf(x)===0)&&taken.indexOf(m.sid)<0});
+      if(c.length>=1){
+        var sm=await api.getTripSplitSalt(c[0].sid);
+        if(sm)sp={sid:c[0].sid,salt:sm};
+      }
+    }
+    if(!sp)return false;
+    if(!/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)||!/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt))return false;
     var tr=readTrips().filter(function(x){return x.id===trip})[0];
     var meta={id:sp.sid,cloud:true,sid:sp.sid,salt:sp.salt,name:(tr&&tr.name)||"共同帳本",tripId:trip,ts:Date.now()};
     var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
@@ -1416,7 +1428,7 @@ function tripFlow(trip,view){
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-import { initializeFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { initializeFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, writeBatch, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
   authDomain: "hthsieh-7b870.firebaseapp.com",
@@ -1467,6 +1479,8 @@ try {
     delExpense(sid, id) { return deleteDoc(expRef(sid, id)); },
     updateLedger(sid, patch) { return updateDoc(sp(sid), patch); },
     async getShareSplit(shareId) { const d = await getDoc(doc(db, "shares", shareId)); const s = d.exists() ? d.data().split : null; return s && typeof s.sid === "string" && typeof s.salt === "string" ? { sid: s.sid, salt: s.salt } : null; },
+    async getTripSplitSalt(sid) { const d = await getDoc(doc(db, "splits", sid)); return d.exists() && typeof d.data().pwSalt === "string" ? d.data().pwSalt : ""; },
+    async listMine(uid) { const qs = await getDocs(query(collection(db, "splits"), where("owner", "==", uid))); return qs.docs.map((d) => ({ sid: d.id, name: String(d.data().name || ""), ts: Number(d.data().ts) || 0 })).sort((a, b) => b.ts - a.ts); },
     async getTripSplit(uid, tripId) { const d = await getDoc(doc(db, "users", uid, "splitlinks", tripId)); const s = d.exists() ? d.data() : null; return s && typeof s.sid === "string" && typeof s.salt === "string" ? { sid: s.sid, salt: s.salt } : null; },
     setTripSplit(uid, tripId, sid, salt) { const r = doc(db, "users", uid, "splitlinks", tripId); return sid ? setDoc(r, { sid, salt }) : deleteDoc(r); },
     setShareSplit(shareId, sid, salt) { return updateDoc(doc(db, "shares", shareId), { split: { sid, salt } }); },
