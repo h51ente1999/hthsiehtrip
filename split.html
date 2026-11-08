@@ -1177,7 +1177,7 @@ async function hubModal(){
   var parts=[];
   try{for(var i=0;i<fs.length;i++){COLLECT=[];await fs[i]();parts=parts.concat(COLLECT);COLLECT=null}}finally{COLLECT=null}
   if(!parts.length)return;
-  modal('<div class="hubhead"><span>共同編輯・設定・備份</span><button type="button" class="ib2" id="hubX" aria-label="關閉">'+ico("x",18)+'</button></div>'+parts.map(function(x){return '<section class="hubsec">'+x.html+'</section>'}).join(""),function(){
+  modal('<div class="hubhead"><span>設定</span><button type="button" class="ib2" id="hubX" aria-label="關閉">'+ico("x",18)+'</button></div>'+parts.map(function(x){return '<section class="hubsec">'+x.html+'</section>'}).join(""),function(){
     $("hubX").onclick=closeModal;
     parts.forEach(function(x){if(x.mount)x.mount()});
     ["shOk","enNo","gOk","mOk"].forEach(function(id){var e=$(id);if(e){var r=e.parentNode;e.remove();if(r&&!r.children.length)r.remove()}});
@@ -1241,7 +1241,7 @@ $("importIn").onchange=function(){
   if(!pick&&LEDGERS.length)pick=LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)})[0].id;
   S.id=pick;drawLedgerSel();
   if(pick)openLedger(pick);
-  if(AUTOSHARE&&trip&&!view&&found&&pick===found.id){if(found.cloud)PEND_SHARE=true;else enableModal()}
+  if(AUTOSHARE&&trip&&!view&&found&&pick===found.id){if(!found.cloud){var ak="split-v1-asked-"+found.id,asked=false;try{asked=!!localStorage.getItem(ak);localStorage.setItem(ak,"1")}catch(e){}if(!asked)enableModal()}}
   if(trip&&!LEDGERS.some(function(L){return L.tripId===trip})){
     PENDING_TRIP=trip;
     if(view)joinLinkModal(trip);
