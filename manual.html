@@ -53,7 +53,7 @@ td:first-child{white-space:nowrap;font-weight:600}
 .cheat td:first-child{white-space:normal}
 details{background:var(--bg);border-radius:12px;padding:10px 14px;margin:8px 0}
 summary{cursor:pointer;font-weight:600}
-footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 40px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 40px;line-height:1.9}footer a{color:var(--muted)}
 .pill{display:inline-block;padding:0 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:.85em}
 @media(min-width:700px){section{padding:30px 32px}}
 [data-dev="m"] .d-only{display:none!important}
@@ -336,6 +336,13 @@ figure.wide{margin:14px 0}
         <li>登入後，所有行程會自動同步到你的其他裝置，之後修改也會即時同步。</li>
         <li>沒登入時，資料只存在這台裝置的瀏覽器，清除瀏覽器資料就會消失，請定期備份。</li>
       </ul>
+      <h3>刪除帳號與雲端資料</h3>
+      <ul>
+        <li>登入後，設定裡會出現紅色的「刪除帳號與雲端資料」。按下並確認後，會重新請你登入 Google 確認身分，接著刪除雲端上的<b>所有行程、分享連結與登入帳號</b>，無法復原。</li>
+        <li>已經發出去的分享連結會一併失效。</li>
+        <li>這台裝置上的資料會保留，只是不再同步。想完全清掉，請先「備份下載」留存，再清除瀏覽器的網站資料。</li>
+        <li>只想清掉某個行程，不必刪帳號：在行程列按垃圾桶刪除；只想停止分享，按「停止分享此行程」。</li>
+      </ul>
       <h3>顏色</h3>
       <ul><li>設定最上方可選整套配色，頁首、標籤、按鈕都會跟著變，匯出的 PPT 與 PDF 也沿用目前的配色。</li></ul>
     </div>
@@ -432,6 +439,6 @@ figure.wide{margin:14px 0}
   set(h.getAttribute("data-dev"),true);
 })();
 </script>
-<footer>hthsieh Trip 使用說明書 · 內容依目前版本撰寫，功能更新後會調整</footer>
+<footer class="cp">Copyright © 2026 hthsieh. All rights reserved.<br><a href="privacy.html">隱私權說明</a> · <a href="manual.html">使用說明書</a> · <a href="./">回到行程規劃</a></footer>
 </body>
 </html>

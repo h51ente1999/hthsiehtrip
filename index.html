@@ -302,7 +302,8 @@ form.add .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 .drop .empty{color:var(--muted);font-size:.85rem;margin:auto;text-align:center}
 @keyframes sbspin{to{transform:rotate(-360deg)}}
 .sbi{display:block}.sbi.spin{animation:sbspin 1s linear infinite}.syncbadge{display:inline-flex;align-items:center}
-#shareStop{color:#b3453b;border-color:#b3453b}
+#shareStop,#acctDel{color:#b3453b;border-color:#b3453b}
+.sitefoot{text-align:center;font-size:.8rem;line-height:1.9;color:var(--muted);padding:6px 16px 90px}.sitefoot a{color:inherit}
 #dropLine{position:fixed;z-index:49;height:4px;border-radius:2px;background:var(--hit);pointer-events:none;display:none;box-shadow:0 0 0 2px var(--blue-soft)}
 .ghost{position:fixed;z-index:50;pointer-events:none;opacity:.92;box-shadow:0 8px 20px rgba(13,42,82,.3)}
 .blk.src{opacity:.35}
@@ -589,7 +590,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <div class="topgrid"><section class="panel brandblk"><svg class="brandlogo" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true"><rect x="1.5" y="1.5" width="61" height="61" rx="15" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".75" stroke-width="3"/><path transform="rotate(45 32 32) translate(10.4 10.4) scale(1.8)" fill="#fff" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="brandname"><b>hthsieh</b> Trip</span><span class="tools"><button type="button" id="fxBtn" class="ib" hidden title="匯率" aria-label="匯率計算機"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button></span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><div class="setback" id="setBack" hidden></div>
 <div id="spotBack" hidden></div>
 <div class="settings spotm" id="spotModal" hidden role="dialog" aria-modal="true" aria-label="景點資料"><div class="shead"><h2 id="spotTitle"></h2><span id="spotBtns"></span><button type="button" class="sx" id="spotX" aria-label="關閉">✕</button></div><div class="spotmap"><div id="spotMapBox" class="mapbox"></div><div class="mapst" id="spotMapSt"></div><button type="button" class="mapfill" id="spotLocate" hidden>查詢位置</button></div><div class="d" id="spotEd"></div></div>
-<div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><a href="manual.html" target="_blank" rel="noopener" style="margin-left:auto;margin-right:10px;font-size:.9rem;color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:99px;padding:2px 12px;white-space:nowrap">使用說明</a><button type="button" class="sx" id="sx" aria-label="關閉設定">✕</button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享此行程</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
+<div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><a href="manual.html" target="_blank" rel="noopener" style="margin-left:auto;margin-right:10px;font-size:.9rem;color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:99px;padding:2px 12px;white-space:nowrap">使用說明</a><button type="button" class="sx" id="sx" aria-label="關閉設定">✕</button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">用 Google 登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="acctDel" hidden title="永久刪除雲端上的所有行程、分享連結與登入帳號">刪除帳號與雲端資料</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享此行程</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份下載</button><button type="button" id="bkLoad">還原備份</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
 
 </div></section></div>
 
@@ -641,6 +642,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 <section class="panel" id="mapPanel"><h2>地圖</h2><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
 </main>
+<footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.<br><a href="privacy.html">隱私權說明</a> · <a href="manual.html">使用說明</a></footer>
 
 <script>
 (function(){
@@ -649,7 +651,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   var $=function(i){return document.getElementById(i)};
   var uid=function(){return Math.random().toString(36).slice(2,9)};
   var openKey=null,justDragged=false,downloads=null;
-  var applyingRemote=false,cloudUser=null,cloudApi=null,deviceId="";
+  var acctDeleting=false,applyingRemote=false,cloudUser=null,cloudApi=null,deviceId="";
   var themeState={ts:0,dirty:false},IDX=null,pushTimers={},pushBusy={},pushAgain={},pushedMap={},metaTimer=null,unsubs=[];
   var viewerShare="";try{viewerShare=new URLSearchParams(location.search).get("share")||""}catch(e){}
   var viewerMode=!!viewerShare;
@@ -2865,7 +2867,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     b.title=t;b.setAttribute("aria-label",t);b.hidden=false;
   }
   function refreshBadge(){if(!cloudUser)return;setBadge(IDX.list.some(function(e){return e.dirty})?"待同步…":"已同步")}
-  function schedulePush(id){if(!cloudUser||!cloudApi)return;clearTimeout(pushTimers[id]);pushTimers[id]=setTimeout(function(){pushTrip(id)},2000);setBadge("待同步…")}
+  function schedulePush(id){if(!cloudUser||!cloudApi||acctDeleting)return;clearTimeout(pushTimers[id]);pushTimers[id]=setTimeout(function(){pushTrip(id)},2000);setBadge("待同步…")}
 
   /* trip list UI */
   function drawTripSel(){
@@ -2957,6 +2959,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 
   /* push / pull */
   async function pushTrip(id){
+    if(acctDeleting)return;
     if(!cloudUser||!cloudApi||viewerMode)return;
     if(pushBusy[id]){pushAgain[id]=true;return}
     var e=ent(id),d=tripData(id);if(!e||!d)return;
@@ -3019,6 +3022,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function syncErr(e){
     var c=e&&e.code||"";
     if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return "";
+    if(c==="auth/user-mismatch"||c==="auth/wrong-password")return "請用目前登入的同一個 Google 帳號確認身分。";
     if(c==="auth/popup-blocked")return "瀏覽器擋住了登入視窗，請允許彈出視窗後再試一次。";
     if(c==="auth/unauthorized-domain")return "這個網址還沒加入 Firebase 的「已授權網域」，請到 Firebase 的 Authentication 設定新增。";
     if(c==="auth/operation-not-allowed")return "Firebase 尚未啟用 Google 登入。";
@@ -3727,7 +3731,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
   function renderSyncUI(){
     $("syncBox").hidden=false;
     var u=cloudUser;
-    $("syncIn").hidden=!!u;$("syncOut").hidden=!u;
+    $("syncIn").hidden=!!u;$("syncOut").hidden=!u;$("acctDel").hidden=!u;
     $("syncInfo").textContent=u?("已登入："+(u.email||u.displayName||"")+"。所有行程會自動同步到登入同一帳號的其他裝置。"):"登入後，行程會自動同步到你的其他裝置。未登入時，資料只存在這台裝置。";
     if(!u)setBadge("未登入");
   }
@@ -3737,6 +3741,23 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
     if(viewerMode){initViewer();return}
     $("syncIn").onclick=async function(){try{await cloudApi.signIn()}catch(e){showSyncInfo(syncErr(e))}};
     $("syncOut").onclick=async function(){try{await cloudApi.signOut()}catch(e){}};
+    $("acctDel").onclick=function(){
+      if(!cloudUser)return;
+      askConfirm("刪除帳號與雲端資料？","會永久刪除你雲端上的所有行程、分享連結（朋友手上的連結會失效）、景點圖片，以及你的登入帳號，無法復原。\n這台裝置上的資料會保留，但不再同步。\n接下來會請你重新登入 Google 確認身分。","繼續",true,function(){
+        cloudApi.reauth().then(function(){
+          acctDeleting=true;stopSync();setBadge("刪除中…");showSyncInfo("正在刪除雲端資料，請不要關閉頁面…");
+          return cloudApi.deleteAccount();
+        }).then(function(){
+          IDX.uid="";IDX.pendingDel=[];IDX.list.forEach(function(e){e.shareId="";e.shareFull=false;e.dirty=true;e.ts=0;e.ver=(e.ver||0)+1});pushedMap={};persistIdx();
+          acctDeleting=false;say("帳號與雲端資料已刪除。");
+        }).catch(function(err){
+          acctDeleting=false;
+          var m=syncErr(err);
+          if(cloudUser){startSync();renderSyncUI()}
+          if(m)showSyncInfo(m+"（若已刪除部分資料，再按一次即可繼續刪除。）");else renderSyncUI();
+        });
+      });
+    };
     cloudApi.onAuth(function(user){
       cloudUser=user;renderSyncUI();updateShareUI();
       if(user)startSync();else stopSync();
@@ -3895,7 +3916,7 @@ window.addEventListener("scroll",upd,{passive:true});upd();
 b.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})();</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, reauthenticateWithPopup, deleteUser } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 import { initializeFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, writeBatch, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -3936,6 +3957,23 @@ try {
     onAuth(cb) { return onAuthStateChanged(auth, (u) => cb(u ? { uid: u.uid, email: u.email, displayName: u.displayName } : null)); },
     signIn() { return signInWithPopup(auth, new GoogleAuthProvider()); },
     signOut() { return signOut(auth); },
+    reauth() { const u = auth.currentUser; if (!u) return Promise.reject(new Error("not-signed-in")); return reauthenticateWithPopup(u, new GoogleAuthProvider()); },
+    async deleteAccount() {
+      const user = auth.currentUser; if (!user) throw new Error("not-signed-in");
+      const uid = user.uid;
+      const qs = await getDocs(tripsCol(uid));
+      for (const d of qs.docs) {
+        const t = d.data() || {};
+        const sid = t.shareId;
+        if (typeof sid === "string" && /^[A-Za-z0-9_-]{10,64}$/.test(sid)) await this.unshare(sid);
+        await clearCol(tSpots(uid, d.id));
+        await deleteDoc(d.ref);
+      }
+      try { await clearCol(collection(db, "users", uid, "spots")); } catch (e) {}
+      try { await deleteDoc(doc(db, "users", uid, "trip", "main")); } catch (e) {}
+      await deleteDoc(metaRef(uid));
+      await deleteUser(user);
+    },
     async pullMeta(uid) { const m = await getDoc(metaRef(uid)); return m.exists() ? m.data() : null; },
     async setMeta(uid, data) { await setDoc(metaRef(uid), data, { merge: true }); },
     async listTrips(uid) { const qs = await getDocs(tripsCol(uid)); return qs.docs.map((d) => ({ ...d.data(), id: d.id })); },
