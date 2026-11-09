@@ -5251,6 +5251,10 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #vTabs{align-items:stretch}
 #vTabs .vtab{flex:1 1 0!important;min-width:68px!important}
 #vTabs .vtab b{font-size:1.15rem}
+#viewer .vkids>span{display:grid!important;grid-template-columns:40px minmax(0,1fr);gap:2px 10px;align-items:center;padding:8px 10px 8px 8px}
+#viewer .vkids>span>img,#viewer .vkids>span>i{grid-row:span 2;width:40px;height:40px;align-self:center}
+#viewer .vkids>span .mlinks{grid-column:2;margin-left:0!important;justify-content:flex-start!important}
+@media (max-width:370px){.vr.hasimg .vdi .vkids{margin-left:-54px}}
 </style>
 
 <div id="toast"></div><script>(function(){var m=document.getElementById("msg"),t=document.getElementById("toast"),tm;new MutationObserver(function(){if(!m.textContent)return;t.textContent=m.textContent;t.classList.add("on");clearTimeout(tm);tm=setTimeout(function(){t.classList.remove("on")},2500+m.textContent.length*70)}).observe(m,{childList:true,characterData:true,subtree:true})})();</script>
