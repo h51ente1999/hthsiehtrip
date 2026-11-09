@@ -4963,9 +4963,17 @@ html.lb-open body{overflow:hidden}
 :root:root:root body #viewer .blk{border-left:0!important}
 :root:root:root body #viewer .tag.area{background:color-mix(in srgb,var(--accent-text) 18%,#fff)!important}
 
+
+/* 懸浮按鈕收合 */
+#fabTg{position:fixed;right:18px;bottom:74px;z-index:62;width:40px;height:40px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;line-height:0;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:none}
+#fabTg:active{transform:scale(.92)}#fabTg .i-up{display:none}body.fab-off #fabTg .i-dn{display:none}body.fab-off #fabTg .i-up{display:block}
+:root :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
+:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
 </style>
 <div id="toast"></div><script>(function(){var m=document.getElementById("msg"),t=document.getElementById("toast"),tm;new MutationObserver(function(){if(!m.textContent)return;t.textContent=m.textContent;t.classList.add("on");clearTimeout(tm);tm=setTimeout(function(){t.classList.remove("on")},2500+m.textContent.length*70)}).observe(m,{childList:true,characterData:true,subtree:true})})();</script>
 <button type="button" id="toTop" aria-label="回到頁面最上方" title="回到最上方"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<button type="button" id="fabTg" aria-label="收合懸浮按鈕" aria-expanded="true" title="收合／展開按鈕"><svg class="i-dn" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><svg class="i-up" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="1.6" fill="currentColor"/><circle cx="17" cy="7" r="1.6" fill="currentColor"/><circle cx="7" cy="17" r="1.6" fill="currentColor"/><circle cx="17" cy="17" r="1.6" fill="currentColor"/></svg></button>
+<script>(function(){var b=document.getElementById("fabTg"),K="travel-spots-v1-fab";function set(off,save){document.body.classList.toggle("fab-off",off);b.setAttribute("aria-expanded",String(!off));b.setAttribute("aria-label",off?"展開懸浮按鈕":"收合懸浮按鈕");if(save){try{localStorage.setItem(K,off?"1":"0")}catch(e){}}}var off=false;try{off=localStorage.getItem(K)==="1"}catch(e){}set(off,false);b.onclick=function(){set(!document.body.classList.contains("fab-off"),true)}})()</script>
 <script>(function(){var b=document.getElementById("toTop");if(!b)return;var sh=false;function upd(){var on=(window.pageYOffset||document.documentElement.scrollTop||0)>400;if(on!==sh){sh=on;b.classList.toggle("show",on)}}
 window.addEventListener("scroll",upd,{passive:true});upd();
 b.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})();</script>
