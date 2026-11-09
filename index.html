@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>(function(){try{if(/[?&]share=/.test(location.search)){document.documentElement.classList.add("vmode");return}var D={"--page":"#d8dfec","--blue":"#5a8dbd","--tag-bg":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-ink":"#ffffff","--tag-food":"#c8805f","--hit":"#c8805f","--blue2":"#8570b4"},raw=localStorage.getItem("travel-spots-v1-theme"),t=raw===null?D:(JSON.parse(raw||"{}")||{}),st=document.documentElement.style;Object.keys(t).forEach(function(k){if(/^--[a-z0-9-]+$/.test(k)&&typeof t[k]==="string"&&/^#[0-9a-f]{6}$/i.test(t[k]))st.setProperty(k,t[k])});if(t["--blue2"]){st.setProperty("--hero2",t["--blue2"]);st.setProperty("--dayg2",t["--blue2"]);st.setProperty("--muted","color-mix(in srgb,var(--ink) 62%,var(--blue))")}if(t["--blue"]&&!t["--on-blue"]){var n=parseInt(t["--blue"].slice(1),16);st.setProperty("--on-blue",(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255>0.55?"#0D2626":"#fff")}}catch(e){}})()</script>
 <title>hthsiehtrip</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%233fa4e0'/%3E%3Cstop%20offset='1'%20stop-color='%238a6fb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url%28%23g%29'/%3E%3Cpath%20transform='rotate%2845%2032%2032%29%20translate%2810.4%2010.4%29%20scale%281.8%29'%20fill='%23fff'%20d='M21%2016v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10%202.67%2010%203.5V9l-8%205v2l8-2.5V19l-2%201.5V22l3.5-1%203.5%201v-1.5L13%2019v-5.5l8%202.5z'/%3E%3C/svg%3E">
 <script defer src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
@@ -3934,7 +3935,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
     if(!/^[A-Za-z0-9_-]{10,64}$/.test(viewerShare)){vFail();return}
     cloudApi.getShare(viewerShare).then(function(r){
       if(!r){vFail();return}
-      s=buildFromRemote(r);viewerCur=CURMAP[r.trip.cur]?r.trip.cur:"KRW";theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();fxDraw();fxLoad(false);
+      s=buildFromRemote(r);viewerCur=CURMAP[r.trip.cur]?r.trip.cur:"KRW";theme=cleanTheme(r.trip.theme);applyTheme();renderViewer();fxDraw();fxLoad(false);document.body.classList.add("vready");
     }).catch(function(err){vFail("無法載入（"+((err&&err.code)||"錯誤")+"），請稍後再試。")});
   }
   function vDlClose(){$("vDlMenu").hidden=true;$("vDl").setAttribute("aria-expanded","false")}$("vDl").onclick=function(e){e.stopPropagation();var o=$("vDlMenu").hidden;$("vDlMenu").hidden=!o;this.setAttribute("aria-expanded",String(o))};document.addEventListener("click",function(e){if(!e.target.closest("#vDl,#vDlMenu"))vDlClose()});$("vPdf").onclick=function(){vDlClose();$("exPdf").click()};
@@ -4969,6 +4970,11 @@ html.lb-open body{overflow:hidden}
 #fabTg:active{transform:scale(.92)}#fabTg .i-up{display:none}body.fab-off #fabTg .i-dn{display:none}body.fab-off #fabTg .i-up{display:block}
 :root :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
 :root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
+
+/* 分享頁：資料載入完成後，懸浮按鈕才一起出現 */
+:root.vmode body:not(.vready) :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg,#toTop,#exToggle,#mapBtn,#splitBtn,#fxBtn){display:none!important}
+@keyframes fabin{from{opacity:0}to{opacity:1}}
+body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fabin .25s ease}
 </style>
 <div id="toast"></div><script>(function(){var m=document.getElementById("msg"),t=document.getElementById("toast"),tm;new MutationObserver(function(){if(!m.textContent)return;t.textContent=m.textContent;t.classList.add("on");clearTimeout(tm);tm=setTimeout(function(){t.classList.remove("on")},2500+m.textContent.length*70)}).observe(m,{childList:true,characterData:true,subtree:true})})();</script>
 <button type="button" id="toTop" aria-label="回到頁面最上方" title="回到最上方"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
