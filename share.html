@@ -564,6 +564,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .spotm .mapfill{margin-top:6px}
 #spotBack{position:fixed;inset:0;z-index:40;background:rgba(20,30,50,.4)}#spotBack[hidden]{display:none}
 .mipos{border:0;background:transparent;padding:0;width:22px;height:22px;display:inline-grid;place-items:center;color:var(--blue);cursor:pointer;line-height:0;border-radius:6px}
+.mipos:has(.mapt){width:auto;height:26px;padding:0 4px;border-radius:6px;background:transparent;color:var(--blue);line-height:1}.mipos .mapt{font-size:.85rem;font-weight:800;letter-spacing:.06em}
 #vFx{position:fixed;right:16px;bottom:186px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);font:inherit;font-size:1.25rem;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vFx.ok{display:grid}#vFx:active{transform:scale(.92)}
 .twd{margin-left:6px;font-size:.78rem;font-weight:600;color:var(--accent-text,var(--ink));white-space:nowrap}
 .zhs{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.zhs .hint{margin:0}.zhrow{display:flex;gap:6px;flex-wrap:wrap}
@@ -770,7 +771,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
   function okNaver(u){try{var x=new URL(u);if((x.protocol==="https:"||x.protocol==="http:")&&/(^|\.)naver\.(com|me)$/.test(x.hostname)){var m=/\/place\/(\d{5,})/.exec(x.pathname);if(m&&/naver\.com$/.test(x.hostname))return "https://map.naver.com/p/entry/place/"+m[1];return x.href}}catch(e){}return ""}
   function naverUrl(sp){return sp.naver||(sp.ko?"https://map.naver.com/p/search/"+encodeURIComponent(sp.ko):"")}
   function mapLinks(sp){var a=[],nu=naverUrl(sp);if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
-  var POSIC='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>';
+  var POSIC='<span class="mapt">MAP</span>';
   function iconHtml(sp,pos){return '<span class="mlinks">'+mapLinks(sp).map(function(l){return '<a class="mi" href="'+esc(l.u)+'" target="_blank" rel="noopener" title="'+l.t+'" aria-label="'+l.t+'"><img src="'+l.i+'" alt=""></a>'}).join("")+(pos?'<button type="button" class="mipos" data-vpos="'+sp.id+'" title="地圖上看位置" aria-label="地圖上看位置">'+POSIC+'</button>':'')+'</span>'}
   function kol(sp){return sp&&sp.ko&&sp.ko!==sp.name?sp.ko:""}
   function copyText(tx){
