@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.gstatic.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src https://*.googleapis.com https://*.firebaseio.com https://www.gstatic.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>hthsieh Countdown</title>
+<script>document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<style>
+html.pre body{visibility:hidden}
+html.pre *{transition:none!important;animation:none!important}
+:root{--page:#d8dfec;--blue:#5a8dbd;--bg:#f3f5fa;--surface:#ffffff;--ink:#232a3c;--on-blue:#ffffff;--tag-food:#c8805f;--line:#d3c7c7;
+--dayg2:color-mix(in srgb,var(--blue) 55%,var(--tag-food));--muted:color-mix(in srgb,var(--ink) 62%,var(--blue));--soft:color-mix(in srgb,var(--blue) 12%,var(--surface));
+--card:var(--surface);--accent:var(--blue);--accent2:var(--dayg2);--on:var(--on-blue);--warn:#b3453b;--ok:#2f8f5b;--shadow:0 6px 20px -12px rgba(40,50,90,.35)}
+@media (prefers-color-scheme:dark){:root{--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--blue:#025373;--on-blue:#F2EBEB;--line:#1f4a4a;--page:#0b1f1f;--warn:#e58b80;--ok:#6fcf97;--shadow:0 6px 20px -12px #000}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:16px/1.6 "Huninn","Noto Serif TC",-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%;min-height:100vh;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{width:100%;max-width:760px;margin:0 auto;padding:16px 16px 40px;flex:1}
+h2{font-size:1.02rem;margin:0 0 8px}
+.hero{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-radius:14px;padding:8px 10px 8px 10px;margin-bottom:12px}
+.hero h1{font-size:1.12rem;font-weight:400;letter-spacing:.5px;margin:0;color:inherit;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}.hero h1 b{font-weight:800}.hero .sp{flex:1}
+.hero .tools{display:flex;gap:6px;flex:none}
+.hero .ib{flex:none;width:36px;height:36px;border-radius:50%;border:0;padding:0;background:color-mix(in srgb,var(--on-blue) 22%,transparent);color:var(--on-blue);display:inline-grid;place-items:center;text-decoration:none;transition:transform .2s cubic-bezier(.3,.8,.3,1)}
+.hero .ib:active{transform:scale(.92)}.hero .ib[hidden]{display:none}
+.sbi{display:block}.sbi.spin{animation:sbspin 1s linear infinite}@keyframes sbspin{to{transform:rotate(360deg)}}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.muted{color:var(--muted)}.small{font-size:.84rem}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;min-height:40px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:var(--ink);transition:background-color .25s,color .25s,border-color .25s,transform .2s cubic-bezier(.3,.8,.3,1)}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:scale(.95)}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on);border-color:transparent;font-weight:600}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.ib2{width:36px;height:36px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);display:inline-grid;place-items:center;padding:0;transition:transform .2s cubic-bezier(.3,.8,.3,1),background-color .25s}
+.ib2:active{transform:scale(.92)}
+input[type=text],input[type=date]{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font-size:1rem;min-height:40px}
+input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+label.f{display:block;font-size:.82rem;color:var(--muted);margin-top:10px}
+label.f>*:not(span){margin-top:4px}
+.sw{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:.95rem}
+.sw input{width:20px;height:20px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* 主角倒數 */
+.star{text-align:center;padding:22px 16px 20px}
+.star .nm{font-size:1.15rem;font-weight:700;overflow-wrap:anywhere}
+.star .dt{font-size:.88rem;color:var(--muted);margin-top:2px}
+.ring{position:relative;width:200px;height:200px;margin:14px auto 6px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .bg{stroke:var(--soft)}
+.ring .fg{stroke:url(#cd_rg);transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.num{font-size:4.2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.num.sm{font-size:2.6rem}.num.md{font-size:3.2rem}
+.noring{display:flex;flex-direction:column;align-items:center;line-height:1;padding:22px 0 10px}
+.lead{font-size:.95rem;color:var(--muted);margin-bottom:8px}
+.unit{font-size:.9rem;color:var(--muted);margin-top:6px}
+.star .wk{font-size:.9rem;color:var(--muted)}
+.star .pin{display:inline-block;font-size:.7rem;padding:0 9px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:2px;font-weight:400}
+
+/* 清單 */
+.lh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lh h2{margin:0}
+.it{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;transition:opacity .2s}
+.it:active{opacity:.7}
+.it+.it{border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.bd{width:50px;height:54px;border-radius:14px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;color:var(--c)}
+.bd b{font-size:1.7rem;font-weight:800}.bd span{font-size:.66rem;opacity:.85;margin-top:2px}
+.it .main{flex:1;min-width:0}
+.it .t{font-weight:700;overflow-wrap:anywhere}
+.it .s{font-size:.78rem;color:var(--muted);line-height:1.4}
+.it .r{text-align:right;flex:none;line-height:1.1}
+.it .r b{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--c),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.it .r small{display:block;font-size:.7rem;color:var(--muted);margin-top:3px}
+.it.past .r b{background:none;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.it.past{opacity:.75}
+.tg{display:inline-block;font-size:.68rem;padding:0 8px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:1px;font-weight:400}
+.xp{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px;color:var(--muted);font-size:.84rem}
+.empty{text-align:center;padding:24px 8px;color:var(--muted)}
+.vin{animation:vin .32s cubic-bezier(.3,.8,.3,1) both}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:99px;font-size:.9rem;opacity:0;pointer-events:none;transition:all .25s;z-index:9;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:10px 16px 22px;line-height:1.9}
+footer a{color:var(--muted)}
+.sbox{padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 彈出視窗 */
+.mbk{position:fixed;inset:0;z-index:40;background:rgba(10,20,30,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .22s}
+.mbk.on{opacity:1;pointer-events:auto}
+.card.modal:not([hidden]){position:fixed;inset:0;margin:auto;z-index:41;width:min(500px,calc(100vw - 24px));height:fit-content;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow-y:auto;padding:18px 20px;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:mpop .22s cubic-bezier(.3,.8,.3,1) both}
+@keyframes mpop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.card.modal>h2:first-of-type,.card.modal>.sbox>h2{padding-right:44px}
+.mx{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;padding:0;background:var(--soft);color:var(--ink);display:grid;place-items:center;transition:transform .2s cubic-bezier(.3,.8,.3,1)}
+.mx:active{transform:scale(.92)}
+body.mlock{overflow:hidden}
+</style>
+<script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
+try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
+var st=document.documentElement.style;Object.keys(th).forEach(function(k){if(k!=="--hit")st.setProperty(k,th[k])});
+if(th["--blue2"])st.setProperty("--dayg2",th["--blue2"]);
+if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;st.setProperty("--on-blue",l>0.55?"#0D2626":"#fff")}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <a class="ib" href="index.html" title="回旅遊網" aria-label="回旅遊網"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <h1><b>hthsieh</b> Countdown</h1><span class="sp"></span>
+    <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnSet" type="button" title="備份與同步" aria-label="備份與同步"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></span>
+  </div>
+  <div class="card" id="editCard" hidden></div>
+  <div class="card" id="setCard" hidden></div>
+  <div class="card star" id="starCard"></div>
+  <div class="card" id="listCard"></div>
+</div>
+<footer>Copyright © 2026 hthsieh. All rights reserved.<br><a href="privacy.html">隱私權說明</a></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+var KEY="countdown-v1";
+function $(id){return document.getElementById(id)}
+function pad(n){return n<10?"0"+n:""+n}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function pd(s){var a=s.split("-");return new Date(+a[0],+a[1]-1,+a[2])}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},2000)}
+var WD=["日","一","二","三","四","五","六"];
+function diff(a,b){return Math.round((Date.UTC(a.getFullYear(),a.getMonth(),a.getDate())-Date.UTC(b.getFullYear(),b.getMonth(),b.getDate()))/864e5)}
+function todayD(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
+function fmt(d){return d.getFullYear()+"/"+pad(d.getMonth()+1)+"/"+pad(d.getDate())+"（週"+WD[d.getDay()]+"）"}
+
+/* ---------- 資料 ---------- */
+var D=null;
+function demo(){var y=todayD().getFullYear();return {items:[
+ {id:"c1",name:"釜山旅行",date:"2027-03-18",repeat:false,pin:true,note:"",start:ds(todayD())},
+ {id:"c2",name:"生日",date:(y)+"-12-05",repeat:true,pin:false,note:"",start:ds(todayD())},
+ {id:"c3",name:"在一起紀念日",date:"2024-02-14",repeat:true,up:true,pin:false,note:"",start:"2024-02-14"},
+ {id:"c4",name:"信貸還完",date:"2028-07-03",repeat:false,pin:false,note:"",start:ds(todayD())}],ring:true}}
+function load(){try{var x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.items))return clean(x)}catch(e){}return {items:[],ring:true}}
+function clean(x){
+  var it=[];(x.items||[]).slice(0,300).forEach(function(o,i){
+    if(!o||typeof o!=="object"||!/^\d{4}-\d{2}-\d{2}$/.test(o.date||""))return;
+    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,20):"c"+Date.now().toString(36)+i,name:String(o.name||"未命名").slice(0,40),date:o.date,repeat:!!o.repeat,pin:!!o.pin,up:!!o.up,note:String(o.note||"").slice(0,60),start:/^\d{4}-\d{2}-\d{2}$/.test(o.start||"")?o.start:o.date})});
+  return {items:it,ring:x.ring!==false};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast("儲存失敗，瀏覽器空間可能已滿")}if(window.syncTouch)syncTouch("countdown")}
+window.cdGet=function(){return D};
+window.cdApply=function(o){D=clean(o);try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}draw()};
+
+/* ---------- 計算 ---------- */
+function at(y,m,d){var dim=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(d,dim))}
+function calc(it){
+  var t=todayD(),base=pd(it.date),target=base,prev=pd(it.start);
+  if(it.repeat){
+    var y=t.getFullYear(),m=base.getMonth(),d=base.getDate();
+    target=at(y,m,d);if(diff(target,t)<0)target=at(y+1,m,d);
+    prev=at(target.getFullYear()-1,m,d);
+  }
+  var days=diff(target,t),past=!it.repeat&&days<0;
+  var total=Math.max(1,diff(target,prev)),pct=past?1:Math.min(1,Math.max(0,diff(t,prev)/total));
+  var yrs=it.repeat?target.getFullYear()-base.getFullYear():0;
+  var r={target:target,days:days,past:past,pct:pct,yrs:yrs,key:days,up:false,since:0};
+  var since=diff(t,base);
+  if(it.up&&since>=0){r.up=true;r.since=since;r.past=false;if(!it.repeat){r.days=0;r.key=1e6-since}}
+  return r;
+}
+function ymTxt(b,t){var m=(t.getFullYear()-b.getFullYear())*12+t.getMonth()-b.getMonth()-(t.getDate()<b.getDate()?1:0);if(m<1)return "";var y=Math.floor(m/12),mm=m%12;return "約 "+(y?y+" 年 ":"")+(mm?mm+" 個月":"")}
+function weeksTxt(n){if(n<7)return "";var w=Math.floor(n/7),d=n%7;return "約 "+w+" 週"+(d?" "+d+" 天":"")}
+
+/* ---------- 畫面 ---------- */
+var SHOWPAST=false;
+function draw(){drawStar();drawList()}
+function sorted(){
+  var arr=D.items.map(function(it){return {it:it,c:calc(it)}});
+  var up=arr.filter(function(x){return !x.c.past}).sort(function(a,b){return a.c.key-b.c.key});
+  var ps=arr.filter(function(x){return x.c.past}).sort(function(a,b){return b.c.days-a.c.days});
+  return {up:up,past:ps};
+}
+function drawStar(){
+  var S=sorted(),h;
+  var star=S.up.filter(function(x){return x.it.pin})[0]||S.up[0];
+  if(!star){
+    $("starCard").innerHTML='<div class="empty">'+(D.items.length?"目前沒有還沒到的日子":"還沒有倒數日")+'</div>'+(D.items.length?"":'<div style="text-align:center"><button class="btn" id="btnDemo" type="button">載入範例看看</button></div>');
+    if($("btnDemo"))$("btnDemo").onclick=function(){var rg=D.ring;D=demo();D.ring=rg!==false;save();draw();toast("已載入範例，可以隨意修改或刪除")};return;
+  }
+  var c=star.c,R=84,C=2*Math.PI*R,n=c.days,u=c.up,it=star.it,base=pd(it.date),showRing=D.ring!==false&&(!u||it.repeat);
+  var big,sub,dt;
+  if(u){
+    big=c.since===0?'<span class="num sm">今天</span>':'<span class="lead">已經</span><span class="num'+(String(c.since).length>=4&&showRing?' md':'')+'">'+c.since+'</span><span class="unit">天</span>';
+    dt='自 '+fmt(base)+' 起';
+    sub=(ymTxt(base,todayD())||"")+(it.repeat?(ymTxt(base,todayD())?"・":"")+"下次 "+(n===0?"就是今天":n+" 天後"):"");
+  }else{
+    big=n===0?'<span class="num sm">今天</span>':n===1?'<span class="num sm">明天</span>':'<span class="num">'+n+'</span><span class="unit">天</span>';
+    dt=fmt(c.target)+(c.yrs>0?'・第 '+c.yrs+' 年':'');
+    sub=weeksTxt(n)||(n>1?"再 "+n+" 天":"");
+  }
+  h='<div class="nm">'+esc(it.name)+(it.pin?'<span class="pin">置頂</span>':'')+'</div><div class="dt">'+dt+'</div>'+
+    (showRing?'<div class="ring"><svg viewBox="0 0 200 200"><defs><linearGradient id="cd_rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent2)"/></linearGradient></defs><circle class="bg" cx="100" cy="100" r="'+R+'" fill="none" stroke-width="11"/><circle class="fg" id="cd_fg" cx="100" cy="100" r="'+R+'" fill="none" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/></svg><div class="mid">'+big+'</div></div>':'<div class="noring">'+big+'</div>')+
+    '<div class="wk">'+sub+'</div>';
+  $("starCard").innerHTML=h;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){var f=$("cd_fg");if(f)f.style.strokeDashoffset=C*(1-c.pct)})});
+}
+function rowHtml(x,i){
+  var it=x.it,c=x.c,t=c.up&&!it.repeat?pd(it.date):c.target,col="color-mix(in srgb,var(--accent) "+(i<0?50:Math.max(0,100-i*22))+"%,var(--accent2))";
+  var right=c.up?(c.since===0?'<b style="font-size:1.1rem">今天</b>':'<small style="margin:0 0 3px">已經</small><b>'+c.since+'</b><small>天</small>'):c.past?'<b>'+(-c.days)+'</b><small>天前</small>':c.days===0?'<b style="font-size:1.1rem">今天</b>':c.days===1?'<b style="font-size:1.1rem">明天</b>':'<b>'+c.days+'</b><small>天</small>';
+  return '<div class="it'+(c.past?" past":"")+'" style="--c:'+col+'" data-e="'+esc(it.id)+'" role="button" tabindex="0" aria-label="編輯 '+esc(it.name)+'"><div class="bd"><b>'+t.getDate()+'</b><span>'+(t.getMonth()+1)+' 月</span></div><div class="main"><div class="t">'+esc(it.name)+(it.repeat?'<span class="tg">每年</span>':'')+'</div><div class="s">'+(c.up?'自 '+fmt(pd(it.date))+' 起'+(it.repeat?'・下次 '+(c.days===0?'今天':c.days+' 天'):''):fmt(t))+(it.note?'・'+esc(it.note):'')+'</div></div><div class="r">'+right+'</div></div>';
+}
+function drawList(){
+  var S=sorted();
+  var h='<div class="lh"><h2>所有倒數日</h2><span style="display:flex;align-items:center;gap:10px"><span class="small muted">'+D.items.length+' 筆</span><button class="ib2" id="btnAdd" type="button" title="新增倒數日" aria-label="新增倒數日"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></span></div>';
+  if(!D.items.length)h+='<div class="empty">按上面的「＋」新增第一個</div>';
+  h+=S.up.map(function(x,i){return rowHtml(x,i)}).join("");
+  if(S.past.length){
+    h+='<div class="xp"><button class="ib2" id="btnPast" type="button" aria-expanded="'+SHOWPAST+'" aria-label="'+(SHOWPAST?"收起已過去的":"展開已過去的")+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(SHOWPAST?"M6 15l6-6 6 6":"M6 9l6 6 6-6")+'"/></svg></button><span>已過去 '+S.past.length+' 筆</span></div>';
+    if(SHOWPAST)h+='<div class="vin">'+S.past.map(function(x){return rowHtml(x,-1)}).join("")+'</div>';
+  }
+  $("listCard").innerHTML=h;
+  $("btnAdd").onclick=function(){editItem("")};
+  if($("btnPast"))$("btnPast").onclick=function(){SHOWPAST=!SHOWPAST;drawList()};
+  [].forEach.call($("listCard").querySelectorAll(".it[data-e]"),function(e){e.onclick=function(){editItem(e.dataset.e)};e.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();editItem(e.dataset.e)}}});
+}
+
+/* ---------- 新增・編輯 ---------- */
+function editItem(id){
+  var it=D.items.filter(function(x){return x.id===id})[0],nw=!it;
+  it=it||{id:"",name:"",date:ds(todayD()),repeat:false,up:false,pin:false,note:"",start:""};
+  var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
+  c.innerHTML='<h2>'+(nw?"新增倒數日":"編輯倒數日")+'</h2><label class="f"><span>名稱</span><input type="text" id="eN" maxlength="40" placeholder="例：釜山旅行、生日" value="'+esc(it.name)+'"></label>'+
+   '<label class="f"><span>日期</span><input type="date" id="eD" value="'+it.date+'"></label>'+
+   '<label class="sw"><input type="checkbox" id="eR"'+(it.repeat?" checked":"")+'><span>每年重複（生日、紀念日）</span></label>'+
+   '<label class="sw"><input type="checkbox" id="eU"'+(it.up?" checked":"")+'><span>往上數：日期過了之後顯示「已經 N 天」</span></label>'+
+   '<label class="sw"><input type="checkbox" id="eP"'+(it.pin?" checked":"")+'><span>置頂，放在最上面的大倒數</span></label>'+
+   '<label class="f"><span>備註（選填）</span><input type="text" id="eNo" maxlength="60" value="'+esc(it.note)+'"></label>'+
+   '<div class="acts"><button class="btn pri" id="eSave" type="button">儲存</button><button class="btn" id="eCancel" type="button">取消</button>'+(nw?"":'<button class="btn danger" id="eDel" type="button">刪除</button>')+'</div><div class="small" id="eMsg" style="color:var(--warn);margin-top:8px"></div>';
+  $("eN").focus();
+  $("eCancel").onclick=function(){c.hidden=true};
+  $("eSave").onclick=function(){
+    var n=$("eN").value.trim(),d=$("eD").value;
+    if(!n){$("eMsg").textContent="請填名稱。";return}
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){$("eMsg").textContent="請選擇日期。";return}
+    var pin=$("eP").checked;
+    var o={id:it.id||"c"+Date.now().toString(36),name:n,date:d,repeat:$("eR").checked,up:$("eU").checked,pin:pin,note:$("eNo").value.trim(),start:(it.start&&it.date===d)?it.start:ds(todayD())};
+    if(pin)D.items.forEach(function(x){x.pin=false});
+    if(nw)D.items.push(o);else D.items[D.items.indexOf(it)]=o;
+    save();c.hidden=true;draw();toast(nw?"已新增":"已儲存");
+  };
+  if(!nw)$("eDel").onclick=function(){if(!confirm("確定刪除「"+it.name+"」？"))return;D.items=D.items.filter(function(x){return x!==it});save();c.hidden=true;draw();toast("已刪除")};
+}
+
+/* ---------- 備份 ---------- */
+$("btnSet").onclick=function(){
+  var c=$("setCard");if(!c.hidden){c.hidden=true;return}c.hidden=false;$("editCard").hidden=true;
+  c.innerHTML='<h2>設定</h2><label class="sw" style="margin:0 0 10px"><input type="checkbox" id="sRing"'+(D.ring!==false?" checked":"")+'><span>顯示進度圓環</span></label><p class="small muted" style="margin:0">資料只存在這個瀏覽器；登入雲端同步後，會自動同步到你的其他裝置。換手機或清除瀏覽資料前，請先「匯出備份」。</p><div class="acts"><button class="btn pri" id="sExp" type="button">匯出備份</button><label class="btn" style="cursor:pointer">匯入備份<input type="file" id="sImp" accept="application/json,.json" hidden></label><button class="btn danger" id="sClr" type="button">全部清空</button></div><div class="small" id="sMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  $("sRing").onchange=function(){D.ring=this.checked;save();draw()};
+  $("sExp").onclick=function(){var bl=new Blob([JSON.stringify(D,null,1)],{type:"application/json"}),u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download="countdown-"+ds(new Date())+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+  $("sImp").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var x=JSON.parse(r.result);if(!x||!Array.isArray(x.items))throw 0;D=clean(x);save();draw();c.hidden=true;toast("已匯入備份")}catch(e){$("sMsg").textContent="這不是有效的備份檔。"}};r.readAsText(f)};
+  $("sClr").onclick=function(){if(!confirm("確定清空所有倒數日？"))return;D={items:[],ring:D.ring!==false};save();draw();c.hidden=true;toast("已清空")};
+  if(window.syncBoxInject)syncBoxInject();
+};
+
+D=load();draw();
+document.addEventListener("visibilitychange",function(){if(!document.hidden)draw()});
+requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.className=""})});
+</script>
+<script>
+/* 彈出視窗：開關、遮罩、關閉鈕 */
+(function(){
+  var ids=["editCard","setCard"],bk=document.createElement("div");bk.className="mbk";document.body.appendChild(bk);
+  var X='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function els(){return ids.map(function(i){return document.getElementById(i)}).filter(Boolean)}
+  function closeAll(){els().forEach(function(e){e.hidden=true})}
+  function sync(){
+    var open=els().filter(function(e){return !e.hidden});
+    bk.classList.toggle("on",open.length>0);document.body.classList.toggle("mlock",open.length>0);
+    open.forEach(function(e){if(!e.querySelector(":scope>.mx")){var b=document.createElement("button");b.type="button";b.className="mx";b.setAttribute("aria-label","關閉");b.innerHTML=X;b.onclick=closeAll;e.appendChild(b)}});
+  }
+  var mo=new MutationObserver(sync);
+  els().forEach(function(e){e.classList.add("modal");mo.observe(e,{attributes:true,attributeFilter:["hidden"],childList:true})});
+  bk.onclick=closeAll;
+  document.addEventListener("keydown",function(ev){if(ev.key==="Escape")closeAll()});
+})();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { initializeFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
+  authDomain: "hthsieh-7b870.firebaseapp.com",
+  projectId: "hthsieh-7b870",
+  storageBucket: "hthsieh-7b870.firebasestorage.app",
+  messagingSenderId: "537319375553",
+  appId: "1:537319375553:web:4fabfc4ee2259776048a40"
+};
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+  const fref = (uid, name) => doc(db, "users", uid, "finance", name);
+  window.cloud = {
+    onAuth(cb) { return onAuthStateChanged(auth, (u) => cb(u && !u.isAnonymous ? { uid: u.uid, email: u.email, displayName: u.displayName } : null)); },
+    signIn() { return signInWithPopup(auth, new GoogleAuthProvider()); },
+    signOut() { return signOut(auth); },
+    async pullDoc(uid, name) { const d = await getDoc(fref(uid, name)); return d.exists() ? d.data() : null; },
+    async pushDoc(uid, name, data) { await setDoc(fref(uid, name), data); },
+    listenDoc(uid, name, cb) { return onSnapshot(fref(uid, name), (d) => cb(d.exists() ? d.data() : null), () => {}); }
+  };
+  window.dispatchEvent(new Event("cloud-ready"));
+} catch (e) {
+  console.error("Firebase init failed", e);
+}
+</script>
+<script>
+(function(){
+"use strict";
+var NM={countdown:{key:"countdown-v1",get:function(){return window.cdGet()},apply:function(o){window.cdApply(o)},isDef:function(){return window.cdGet().items.length===0}}};
+var SY={user:null,api:null,timers:{},unsub:[],applying:false,err:""};
+function $(id){return document.getElementById(id)}
+function lts(n){try{return +localStorage.getItem(NM[n].key+"-ts")||0}catch(e){return 0}}
+function sts(n,v){try{localStorage.setItem(NM[n].key+"-ts",String(v))}catch(e){}}
+var BI={sync:'<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',ok:'%s<path d="m9 12.5 2.2 2.2L15.5 10.5"/>',bad:'%s<path d="M12 10v3M12 15.8h.01"/>',off:'%s<path d="M4 4l16 16"/>'};
+var BTXT="";
+function setBadge(t){
+  var b=$("syncBadge");if(!b)return;BTXT=t||"";
+  if(!t){b.innerHTML="";b.hidden=true;return}
+  var k=/同步中|待同步/.test(t)?"sync":/已同步/.test(t)?"ok":/失敗/.test(t)?"bad":"off";
+  var p=BI[k].replace("%s",'<path d="M18 18a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/>');
+  b.innerHTML='<svg class="sbi'+(k==="sync"?" spin":"")+'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+  b.title=t;b.setAttribute("aria-label",t);b.hidden=false;
+}
+$("syncBadge").onclick=function(){var m=$("toast");m.textContent=BTXT||"";m.classList.add("on");clearTimeout(window.__tt);window.__tt=setTimeout(function(){m.classList.remove("on")},1800)};
+function pending(){return Object.keys(SY.timers).length>0}
+function refresh(){if(!SY.user)return;setBadge(SY.err?"同步失敗，稍後會再試":pending()?"待同步…":"已同步")}
+function sched(n){if(!SY.user||!SY.api)return;clearTimeout(SY.timers[n]);SY.timers[n]=setTimeout(function(){push(n)},1500);setBadge("待同步…")}
+async function push(n){
+  clearTimeout(SY.timers[n]);delete SY.timers[n];
+  if(!SY.user||!SY.api)return;
+  try{if(!lts(n))sts(n,Date.now());setBadge("同步中…");await SY.api.pushDoc(SY.user.uid,n,{json:JSON.stringify(NM[n].get()),ts:lts(n)});SY.err="";refresh()}
+  catch(e){SY.err="x";setBadge("同步失敗，稍後會再試");SY.timers[n]=setTimeout(function(){push(n)},15000)}
+}
+window.syncTouch=function(n){if(SY.applying)return;sts(n,Date.now());sched(n)};
+function applyRemote(n,r){
+  try{var o=JSON.parse(r.json);SY.applying=true;NM[n].apply(o);sts(n,+r.ts||Date.now());var m=$("toast");m.textContent="已從雲端更新";m.classList.add("on");setTimeout(function(){m.classList.remove("on")},1800)}
+  catch(e){}finally{SY.applying=false}
+}
+async function reconcile(n){
+  var r=await SY.api.pullDoc(SY.user.uid,n),l=lts(n);
+  if(!r){if(!NM[n].isDef())await push(n);return}
+  var rt=+r.ts||0;
+  if(l===0){if(NM[n].isDef())applyRemote(n,r);else{sts(n,Date.now());await push(n)}return}
+  if(rt>l)applyRemote(n,r);else if(rt<l)await push(n);
+}
+function startSync(){
+  stopSync();SY.err="";setBadge("同步中…");var u=SY.user;
+  Promise.all(Object.keys(NM).map(function(n){return reconcile(n)})).then(function(){
+    if(SY.user!==u)return;refresh();
+    Object.keys(NM).forEach(function(n){SY.unsub.push(SY.api.listenDoc(u.uid,n,function(r){if(SY.user!==u||!r)return;if((+r.ts||0)>lts(n))applyRemote(n,r)}))});
+  }).catch(function(){setBadge("同步失敗，稍後會再試");SY.err="x"});
+}
+function stopSync(){SY.unsub.forEach(function(f){try{f()}catch(e){}});SY.unsub=[];Object.keys(SY.timers).forEach(function(k){clearTimeout(SY.timers[k])});SY.timers={}}
+window.syncBoxInject=function(){
+  [].forEach.call(document.querySelectorAll(".sbox"),function(e){e.remove()});
+  var c=$("setCard");if(!c||c.hidden||!SY.api)return;
+  var d=document.createElement("div");d.className="sbox";
+  d.innerHTML='<h2>雲端同步</h2><p class="small muted" style="margin:0">'+(SY.user?'已登入：'+(SY.user.email||SY.user.displayName||"")+'。倒數日會自動同步到登入同一個帳號的其他裝置。':'登入後，倒數日會自動同步到你的其他裝置。未登入時，資料只存在這個瀏覽器。')+'</p><div class="acts"><button class="btn pri" id="syIn" type="button"'+(SY.user?" hidden":"")+'>用 Google 登入</button><button class="btn" id="syOut" type="button"'+(SY.user?"":" hidden")+'>登出</button></div><div class="small" id="syMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  c.insertBefore(d,c.firstChild);
+  $("syIn").onclick=async function(){try{await SY.api.signIn()}catch(e){$("syMsg").textContent=(e&&e.code==="auth/popup-closed-by-user")?"":"登入失敗，請再試一次。"}};
+  $("syOut").onclick=async function(){try{await SY.api.signOut()}catch(e){}};
+};
+function initCloud(){
+  if(SY.api||!window.cloud)return;
+  SY.api=window.cloud;
+  SY.api.onAuth(function(u){SY.user=u;if(u)startSync();else{stopSync();setBadge("未登入")}syncBoxInject()});
+  document.addEventListener("visibilitychange",function(){if(document.hidden&&SY.user)Object.keys(SY.timers).forEach(function(n){push(n)})});
+  window.addEventListener("online",function(){if(SY.user)startSync()});
+}
+window.addEventListener("cloud-ready",initCloud);
+if(window.cloud)initCloud();
+})();
+</script>
+</body>
+</html>
