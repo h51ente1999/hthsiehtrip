@@ -756,15 +756,21 @@ function summaryText(L){
   return t;
 }
 /* ---------- 請款單（列印） ---------- */
+/* 金融機構代號：依財金公司「晶片金融卡跨行轉帳金融機構代號一覽表」（114/11/13）的順序：黃色＝銀行、紅色＝郵局、藍色＝信用合作社與漁會 */
+var BANKS=[["004","臺灣銀行"],["005","土地銀行"],["006","合庫商銀"],["007","第一銀行"],["008","華南銀行"],["009","彰化銀行"],["011","上海銀行"],["012","台北富邦"],["013","國泰世華"],["016","高雄銀行"],["017","兆豐銀行"],["021","花旗(台灣)銀行"],["048","王道銀行"],["050","臺灣企銀"],["052","渣打商銀"],["053","台中銀行"],["081","匯豐(台灣)銀行"],["108","陽信銀行"],["118","板信銀行"],["700","中華郵政"],["803","聯邦銀行"],["805","遠東銀行"],["806","元大銀行"],["807","永豐銀行"],["808","玉山銀行"],["809","凱基銀行"],["810","星展(台灣)銀行"],["812","台新銀行"],["816","安泰銀行"],["822","中國信託"],["823","將來銀行"],["824","連線銀行"],["826","樂天銀行"]];
+function bankOpts(sel){return '<option value="">請選擇銀行</option>'+BANKS.map(function(b){var v=b[0]+"|"+b[1];return '<option value="'+esc(v)+'"'+(v===sel?" selected":"")+'>'+b[0]+"　"+esc(b[1])+'</option>'}).join("")+'<option value="other|"'+(/^other\|/.test(sel)?" selected":"")+'>其他（自行輸入）</option>'}
 function invoiceModal(){
   var L=cur();if(!L)return;
   var c=calc(L),cred=L.members.filter(function(m){return c.net[m.id]>0});
   if(!c.tf.length||!cred.length){toast("目前大家打平，不需要請款");return}
-  var def=(L.myMember&&c.net[L.myMember]>0)?L.myMember:cred[0].id,acct="",ad={zip:"",addr:""},style="env";
-  try{acct=localStorage.getItem("split-v1-acct")||"";ad=JSON.parse(localStorage.getItem("split-v1-addr")||"{}")||ad}catch(e){}
+  var def=(L.myMember&&c.net[L.myMember]>0)?L.myMember:cred[0].id,ac={b:"",n:"",h:""},ad={zip:"",addr:""},style="env";
+  try{ac=Object.assign(ac,JSON.parse(localStorage.getItem("split-v1-acct2")||"{}"));ad=JSON.parse(localStorage.getItem("split-v1-addr")||"{}")||ad}catch(e){}
   modal('<h2>匯出請款單 PDF</h2><p class="muted small" style="margin:0">幫墊款的人做一張請款單 PDF，傳給欠錢的朋友，照著轉帳就好。</p>'+
     '<label class="f"><span>收款人（誰要收錢）</span><select id="ivPayee">'+cred.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===def?" selected":"")+'>'+esc(m.name)+'（應收 '+nf(c.net[m.id])+'）</option>'}).join("")+'</select></label>'+
-    '<label class="f"><span>請款帳號（銀行、帳號、戶名都可以寫）</span><textarea id="ivAcct" rows="3" maxlength="120" placeholder="例：中國信託 822　1234-5678-9012　王小明"></textarea></label>'+
+    '<label class="f"><span>銀行</span><select id="ivBank">'+bankOpts(ac.b)+'</select></label>'+
+    '<label class="f" id="ivOtherW" hidden><span>銀行名稱（代號可一起寫）</span><input type="text" id="ivOther" autocomplete="off" maxlength="24" placeholder="例：012 台北富邦"></label>'+
+    '<div class="g2"><label class="f"><span>帳號</span><input type="text" id="ivAccNo" inputmode="numeric" autocomplete="off" maxlength="24" placeholder="例：12345678"></label>'+
+    '<label class="f"><span>戶名</span><input type="text" id="ivAccName" autocomplete="off" maxlength="20" placeholder="例：王小明"></label></div>'+
     '<div id="ivEnv"><label class="f"><span>收件人</span><select id="ivTo"></select></label>'+
     '<div class="g2"><label class="f"><span>郵遞區號（選填）</span><input type="text" id="ivZip" inputmode="numeric" maxlength="6" placeholder="例：100"></label><div></div></div>'+
     '<label class="f"><span>收件地址（選填）</span><textarea id="ivAddr" rows="2" maxlength="80" placeholder="例：台北市中正區○○路 1 號 3 樓"></textarea></label>'+
@@ -772,7 +778,7 @@ function invoiceModal(){
     '<div class="ph"><button class="btn sm" type="button" id="ivPhotoBtn">'+ico("img",15)+' 加入照片</button><span class="muted small" id="ivPhotoTx">未選擇照片</span><button class="btn sm icon" type="button" id="ivPhotoX" hidden aria-label="移除照片">'+ico("x",14)+'</button></div><input type="file" id="ivPhotoIn" accept="image/*" hidden></div>'+
     '<label class="f"><span>繳款截止日（選填）</span><input type="date" id="ivDue"></label>'+
     '<div class="err" id="ivErr" role="alert"></div><div class="row"><button class="btn" type="button" id="ivNo">取消</button><button class="btn pri" type="button" id="ivGo">'+ico("pdf",16)+' 匯出 PDF</button></div>',function(){
-    $("ivAcct").value=acct;$("ivZip").value=ad.zip||"";$("ivAddr").value=ad.addr||"";$("ivNo").onclick=closeModal;
+    $("ivOther").value=/^other\|/.test(ac.b||"")?ac.b.slice(6):"";var shO=function(){$("ivOtherW").hidden=$("ivBank").value.indexOf("other|")!==0};$("ivBank").onchange=shO;shO();$("ivAccNo").value=ac.n||"";$("ivAccName").value=ac.h||"";$("ivZip").value=ad.zip||"";$("ivAddr").value=ad.addr||"";$("ivNo").onclick=closeModal;
     function toList(){var pe=$("ivPayee").value,h='<option value="">全體旅伴（一起寄）</option>';c.tf.filter(function(r){return r.to===pe}).forEach(function(r){h+='<option value="'+esc(r.from)+'">'+esc(mname(L,r.from))+'（應付 '+nf(r.v)+'）</option>'});$("ivTo").innerHTML=h}
     toList();$("ivPayee").onchange=toList;
     var photo="";
@@ -780,13 +786,17 @@ function invoiceModal(){
     $("ivPhotoIn").onchange=function(){var f=this.files&&this.files[0];this.value="";if(!f)return;if(!/^image\//.test(f.type)){$("ivErr").textContent="不是圖片檔。";return}shrink(f,function(d){photo=d;$("ivPhotoTx").textContent="已加入照片";$("ivPhotoX").hidden=false;$("ivErr").textContent=""})};
     $("ivPhotoX").onclick=function(){photo="";$("ivPhotoTx").textContent="未選擇照片";this.hidden=true};
     $("ivGo").onclick=function(){
-      var a=$("ivAcct").value.trim();if(!a){$("ivErr").textContent="請輸入請款帳號。";$("ivAcct").focus();return}
+      var bk=$("ivBank").value.split("|"),no=$("ivAccNo").value.replace(/[^0-9\-]/g,""),hn=$("ivAccName").value.trim();
+      var oth=bk[0]==="other";if(oth){bk=["",$("ivOther").value.trim()];if(!bk[1]){$("ivErr").textContent="請輸入銀行名稱。";$("ivOther").focus();return}}
+      if(!bk[1]){$("ivErr").textContent="請選擇銀行。";$("ivBank").focus();return}
+      if(!no){$("ivErr").textContent="請輸入帳號。";$("ivAccNo").focus();return}
+      var a=bk[1]+(bk[0]?"（"+bk[0]+"）":"")+"\n帳號 "+no+(hn?"\n戶名 "+hn:"");
       var zip=$("ivZip").value.trim(),addr=$("ivAddr").value.trim();
-      try{localStorage.setItem("split-v1-acct",a);localStorage.setItem("split-v1-addr",JSON.stringify({zip:zip,addr:addr}))}catch(e){}
+      try{localStorage.setItem("split-v1-acct2",JSON.stringify({b:oth?"other|"+bk[1]:$("ivBank").value,n:no,h:hn}));localStorage.setItem("split-v1-addr",JSON.stringify({zip:zip,addr:addr}))}catch(e){}
       var pe=$("ivPayee").value,to=style==="env"?$("ivTo").value:"",du=$("ivDue").value,mg=style==="env"?$("ivMsg").value.trim():"";
       closeModal();exportInvoice(L,c,pe,a,{style:style,to:to,toName:to?mname(L,to):"",zip:zip,addr:addr,msg:mg,photo:style==="env"?photo:"",due:du?du.replace(/-/g,"/"):""});
     };
-    $("ivAcct").focus();
+    $("ivBank").focus();
   });
 }
 function code128(s){
