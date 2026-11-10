@@ -1123,6 +1123,18 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #viewer .vkids>span .mlinks{grid-column:2;margin-left:0!important;justify-content:flex-start!important}
 @media (max-width:370px){.vr.hasimg .vdi .vkids{margin-left:-54px}}
 </style>
+<style id="ctry-css">html:not([data-ctry="KR"]) #nvw{display:none}</style>
+<style id="ct-css">
+#ctSheet{position:fixed;inset:0;z-index:96;display:none}#ctSheet.on{display:block}
+#ctSheet .bk{position:absolute;inset:0;background:rgba(18,22,32,.5)}
+#ctSheet .sh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:22px;padding:20px 18px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+#ctSheet h3{margin:0 0 6px;font-size:1.15rem}#ctSheet p{margin:0 0 14px;font-size:.88rem;line-height:1.5;color:var(--muted,#6b7387)}
+#ctSheet .ctg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+#ctSheet .ctg button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 14px;border-radius:14px;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;font:inherit;cursor:pointer;text-align:left;transition:transform .15s,border-color .2s,background .2s}
+#ctSheet .ctg button:active{transform:scale(.97)}#ctSheet .ctg button:hover{border-color:var(--blue)}
+#ctSheet .ctg b{font-size:1rem}#ctSheet .ctg small{color:var(--muted,#6b7387);font-size:.8rem}
+#ctSheet .ctlater{display:block;margin:12px auto 0;border:0;background:transparent;color:var(--muted,#6b7387);font:inherit;font-size:.9rem;padding:8px 14px;cursor:pointer}
+</style>
 </head>
 <body>
 <section id="viewer" hidden><div id="vLoad" aria-live="polite"><i></i><i></i><i></i><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div><div id="vClock" hidden></div></div><div id="vPre"></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div id="vBody"></div></div></section>
@@ -1168,7 +1180,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     <label class="lf full"><span>地址</span><input type="text" id="a" aria-label="地址"></label>
     <label class="lf full"><span>營業時間</span><input type="text" id="hr" aria-label="營業時間"></label>
     <label class="lf full"><span>備註</span><textarea class="f" id="nt" rows="2" aria-label="備註"></textarea></label>
-    <label class="lf full"><span>Naver 地圖連結</span><input type="text" id="nv" aria-label="Naver 地圖連結"></label>
+    <label class="lf full" id="nvw"><span>Naver 地圖連結</span><input type="text" id="nv" aria-label="Naver 地圖連結"></label>
     <div class="acts"><label class="upload"><input type="file" id="f" accept="image/*"><span id="upl">＋ 圖片</span></label><button type="button" class="pimg" id="pasteImgAdd" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button>
     <button class="primary" type="submit">加入景點庫</button></div>
     
@@ -1296,7 +1308,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   var ICON_N="data:image/png;base64,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",ICON_G="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAVO0lEQVR42t2ce4zlZ3nfP8/zvr/LmZv3Mntnba/XXm/BE69jBxJDwS4NRFzqJBQnVVOiJCW9CRIiBEKp3LSK0kISQtQ2RiiVoipVgKjkVqSkaTtu7IAhtTFehGUbr9fseuzdnZ3d2Tm33+V9n/7x+53xrFnD7pmZReEdvTqjOXPOec/391y+z+X3CN9hmZkAKiJh9Ldnnnnm2snJySPAkTRNb1bVVwE7nXPTItIBMjNLRMQBAoiICBu4zMyA0Q5ABRRmNgghrACnzexkVVVPxhgf6/V6jx08ePCba17vgCgi9u0+x3+HQ7gWmHD06NH9e/fu/cksy96ZJMlcmqZb+O4uaTeAA1Jgcs3zh9f+c1EU57vd7tGiKP5sYWHh0yJy4mXf8YqvkAOYn5+fXVxc/PXBYLBsF69oZnW7Qwghtn+LMUaLMdrVWms+L5pZbM8S1pzvosMMBoPlxcXFX5+fn59d+10v+8qMXnDs2LF7ut3u8TXvXYUQwss/8G/Jiu3Zq9Efut3u8WPHjt2zBiS5bHAWFhbua96vAeZvKSivCNYIqBCCLSws3HdZIM3Pz3uAM2fOfLx9ozqsQel7cI3U0M6cOfPxtRi8IjgLCwv3tS8uv8ek5ttJU2lmdvLkyfsuCdJIrY4fP/72VmA2XaVibHZo96pNb0396Lm6fbwaKhdCsOPHj799LSba8hx7/PHHt87Ozn5KVQ3QyzFYV+4awSKYgUizVUAl0rCkSBQDsdXnXPsIRohGtE2jDKqqtn379k89+OCDW1uqJf6BBx5wd999d33q1Klfnpyc3AvU34kfjQWMgSiM6OKwaywuGs8twfPnjdP9yLnaGCCIBrKOsWVG2b/dOLzdcf1W6DRIYdawQ93YS6hAPTU1tffGG2/8ZRH54Pz8vBeARx55ZO/hw4efmpiY6LyMgK1/RQOVhvIOYenJmmNPBJ56vuLksnAqOHoxoatCzxl1hH4qFBilgnmYmDD27oy87gZ4y0HHLdubI5oJyIaKugE2GAwGTzzxxKHbb799QQBeeOGFD+3evfujGyo9BmaGqMDA6D98gWe+vMyxU8YZHF2f0k1Sei6hLwk95+hqpDKh75RKIWDUZpTAwKAwY2YGXndIeM9tymt3KgDBGlXcoFUD/vTp0x/etWvXxzxAp9O5p0VPNihQAhFEhPorpzn3Z89x8mTNkk+RfIqOy6nEKGOkwhg6g2AIQpQmsrIIUYUaA4XcQYYQCvjLrxr/9xsF75xTful1ntnMbSRIAliWZfcAH/NHjx7dn6bp3MhQbRQ4sY4MP/MwK//rGOckp57YgnceZwEfahwVqgoSUatx6lAExXBi6Oh6iYBBNCNIc8DpNFJXwme+POThBePf3T3NG3Y5QjTc+g2TApIkydzRLx/drzMzM9+f5/n0hkhQC064MGDwsc/Q+9yDDClQD1oHJJSo1YhEHIajAcIheGt0W1Z3I4HSgiQiLVZGHQJmgek8cPzFkp/54yX+4NkCp0KwjZGgTqczPbNr5vs1SZIjMvKx60s/YCKE5RWKX/3PxC9+idgxJFRQF42UWMBbII2RzIwsQhaN1MCb4Q0c0lzC1t3JGp8hNACZGlECpRl5GtG64AN/uczvPT3ECYT1c4EoIiRJckTzPD+0IWoF1EVF/WufgMcepZpyEMrGdVkjOUpArcYTGgmySNKC5jXg1EgQnIJiiMm3iLSJEcSIYkStKaUmeCO3Ph94cIHPnriwUZJEnueHVET2rxGtsVYwI4oQ7v8U+vAXYWoSKWokBDQG1OKabYhFHBEv4AXUIJZKKKAuhbpUJChOBKfS8h3BBExiC1RsQYoECYivSKTPv3pwgb9ZKnCyLlIpNMxxv4rIjvUJYwRV6v/zAPq5zxKmJwlVicQasQohIBbAajQ2atbYnwh1jZUw3Um5br/y6r8j3HqLcfimyNYdgdpHBnXDClUihjWWQCJIIEokSiRITUWNd8aw3+P9X3iG88FahVzX2uFFZGZsCWqNsp0/j33yfiTJwAJCjVA1WVCrUatQKtQCDpBYQwF7D0yw944O264XpreWOGdgQklkuXA8ezZh/ljNQ08p53qKSyMmkaA1wUWCNruWCtOamopOHnj49CKf+Ppz/MrcAUKMONVxJWjGO+fy9UiPOUf5h58mPX4Cm92OhoB6IxARC0iMEA0JIN6wckg2Pcmht+1k1+0JTJTUVUkMRigNaZnqbl+zf1/FG64VnpxTfudvEuafFPK0sUM1of1pVMykpNIak5pOZvynJ47xngOzHJicJJqhY6TEVTVXIFuTnL8y6XGO+uyLyJ/+EUx2sFC2+fOAENFWmqBCqYnFkHw247b3XsvuNxqlDCl7htUgpqg6pN2lKd3S6PcjN81U/OZbSv756yNdk1bN6tYOBYIGQgtOlIrU15wtVrj/6WcRUczsSj3yCItMzSwZV3oiUP/Pv8C/uIhk2qiURMAQIiIlQoFqBVWfZIvj0D89jF4Hg5UKBHziSNOUPM/Is7zZeU6epWRpQpI4BpVQFTXvv6PkX7wushQr8DVBS6IrCK6g1hqTCnMllRQkWeS/nfgGpwcDnOi41ijRtjTDFVdlVAl1BQ/8FZpnmERUQcRAapBGmkQq1IYE12fvP3k1ujclDIw0zcjTnCzLSJKEJEnwiccnnsQnpGm6ujt5iqhjuRf4hdvgx24UloYR5wJRCyI1SIVpRZSKKAU+qXlhuMyfv/A8XCE3GmFhZm68vE+MRBHic8eRZ5+ASYcRGpLua8SXiCvBDVFfEQcrTL/hBvLX7Cf0apI8XQXGOYdzrmXKzW7Is+CcI0kS0qSRJvWOsjI+ckfKjskLdCkxDUSpCVoR3BB0iGmByAC0y+dPP9VK9Bi+XkR0XO9lQPja47jBeUgFfGy2Cw1AvsT5ArUutgUm3nwblIE0zUh8inMOVUVVLwLnUludkiQJeZpSmnDdVMpPv6bD+WIFcxHTAdENMSmQdhsFzimPnXuelaKP07HUTHSciqeZNXHJsa8jXsAZ6gOa1GhSI0mF8xUujRDPk8ztI9m7AxXDZx717qXM2WWKvGoDUpYmDOrIj147y84sUFkf/BC0QKQk6hDTISYDUldwojrDN3pLbWpqDIDGiixEMIN46jgyAaQVkleQVVheIlmF5AMk72HZCsktN+BcgjqPOI+KoCN1ulKQvCeIcmA6Y24W+nEZdRW4Afg+4oaoDhEtcL5iGC5wont2bUR0RcuPRw6VWA3Q4gzScZAZaMRcRJzDeQg+ot6wXPB79jeeWRtbM25ORUTwzqPek0vgNTPG/z6/gjhFpA9agLQkVUpwYBQsDC60R49XnNHxY56UWJbE+gI6EbG8xrS1QYmBqyFJSDTg0gwmOqg6EjVU7IrU61IcV1VxOHZPZeAugHiQsmXvZQOOlu0/lyxX3bE/bvz0qjXARKvQVBEJmAe8ghcsMcwZMU/BC04EYWNKEg0rVrIUcF1wOcIQpGr3iKwKUDSgjXUtBH/FZ5YmEa+awKQilFimrQQZ5hXxCgnEBKJbxDNczfSttwtGRvUiUZarFXADVIUoJUjVqlcEAk4BXzaAjnltvI2DkAUkyYhbO0QbQO4RMcTF1uULkoAkkNKH8kzDbWxjyg7S2sJnizPgey0dCI2bb0OdJuJvopKdyTXryr+OpV74hHrnbpgYotMBJktsuoLJqvl9siRMGTZVEFcebS/DRqiY4cWxXPX5yuAYSVoRpY9ID9US0QpzoXEaApka+zpTYONJ73huHmsIwp6bCHmJTAaYCthUgMkam6yJE4E4UcM0VCt/QSyHGDqer72ozGaoU/66+zxfH5xiwkmjWlKj1CABkSbvHaxiu05wfWcWi+OxaR3blQRgz63Uk0KcrIiThnSACYgTEDpQZ5E4MUMRvsZw6c8bemBhI7K7/O6JeUSGqERUK1RrRGogIm1CropDbshn2dfZRRUrZAzaNxZAogox4GaPUG3bQ+z0sYlAmKiInUjMI6FjhNwoM6HIPC8u3k+oL7TdcuPVB6oY8Kr84eIjfP7MI1yTZJjWRKmbWBBDiQ1IAkU15PXbDtPJO5hcRQkSUYglbupVhF1/l0q72KSHXAi5EXIhplCnUHmjziZZLJ/mmRd/G1Vpa+tXpmq1BRJ1PDF8kQ8+9WkSHVl9e+kRa4BoQ6Fcct46+31YrFBxV89ISytFDnD776XvUyyJkCghFepEqBOovFCoMhSlclv42uIf8ejp30FEEROChW8LVNO+agSLeHE8VZ7hJ574JAv9c2Si1LEmxvgy62g4UXpVnzunruMHt91IEdoi5VWzQSI4l2BxiG59E+WWH6RwyxSdhOAhJEZIhOActSolCUNzlMzwwIlP89mTv8pyXMKJQxDMGhBevqWtkzlR/nTl67z18U/w5JmTzLicQJsPX/VMDXlUawheqCt+bt+b6GiOqY5dsvHrIWzqQKxDZ98v0D/xJXwSUVNMocJRiGOIYxAdgwi9GKmY5K8WHuALS8e5e889/NC217PTbcNd4itUwJcG3+RTz8/zuRN/jdWRac2oY0Bov/RF5Z2GApwPA944dZh/sOtOerEkS9OxJUi63a5NTk6OVw8LgbIcEkLC8omfx/f+AJ/vpCJSkNIn5YIknLeUcyHjbOywGCY4azmn6sipqGSd3RycOcwN09ey0+1EVOnGkqcHp/h/y8/w1aVn6A8LZjTHRIlmawhnY39iI4dtxzqUZcEf3/JL3DX7aioNZEkyFkD9Xn99rS6qinOeEGByz32sfPMhAuep/RRl9NTmqHCUeAr1FOYYoPSJBJ0gtYzF7nmePvcFLugXqVEqoI4QIiTmmNSULW6CSsCiofaytAvSFB4FvHjOFst8+Lof4a7tN9OPJVOJbzybyVhBsq4nNmrSoh7nStRdTz77awwsEFWpnKdQoRSoZASUoxbFLCEY1NQ48Uz6CbaQM0PCDClbJGeb5ky6hIhRW93Ef3ax+RRT1BrJSMRzrurzxm238JHr3skgFKTOgTpM3NgZhHW3u6gq3mWIrJBPv4t02wfpV0sEyRiKMBSlRKlw1OYIKEFGfR0NcwkYUSJmsTXYTb3rJQ9nbYxlF3msl+5D8HRjyb5sG/ff9FOkUVCvJIlff2rF1kn9RQTnHWmSI/TZMvUB3Mw/ZCUsUTLB0FKGpBTiqEQbkERbquiwUZtL28Aobe/hWuc0an0RjaAj1Wp+FKWySGopnzz8Hg6lW6ickSVZ2z5j68JINyKCFBESn+C8wySy+5qPkmSvpSeLBMmpTKmiEKIjmiPExj1HAdGX0q+yNg1rrAlwbU2G5qWiwShj3KXgNw+9m7dN3swKgU7aJOia93Nj92WYmW0YQE3lIcU5Q5ni4NbfAn+Ynq2ApdQ0ElSJw0TbL/jS0bWxKoi2j9glEmwNWCJt0xWwFLr82wM/ynt3/BDn45CJNL+ojLTe1IHaenXs5fbIZ4grSN0OfmDrx1G/j/MyoJaUUhyVyChaAht1kYHQ1M8buteAIGKXuH6NynhRFmOXX7z+R/jI7jdzrh7gswzv/Ybek6bShMBsBE5NV5YnTXJMC6b9Ad604z9gsoWBDYGEiKNeZS2t2qwWDJuE/ksVj5EkxTUBruEFzoQuP7v3bv79/rezEgrSxJN73zaor096RliISK1t2+uGrIvrVx2CDNnlbuYdO/81FTldLTH1jfKsqVnKKN5c47Uu2Y9CIBFhse7yrj238lvXv5uyrvCJJ01S1OlGqdZqjKxtVpvvdGvilfMjR5bmlNrjYH6En9j9IYYopVSY+EsWg/WSoKztJHCcCcv88Owt/O6Bn0XrGvEpWZqtVmo3Apw1WBQaYxyyCauxR54syRlalyOd1/JTsz/HSl3QBAfaeCFrXLy2Ha3SsuPG3cfW5RuJwEo94AdmbuL3bnwvqXliIqthxAbfEjsKpYYaY7zwinK9AermvSdNc3r0+Hszd/GTsz/O2XABEw+mrX7FVeOrtJxnzWkcSrcu2JNt57/e/PPM0qHSQCfNm/7qjQfIWlt0Qc3sDJu0RiClSUKWZAxiwb077uGtW97C+fICibqWLcvF9ogmdBoxn4pI7hL+y83v5Xq3nZ4UTKSdRq3c5khPu86omZ3YDAm6lCT5xFPUBf9y97183+SNXKi7ePFN6qLNDa0ljNa0V9CrBnz04D/iromb6MWSTja5kVznFSUoxnhCy7J8ik1eI6OdJiniHRPi+dC1P01HOlRWNveEaROdyWpvaiTFsTRc4Z/t+vv8zI43cS4OmMhyvHObcTfbt6yyLJ/SEMJjrd/XzQZJVcnTjEICB7NX8f4999IrBo1Jtpdn8hzdUHLHxH7+zfXvpl8XZGnSNC+Ibqb0rGIRQnhMl5aWHh0OhyuMOv03cTX5I0eeZqyEAe/YdSdvuOZWzpUXcOJWoy4Z5ZfryK9c/+PMeE9wrMZ7opsKjgEyGAxWlpaWHtW5ubkTZVkebZ+IV0PdRvYohsj79r+LTp1TxbAanDpxnK+6vHv2Dn54++10Y0mepLg2AN3kFQEriuLo3NzcCW3HNvzJ1ZCgi+yRT6klcMvEAX5sx50slcsk6lGEaIEtIecX991DiEaeZnjnm5vzNn8ZIMPh8E9Wde3kyZO/3+/3exuV/ric5dq+w2Es+Md73sw2mWE5DIhEXqgucO+eu3j19LX0pCL1yWa787Xg6GAw6C0sLPw+gJufn/d33nnn8vve975tU1NTr287wfVqSBJAZTXb3BQHJvbxdLZEunULb916Kx/e/TYSPGnWtAhvROvM5ZBnwJ09e/Y/Hjp06L/Pz897abvK5aGHHrrmyJEjX5uamtozQnLTL5cZdV0zGAxITDgf+vRCxa5kuikAphl5lm5aKHEJ2yPdbveFZ5999pa5ubnlVb46GhFz/Pjxt+/fv/9/qGrdFtE3/1QxUpYlRVVC3RQLo4L3njzLcG1+Z5MBMiDEGP3x48ffcfDgwc9/y9ic0TiGkydPXtXRFDFGq+vaiqKwXq9n3V7XhsOhlWVpV2lsyHceTfHthpu0A0A2HaQQgtVVbXXd7KsEzuUPN/luj8cZDUlau6/WeJwXX3zxvrFmCD333HP39Hq979kBS71e74oHLL3SiK7f+F4b0XX69OnfuJwRXXKZQ95YO+TNez+XZdl3e8jbFa2iKM7Xdb065G1ubu6yhrzJuGMC8zy/zTl3a5qmNzvnXmVmO51z08CEiKTtjXquvVnmqo4JjDGuAKerqjoZY3wyxvjVXq/3lXHGBP5/yf8RPBvimYgAAAAASUVORK5CYII=";
   function okNaver(u){try{var x=new URL(u);if((x.protocol==="https:"||x.protocol==="http:")&&/(^|\.)naver\.(com|me)$/.test(x.hostname)){var m=/\/place\/(\d{5,})/.exec(x.pathname);if(m&&/naver\.com$/.test(x.hostname))return "https://map.naver.com/p/entry/place/"+m[1];return x.href}}catch(e){}return ""}
   function naverUrl(sp){return sp.naver||(sp.ko?"https://map.naver.com/p/search/"+encodeURIComponent(sp.ko):"")}
-  function mapLinks(sp){var a=[],nu=naverUrl(sp);if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
+  function mapLinks(sp){var a=[],nu=ctry()==="KR"?naverUrl(sp):"";if(nu)a.push({u:nu,i:ICON_N,t:"Naver 地圖"});a.push({u:mapUrl(sp),i:ICON_G,t:"Google 地圖"});return a}
   var POSIC='<span class="mapt">MAP</span>';
   function iconHtml(sp,pos){return '<span class="mlinks">'+mapLinks(sp).map(function(l){return '<a class="mi" href="'+esc(l.u)+'" target="_blank" rel="noopener" title="'+l.t+'" aria-label="'+l.t+'"><img src="'+l.i+'" alt=""></a>'}).join("")+(pos?'<button type="button" class="mipos" data-vpos="'+sp.id+'" title="地圖上看位置" aria-label="地圖上看位置">'+POSIC+'</button>':'')+'</span>'}
   function kol(sp){return sp&&sp.ko&&sp.ko!==sp.name?sp.ko:""}
@@ -1323,7 +1335,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>電話</span><input type="text" inputmode="tel" autocomplete="tel" data-f="phone"'+at+' value="'+esc(sp.phone||"")+'" placeholder="例：051-123-4567" aria-label="電話"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
-      '<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>'+
+      (ctry()==="KR"?'<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>':'')+
       '<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+''+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div></div>');
   }
@@ -1339,7 +1351,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
 
   function setDocTitle(){document.title="hthsiehtrip"+(s&&s.title?" - "+s.title:"")}
-  function render(){setDocTitle();try{mapSoon()}catch(e){}
+  function render(){applyCtry();setDocTitle();try{mapSoon()}catch(e){}
     updateCountdown();
     $("title").value=s.title||"";
     var shown=s.spots.filter(function(sp){return (!filterCat||(filterCat==="__none"?!sp.cat:sp.cat===filterCat))&&(!filterArea||(filterArea==="__none"?!sp.area:sp.area===filterArea))});
@@ -1552,6 +1564,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     return (s&&CURMAP[s.cur])?s.cur:fxDef;
   }
   function fxCur(){return CURMAP[fxCode()]}
+  /* 旅遊國家：依行程幣別判斷（韓元＝韓國、日圓＝日本、其他＝英文通用） */
+  function ctry(){var c=fxCode();return c==="KRW"?"KR":c==="JPY"?"JP":"EN"}
+  function applyCtry(){try{document.documentElement.setAttribute("data-ctry",ctry())}catch(e){}}
   function fxRate(){var c=fx[fxCode()];return c?c.r:0}
   function fxFmtInv(r){var v=1/r;return v>=100?v.toFixed(1):(v>=1?v.toFixed(2):v.toPrecision(3))}
   function fxFmtRate(r){return r<0.1?r.toFixed(5):(r<1?r.toFixed(4):r.toFixed(2))}
@@ -3515,7 +3530,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     s=normTrip(loadTripData(IDX.cur)||blankTrip(""));
     ensureTrip();openKey=null;filterCat="";filterArea="";
     $("out").style.display="none";$("prev").style.display="none";$("exClose").hidden=true;
-    render();renderTrip();drawTripSel();updateShareUI();
+    render();renderTrip();drawTripSel();updateShareUI();askCountrySoon(2400);
   }
   function switchTrip(id){if(viewerMode||id===IDX.cur||!ent(id))return;IDX.cur=id;persistIdx();loadCur()}
   function newTripEntry(data,dirty){
@@ -3574,7 +3589,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   $("tripNew").onclick=function(){
     askConfirm("新增行程","要建立一個新的空白行程嗎？","新增",false,function(){
-      var id=newTripEntry(blankTrip(""),false);persistIdx();switchTrip(id);$("title").focus();
+      var id=newTripEntry(blankTrip(""),false);persistIdx();switchTrip(id);$("title").focus();askCountrySoon(350);
     });
   };
   $("exClose").onclick=function(){$("out").style.display="none";$("prev").style.display="none";this.hidden=true};
@@ -3793,7 +3808,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
 
   /* ===== share v2 ===== */
-  var TZG=[["Asia/Seoul","韓國 首爾","釜山|首爾|서울|부산|제주|인천|韓國|한국|海雲台|대한민국|PUS|ICN|GMP|CJU"],["Asia/Tokyo","日本 東京","東京|大阪|京都|北海道|沖繩|福岡|名古屋|日本|NRT|HND|KIX|CTS|OKA|FUK"],["Asia/Bangkok","泰國 曼谷","曼谷|清邁|普吉|泰國|BKK|CNX|HKT"],["Asia/Singapore","新加坡","新加坡|SIN"],["Asia/Hong_Kong","香港","香港|HKG"],["Asia/Ho_Chi_Minh","越南","河內|胡志明|峴港|越南|SGN|HAN|DAD"],["Asia/Kuala_Lumpur","馬來西亞","吉隆坡|沙巴|馬來西亞|KUL|BKI"],["Europe/Paris","法國 巴黎","巴黎|法國|CDG"],["Europe/London","英國 倫敦","倫敦|英國|LHR"],["America/Los_Angeles","美西 洛杉磯","洛杉磯|舊金山|西雅圖|LAX|SFO|SEA"],["America/New_York","美東 紐約","紐約|波士頓|JFK|EWR|BOS"]],CURTZ={KRW:"Asia/Seoul",JPY:"Asia/Tokyo",THB:"Asia/Bangkok",SGD:"Asia/Singapore",HKD:"Asia/Hong_Kong",VND:"Asia/Ho_Chi_Minh",MYR:"Asia/Kuala_Lumpur",GBP:"Europe/London"};
+  var TZG=[["Asia/Seoul","韓國 首爾","釜山|首爾|서울|부산|제주|인천|韓國|한국|海雲台|대한민국|PUS|ICN|GMP|CJU"],["Asia/Tokyo","日本 東京","東京|大阪|京都|北海道|沖繩|福岡|名古屋|日本|NRT|HND|KIX|CTS|OKA|FUK"],["Asia/Bangkok","泰國 曼谷","曼谷|清邁|普吉|泰國|BKK|CNX|HKT"],["Asia/Singapore","新加坡","新加坡|SIN"],["Asia/Hong_Kong","香港","香港|HKG"],["Asia/Ho_Chi_Minh","越南","河內|胡志明|峴港|越南|SGN|HAN|DAD"],["Asia/Kuala_Lumpur","馬來西亞","吉隆坡|沙巴|馬來西亞|KUL|BKI"],["Europe/Paris","法國 巴黎","巴黎|法國|CDG"],["Europe/London","英國 倫敦","倫敦|英國|LHR"],["America/Los_Angeles","美西 洛杉磯","洛杉磯|舊金山|西雅圖|LAX|SFO|SEA"],["America/New_York","美東 紐約","紐約|波士頓|JFK|EWR|BOS"]],CURTZ={KRW:"Asia/Seoul",JPY:"Asia/Tokyo",THB:"Asia/Bangkok",SGD:"Asia/Singapore",HKD:"Asia/Hong_Kong",VND:"Asia/Ho_Chi_Minh",MYR:"Asia/Kuala_Lumpur",GBP:"Europe/London",CNY:"Asia/Shanghai",PHP:"Asia/Manila",IDR:"Asia/Jakarta",EUR:"Europe/Paris",AUD:"Australia/Sydney"};
   function tzGuess(){
     if(s.tz)return s.tz;
     var txt=[];(s.spots||[]).forEach(function(x){txt.push((x.addr||"")+" "+(x.area||"")+" "+(x.name||""))});
@@ -4208,6 +4223,38 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     else if(f.k==="url"){var u=okUrl(c.mapsUri);if(u)sp.url=u}
     else if(f.k==="phone")sp.phone=String(c.phone).slice(0,40);
   }
+
+  /* ===== 旅遊國家詢問：新行程、或還沒選過國家的行程，進頁面時詢問；選了就自動設定匯率、時鐘與功能 ===== */
+  var CTL=[["韓國","KRW"],["日本","JPY"],["泰國","THB"],["新加坡","SGD"],["香港","HKD"],["越南","VND"],["馬來西亞","MYR"],["中國","CNY"],["菲律賓","PHP"],["印尼","IDR"],["英國","GBP"],["澳洲","AUD"],["美國","USD"],["歐洲","EUR"]],ctTimer=null;
+  window.addEventListener("load",function(){askCountrySoon(2000)});
+  function ctNeeded(){return !viewerMode&&s&&!CURMAP[s.cur]}
+  function ctSkipped(){try{return sessionStorage.getItem("ct-skip-"+IDX.cur)==="1"}catch(e){return false}}
+  function askCountrySoon(ms){clearTimeout(ctTimer);ctTimer=setTimeout(function(){if(ctNeeded()&&!ctSkipped()&&!applyingRemote)askCountry()},ms||2400)}
+  function ctSheet(){
+    var a=document.getElementById("ctSheet");
+    if(!a){a=document.createElement("div");a.id="ctSheet";document.body.appendChild(a);
+      a.innerHTML='<div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="這趟旅行要去哪裡"><h3>這趟旅行要去哪裡？</h3><p>選好後會自動設定這趟的匯率和時鐘，並隱藏用不到的功能（例如不是韓國就不顯示 Naver）。</p><div class="ctg" id="ctG"></div><button type="button" class="ctlater" id="ctLater">這次先不選</button></div>';
+      a.addEventListener("click",function(e){
+        var b=e.target.closest("button[data-ct]");
+        if(b){ctPick(b.dataset.ct);return}
+        if(e.target.id==="ctLater"||e.target.classList.contains("bk")){try{sessionStorage.setItem("ct-skip-"+IDX.cur,"1")}catch(x){}a.classList.remove("on")}
+      });
+    }
+    return a;
+  }
+  function askCountry(){
+    var a=ctSheet();
+    document.getElementById("ctG").innerHTML=CTL.map(function(x){var c=CURMAP[x[1]];return '<button type="button" data-ct="'+x[1]+'"><b>'+x[0]+'</b><small>'+(c?c.n+" "+c.s:x[1])+'</small></button>'}).join("");
+    a.classList.add("on");
+  }
+  function ctPick(code){
+    if(!CURMAP[code]||!s)return;
+    s.cur=code;save();
+    var a=document.getElementById("ctSheet");if(a)a.classList.remove("on");
+    render();try{renderSpotModal()}catch(e){}
+    var nm="";CTL.forEach(function(x){if(x[1]===code)nm=x[0]});
+    say("已設定為「"+nm+"」：匯率用"+CURMAP[code].n+(CURTZ[code]?"，時鐘用當地時間":"")+"。");
+  }
   /* ===== 檢查資料：同時查 Google 與 Naver，列出變更前／變更後，由使用者決定是否套用 ===== */
   var CHK=null;
   function chkDist(a,b){var R=6371000,r=Math.PI/180,dl=(b[0]-a[0])*r,dg=(b[1]-a[1])*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2);return 2*R*Math.asin(Math.sqrt(x))}
@@ -4218,7 +4265,13 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(/[동리가읍면]\s?\d+(-\d+)?(?![\d가-힣])/.test(v))return "jibun";
     return "";
   }
-  function addrClean(v){return String(v||"").replace(/^\s*대한민국\s*/,"").replace(/^([가-힣]{2,6}?)(특별자치시|특별자치도|특별시|광역시)\s/,"$1 ").trim()}
+  function addrClean(v){return String(v||"").replace(/^\s*(?:대한민국|日本、?|Japan,?)\s*/,"").replace(/^([가-힣]{2,6}?)(특별자치시|특별자치도|특별시|광역시)\s/,"$1 ").trim()}
+  function chkLoc(nm,sp){
+    nm=String(nm||"").trim();if(!nm)return "";var c=ctry();
+    if(c==="KR")return /[가-힣]/.test(nm)?nm:"";
+    if(c==="JP")return /[\u3040-\u30ff\u3400-\u9fff]/.test(nm)&&nm!==sp.name?nm:"";
+    return nm!==sp.name?nm:"";
+  }
   function chkNorm(k,v){
     v=String(v==null?"":v).trim();
     if(k==="phone"){var d=v.replace(/\D/g,"");if(d.indexOf("82")===0&&d.length>9)d="0"+d.slice(2);return d}
@@ -4258,12 +4311,13 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     document.getElementById("chkBody").innerHTML='<p class="ckm">正在查 Google 和 Naver…</p>';
     document.getElementById("chkN").textContent="";document.getElementById("chkGo").disabled=true;
     var q=(sp.ko||realName(sp)||"")+" "+(sp.addr||"");q=q.trim();
-    var path=sp.gid?"/place?pid="+encodeURIComponent(sp.gid)+"&lang=ko":(q?"/place?q="+encodeURIComponent(q)+"&lang=ko"+(okLL(sp.lat,sp.lng)?"&lat="+sp.lat+"&lng="+sp.lng:""):"");
+    var CT=ctry(),LG={KR:"ko",JP:"ja",EN:"en"}[CT];
+    var path=sp.gid?"/place?pid="+encodeURIComponent(sp.gid)+"&lang="+LG:(q?"/place?q="+encodeURIComponent(q)+"&lang="+LG+(okLL(sp.lat,sp.lng)?"&lat="+sp.lat+"&lng="+sp.lng:""):"");
     var gP=path?helperFetch(path).then(function(r){return {places:(r&&r.places)||[]}},function(e){return {err:String(e&&e.message||e)}}):Promise.resolve({err:"沒有名稱或地址可以搜尋"});
-    var nP=sp.naver?helperInfo(sp.naver).then(function(i){return (i&&(i.name||i.addr||i.phone||okLL(i.lat,i.lng)))?{info:i}:{err:"Naver 沒有回傳資料（可能被擋）"}},function(e){return {err:String(e&&e.message||e)}}):Promise.resolve({none:true});
+    var nP=(sp.naver&&CT==="KR")?helperInfo(sp.naver).then(function(i){return (i&&(i.name||i.addr||i.phone||okLL(i.lat,i.lng)))?{info:i}:{err:"Naver 沒有回傳資料（可能被擋）"}},function(e){return {err:String(e&&e.message||e)}}):Promise.resolve({none:true});
     Promise.all([gP,nP]).then(function(r){
       if(!CHKopen(id))return;
-      CHK={id:id,G:r[0].places||[],gerr:r[0].err||"",N:r[1].info||null,nerr:r[1].err||(r[1].none?"這個景點沒有 Naver 連結，只比對 Google。":""),gi:0,sel:{},rows:[]};
+      CHK={id:id,G:r[0].places||[],gerr:r[0].err||"",N:r[1].info||null,nerr:r[1].err||(r[1].none?(CT==="KR"?"這個景點沒有 Naver 連結，只比對 Google。":"這個國家只比對 Google。"):""),gi:0,sel:{},rows:[]};
       if(sp.gid){var ix=CHK.G.findIndex(function(p){return p.id===sp.gid});if(ix>=0)CHK.gi=ix}
       chkBuild();
     });
@@ -4272,15 +4326,15 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   function chkBuild(){
     var sp=spot(CHK.id),G=CHK.G[CHK.gi]||null,N=CHK.N,rows=[],warn=[];
     var cur={phone:sp.phone||"",addr:sp.addr||"",ko:sp.ko||"",hours:sp.hours||"",ll:okLL(sp.lat,sp.lng)?[sp.lat,sp.lng]:null};
-    var gv={phone:G?G.phone:"",addr:G?G.addr:"",ko:G&&/[가-힣]/.test(G.name||"")?G.name:"",hours:G?normHours(G.hours):"",ll:G&&okLL(G.lat,G.lng)?[G.lat,G.lng]:null};
-    var nv={phone:N?N.phone||"":"",addr:N?N.addr||"":"",ko:N&&/[가-힣]/.test(N.name||"")?N.name:"",hours:N?normHours(N.hours):"",ll:N&&okLL(N.lat,N.lng)?[N.lat,N.lng]:null};
+    var gv={phone:G?G.phone:"",addr:G?G.addr:"",ko:G?chkLoc(G.name,sp):"",hours:G?normHours(G.hours):"",ll:G&&okLL(G.lat,G.lng)?[G.lat,G.lng]:null};
+    var nv={phone:N?N.phone||"":"",addr:N?N.addr||"":"",ko:N?chkLoc(N.name,sp):"",hours:N?normHours(N.hours):"",ll:N&&okLL(N.lat,N.lng)?[N.lat,N.lng]:null};
     gv.addr=addrClean(gv.addr);nv.addr=addrClean(nv.addr);
     var skip=[],kc=addrKind(cur.addr),kg=addrKind(gv.addr),kn=addrKind(nv.addr),anyRoad=kc==="road"||kg==="road"||kn==="road";
     if(anyRoad){
       if(kg==="jibun"){skip.push("Google");gv.addr=""}
       if(kn==="jibun"){skip.push("Naver");nv.addr=""}
     }
-    var L=[["phone","電話"],["addr","地址（韓文）"],["ko","韓文店名"],["ll","座標"],["hours","營業時間"]],okRows=[];
+    var LB={KR:["韓文","韓文"],JP:["日文","日文"],EN:["","當地"]}[ctry()];var L=[["phone","電話"],["addr","地址"+(LB[0]?"（"+LB[0]+"）":"")],["ko",LB[1]+"店名"],["ll","座標"],["hours","營業時間"]],okRows=[];
     L.forEach(function(f){
       var k=f[0],g=gv[k],n=nv[k],c=cur[k],has=function(v){return k==="ll"?!!v:!!String(v||"").trim()};
       if(!has(g)&&!has(n))return;
@@ -4290,7 +4344,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       else{if(has(g)&&!gSame)opts.push({src:"Google",v:g});if(has(n)&&!nSame)opts.push({src:"Naver",v:n})}
       if(!opts.length){okRows.push(f[1]);return}
       var rn="";
-      if(k==="addr"){
+      if(k==="addr"&&ctry()==="KR"){
         opts.forEach(function(o){if(addrKind(o.v)==="jibun")o.src+="（地號地址）"});
         if(skip.length)rn+=skip.join("、")+" 回傳的是地號地址，已略過；計程車導航主要用道路名地址。";
         if(kc==="jibun"&&opts.some(function(o){return addrKind(o.v)==="road"}))rn+=(rn?" ":"")+"你現在存的是地號地址，建議換成道路名地址。";
