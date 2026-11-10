@@ -4246,7 +4246,7 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
     var ad=to.addr||"";
     G("txkr").textContent=ad||nm;G("txkr").className="kr"+((ad||nm).length>14?" sm":"");
     G("txsub").hidden=!(ad&&nm);G("txsub").textContent=ad?nm:"";
-    var tl=telOk(to.phone);G("txtel").hidden=!tl;G("txtel").textContent=tl?"☎ "+to.phone:"";if(tl)G("txtel").setAttribute("href","tel:"+tl);else G("txtel").removeAttribute("href");
+    var tl=telOk(to.phone);G("txtel").hidden=!tl;G("txtel").textContent=tl?to.phone:"";if(tl)G("txtel").setAttribute("href","tel:"+tl);else G("txtel").removeAttribute("href");
     G("txrm").textContent="gisanim, yeogiro ga juseyo."+(ko?"\n"+romWords(ko):"");
     G("txcn").textContent="請載我到這裡："+(to.name||"");
     G("txov").classList.remove("more");G("txmore").setAttribute("aria-expanded","false");
