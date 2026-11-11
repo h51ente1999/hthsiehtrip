@@ -127,6 +127,21 @@ footer a{color:var(--muted)}
 .bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:14px 0 6px}
 .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sum2{text-align:center;padding:4px 0 2px}
+.sum2 .k{font-size:.8rem;color:var(--muted)}
+.sum2 .v{font-size:2rem;font-weight:800;line-height:1.2;margin-top:2px}
+.sum2 .v.ok{color:var(--ok)}
+.sum2 .row2{display:flex;gap:18px;justify-content:center;margin-top:12px}
+.lhd{display:flex;align-items:center;gap:8px;margin:-2px 0 12px}
+.lhd b{flex:1;min-width:0;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ln{padding:12px 0;cursor:pointer;transition:opacity .2s}
+.ln:active{opacity:.7}
+.ln+.ln{border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.ln .lt{display:flex;align-items:baseline;gap:10px}
+.ln .lt b{flex:1;min-width:0;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ln .lt span{font-weight:800;font-size:1.02rem;flex:none}
+.ln .bar{margin:8px 0 5px;height:8px}
+.ln .ls{display:flex;justify-content:space-between;gap:10px;font-size:.76rem;color:var(--muted)}
 .chip{background:var(--soft);border-radius:99px;padding:4px 12px;font-size:.84rem}
 .chip.warn{background:color-mix(in srgb,var(--warn) 14%,var(--surface));color:var(--warn)}
 .next{display:flex;align-items:center;gap:12px}
@@ -223,7 +238,7 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
   </div>
 </div>
 <footer>Copyright © 2026 hthsieh. All rights reserved.</footer>
-<nav class="vnav" id="vnav" aria-label="切換頁面"><i class="vp"></i><button type="button" id="tabB" class="on">費用月曆</button><button type="button" id="tabR">還款進度</button></nav>
+<nav class="vnav" id="vnav" aria-label="切換頁面"><i class="vp"></i><button type="button" id="tabB" class="on">費用月曆</button><button type="button" id="tabR">貸款本息</button></nav>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -400,7 +415,8 @@ D=load();draw();
 
 var VIEW="bills";
 function setView(v){
-  VIEW=v;$("vBills").hidden=v!=="bills";$("vRepay").hidden=v!=="repay";
+  VIEW=v;["editCard","setCard","r_setCard"].forEach(function(i){var e=document.getElementById(i);if(e)e.hidden=true});
+  $("vBills").hidden=v!=="bills";$("vRepay").hidden=v!=="repay";
   $("tabB").classList.toggle("on",v==="bills");$("vnav").classList.toggle("r",v==="repay");(v==="bills"?$("vBills"):$("vRepay")).classList.remove("vin");void (v==="bills"?$("vBills"):$("vRepay")).offsetWidth;(v==="bills"?$("vBills"):$("vRepay")).classList.add("vin");$("tabR").classList.toggle("on",v==="repay");
   
   if(v==="repay"&&window.repayDraw)window.repayDraw();else draw();
@@ -415,74 +431,128 @@ $("tabB").onclick=function(){setView("bills")};$("tabR").onclick=function(){setV
 var KEY="repay-v1";
 function $(id){return document.getElementById(id)}
 function pad(n){return n<10?"0"+n:""+n}
-function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
-function today(){return ymd(new Date())}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function thisMonth(){return today().slice(0,7)}
-function nf(n){return Number(n).toLocaleString("en-US")}
-function fmtFull(s){return s?s.replace(/-/g,"/"):""}
+function nf(n){return Number(Math.round(n)).toLocaleString("en-US")}
 function fmtM(s){var a=s.split("-");return a[0]+"/"+a[1]}
+function monthsTxt(d){var a=d.split("-"),b=thisMonth().split("-");var k=(+a[0]-+b[0])*12+(+a[1]-+b[1]);return k<=0?"本月":k===1?"下個月":k+" 個月後"}
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},1800)}
 
 /* ---------- 資料 ---------- */
-/* 第 1～16 期已還。前 7 期的還款月份來自你的表格，第 8～16 期沒有記錄，只標「已還」 */
-function seed(){
-  var act={1:"2025-08",2:"2025-09",3:"2025-10",4:"2025-11",5:"2025-12",6:"2026-01",7:"2026-02"};
-  var ps=[];for(var n=1;n<=36;n++)ps.push({n:n,paid:n<=16,date:act[n]||""});
-  return {amount:13750,total:36,startY:2025,startM:8,periods:ps};
-}
-var D=null,EXP=false;
-function load(){
-  try{var x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.periods)&&x.periods.length)return clean(x)}catch(e){}
-  return seed();
+var D=null,EXP=false,SEL="";
+function nid(){return "l"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function blank(){var t=today().split("-");return {id:nid(),name:"",amount:0,total:0,startY:+t[0],startM:+t[1],principal:0,periods:[]}}
+function cleanLoan(x,i){
+  var b=blank();
+  var amt=+x.amount>0?Math.round(+x.amount):0,tot=Math.min(360,Math.max(0,Math.round(+x.total||0)));
+  var ps=[];for(var n=1;n<=tot;n++){var o=(x.periods||[])[n-1]||{};ps.push({n:n,paid:!!o.paid,date:/^\d{4}-\d{2}(-\d{2})?$/.test(o.date||"")?o.date.slice(0,7):""})}
+  return {id:typeof x.id==="string"&&x.id?x.id.slice(0,24):"l"+i+b.id,name:String(x.name||"").slice(0,24),amount:amt,total:tot,
+    startY:Math.min(2999,Math.max(1990,+x.startY||b.startY)),startM:Math.min(12,Math.max(1,+x.startM||b.startM)),
+    principal:+x.principal>0?Math.round(+x.principal):0,periods:ps};
 }
 function clean(x){
-  var s=seed(),amt=+x.amount>0?+x.amount:s.amount,tot=Math.min(120,Math.max(1,Math.round(+x.total||s.total)));
-  var ps=[];for(var n=1;n<=tot;n++){var o=x.periods[n-1]||{};ps.push({n:n,paid:!!o.paid,date:/^\d{4}-\d{2}(-\d{2})?$/.test(o.date||"")?o.date.slice(0,7):""})}
-  return {amount:amt,total:tot,startY:+x.startY||s.startY,startM:Math.min(12,Math.max(1,+x.startM||s.startM)),periods:ps};
+  var ls=[];
+  if(x&&Array.isArray(x.loans))ls=x.loans.slice(0,30).map(cleanLoan).filter(function(l){return l.total>0});
+  else if(x&&Array.isArray(x.periods)&&(+x.total>0))ls=[cleanLoan({id:"l_old",name:"貸款",amount:x.amount,total:x.total,startY:x.startY,startM:x.startM,periods:x.periods},0)];
+  return {loans:ls};
 }
+function load(){try{var x=JSON.parse(localStorage.getItem(KEY)||"null");if(x)return clean(x)}catch(e){}return {loans:[]}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast("儲存失敗，瀏覽器空間可能已滿")}if(window.syncTouch)syncTouch("repay")}
-function dueOf(n){var m=D.startM-1+(n-1),y=D.startY+Math.floor(m/12);return y+"-"+pad(m%12+1)}
+function L(id){return D.loans.filter(function(l){return l.id===id})[0]||null}
+function dueOf(l,n){var m=l.startM-1+(n-1),y=l.startY+Math.floor(m/12);return y+"-"+pad(m%12+1)}
+function stats(l){
+  var paid=l.periods.filter(function(p){return p.paid}).length,t=thisMonth();
+  var late=l.periods.filter(function(p){return !p.paid&&dueOf(l,p.n)<t});
+  var nxt=l.periods.filter(function(p){return !p.paid})[0]||null;
+  return {paid:paid,left:l.total-paid,late:late,nxt:nxt,pct:l.total?Math.round(paid/l.total*100):0};
+}
+/* 年利率：以每期本息與本金反推（二分法） */
+function apr(l){
+  if(!(l.principal>0&&l.amount>0&&l.total>0))return null;
+  var tot=l.amount*l.total;if(tot<=l.principal)return 0;
+  var lo=0,hi=0.05,f=function(r){if(r===0)return l.amount*l.total-l.principal;var k=Math.pow(1+r,-l.total);return l.amount*(1-k)/r-l.principal};
+  for(var i=0;i<80;i++){var m=(lo+hi)/2;if(f(m)>0)lo=m;else hi=m}
+  return ((lo+hi)/2)*12*100;
+}
+function setPaid(l,n,v){
+  var p=l.periods[n-1];if(!p)return;
+  p.paid=v;p.date=v?(p.date||dueOf(l,n)):"";
+  save();draw();
+}
 
 /* ---------- 畫面 ---------- */
 var CK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-function stats(){
-  var paid=D.periods.filter(function(p){return p.paid}).length,t=thisMonth();
-  var late=D.periods.filter(function(p){return !p.paid&&dueOf(p.n)<t});
-  var nxt=D.periods.filter(function(p){return !p.paid})[0]||null;
-  return {paid:paid,left:D.total-paid,late:late,nxt:nxt,pct:Math.round(paid/D.total*100)};
-}
+var BACK='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
 function draw(){
-  var s=stats(),R=56,C=2*Math.PI*R,done=s.left===0;
-  var last=dueOf(D.total);
-  $("r_sumCard").innerHTML='<div class="sum"><div class="ring"><svg viewBox="0 0 132 132"><defs><linearGradient id="r_rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent2)"/></linearGradient></defs><circle class="bg" cx="66" cy="66" r="'+R+'" fill="none" stroke-width="12"/><circle class="fg" id="r_fg" cx="66" cy="66" r="'+R+'" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/></svg><div class="mid"><b>'+s.pct+'%</b><span>'+s.paid+' / '+D.total+' 期</span></div></div>'+
-   '<div class="nums"><div class="k">還欠</div><div class="v'+(done?" ok":"")+'">NT$ '+nf(s.left*D.amount)+'</div>'+
-   '<div class="row2"><div><div class="k">已還</div><div style="font-weight:700">NT$ '+nf(s.paid*D.amount)+'</div></div><div><div class="k">每期</div><div style="font-weight:700">NT$ '+nf(D.amount)+'</div></div></div></div></div>'+
+  if(SEL&&!L(SEL))SEL="";
+  if(SEL)drawOne(L(SEL));else drawAll();
+}
+function drawAll(){
+  $("r_nextCard").hidden=true;$("r_listCard").hidden=false;
+  if(!D.loans.length){
+    $("r_sumCard").innerHTML='<div style="text-align:center;padding:26px 8px 18px;color:var(--muted)">還沒有貸款<br><span class="small">填好每期本息、期數和第一期的年月就會開始算</span></div><div style="text-align:center"><button class="btn pri" id="r_go" type="button">新增貸款</button></div>';
+    $("r_go").onclick=function(){editLoan("")};
+    $("r_listCard").hidden=true;$("r_listCard").innerHTML="";return;
+  }
+  var left=0,paid=0,mon=0,late=0,cm=thisMonth();
+  D.loans.forEach(function(l){var s=stats(l);left+=s.left*l.amount;paid+=s.paid*l.amount;late+=s.late.length;
+    if(l.periods.some(function(p){return !p.paid&&dueOf(l,p.n)<=cm}))mon+=l.amount});
+  $("r_sumCard").innerHTML='<div class="sum2"><div class="k">還欠總額</div><div class="v'+(left===0?" ok":"")+'">NT$ '+nf(left)+'</div>'+
+    '<div class="row2"><div><div class="k">本月應繳</div><div style="font-weight:700">NT$ '+nf(mon)+'</div></div><div><div class="k">已還</div><div style="font-weight:700">NT$ '+nf(paid)+'</div></div></div>'+
+    (late?'<div class="chips" style="justify-content:center"><span class="chip warn">共 '+late+' 期逾期未勾</span></div>':'')+'</div>';
+  var h='<div class="lh"><h2>貸款</h2><button class="ib2" id="r_add" type="button" title="新增貸款" aria-label="新增貸款"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>';
+  D.loans.forEach(function(l){
+    var s=stats(l),done=s.left===0,nd=s.nxt?dueOf(l,s.nxt.n):"";
+    h+='<div class="ln" data-l="'+esc(l.id)+'" role="button" tabindex="0"><div class="lt"><b>'+esc(l.name||"未命名貸款")+'</b><span>'+(done?'<span style="color:var(--ok)">已還清</span>':'NT$ '+nf(s.left*l.amount))+'</span></div>'+
+      '<div class="bar"><i style="width:'+s.pct+'%"></i></div>'+
+      '<div class="ls"><span>'+s.paid+' / '+l.total+' 期・每期 NT$ '+nf(l.amount)+'</span><span>'+(done?'':(s.late.length?'<b style="color:var(--warn)">逾期 '+s.late.length+' 期</b>':'下期 '+fmtM(nd)))+'</span></div></div>';
+  });
+  $("r_listCard").innerHTML=h;
+  $("r_add").onclick=function(){editLoan("")};
+  [].forEach.call($("r_listCard").querySelectorAll(".ln[data-l]"),function(e){
+    e.onclick=function(){SEL=e.dataset.l;EXP=false;draw();window.scrollTo(0,0)};
+    e.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();e.click()}};
+  });
+}
+function drawOne(l){
+  $("r_listCard").hidden=false;
+  var s=stats(l),R=56,C=2*Math.PI*R,done=s.left===0,last=dueOf(l,l.total),ar=apr(l);
+  $("r_sumCard").innerHTML='<div class="lhd"><button class="ib2" id="r_back" type="button" aria-label="回貸款列表">'+BACK+'</button><b>'+esc(l.name||"未命名貸款")+'</b><button class="ib2" id="r_edit" type="button" aria-label="編輯這筆貸款" title="編輯"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5z"/></svg></button></div>'+
+   '<div class="sum"><div class="ring"><svg viewBox="0 0 132 132"><defs><linearGradient id="r_rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent2)"/></linearGradient></defs><circle class="bg" cx="66" cy="66" r="'+R+'" fill="none" stroke-width="12"/><circle class="fg" id="r_fg" cx="66" cy="66" r="'+R+'" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/></svg><div class="mid"><b>'+s.pct+'%</b><span>'+s.paid+' / '+l.total+' 期</span></div></div>'+
+   '<div class="nums"><div class="k">還欠</div><div class="v'+(done?" ok":"")+'">NT$ '+nf(s.left*l.amount)+'</div>'+
+   '<div class="row2"><div><div class="k">已還</div><div style="font-weight:700">NT$ '+nf(s.paid*l.amount)+'</div></div><div><div class="k">每期</div><div style="font-weight:700">NT$ '+nf(l.amount)+'</div></div></div></div></div>'+
    '<div class="bar"><i style="width:0" id="r_bf"></i></div>'+
-   '<div class="chips"><span class="chip">共 NT$ '+nf(D.total*D.amount)+'</span>'+(done?'<span class="chip" style="color:var(--ok)">全部還清 🎉</span>':'<span class="chip">預計 '+fmtM(last)+' 還完</span><span class="chip">還剩 '+s.left+' 期</span>')+(s.late.length?'<span class="chip warn">逾期 '+s.late.length+' 期未勾</span>':'')+'</div>';
-  requestAnimationFrame(function(){requestAnimationFrame(function(){var f=$("r_fg"),b=$("r_bf");if(f)f.style.strokeDashoffset=C*(1-s.paid/D.total);if(b)b.style.width=(s.paid/D.total*100)+"%"})});
+   '<div class="chips"><span class="chip">本息共 NT$ '+nf(l.total*l.amount)+'</span>'+
+   (l.principal>0?'<span class="chip">本金 NT$ '+nf(l.principal)+'</span><span class="chip">利息 NT$ '+nf(l.total*l.amount-l.principal)+(ar!=null?'・年利率約 '+(Math.round(ar*100)/100)+'%':'')+'</span>':'')+
+   (done?'<span class="chip" style="color:var(--ok)">全部還清 🎉</span>':'<span class="chip">預計 '+fmtM(last)+' 還完</span><span class="chip">還剩 '+s.left+' 期</span>')+
+   (s.late.length?'<span class="chip warn">逾期 '+s.late.length+' 期未勾</span>':'')+'</div>';
+  $("r_back").onclick=function(){SEL="";EXP=false;draw();window.scrollTo(0,0)};
+  $("r_edit").onclick=function(){editLoan(l.id)};
+  requestAnimationFrame(function(){requestAnimationFrame(function(){var f=$("r_fg"),b=$("r_bf");if(f)f.style.strokeDashoffset=C*(1-s.paid/l.total);if(b)b.style.width=(s.paid/l.total*100)+"%"})});
 
   if(done){$("r_nextCard").hidden=true}else{
-    $("r_nextCard").hidden=false;var d=dueOf(s.nxt.n),isLate=d<thisMonth();
-    $("r_nextCard").innerHTML='<div class="next"><div class="grow"><div class="small muted">下一期</div><b>第 '+s.nxt.n+' 期　'+fmtM(d)+'</b><div class="small" style="color:'+(isLate?"var(--warn)":"var(--muted)")+'">'+(isLate?"已過預定月份，還了就勾一下":"NT$ "+nf(D.amount)+"・"+(d===thisMonth()?"就是這個月":"預定 "+monthsTxt(d)))+'</div></div><button class="btn pri" id="r_btnPay" type="button" aria-label="這期還了" title="這期還了" style="width:48px;height:48px;padding:0;border-radius:50%;flex:none">'+CK.replace('width="18" height="18"','width="24" height="24"')+'</button></div>';
-    $("r_btnPay").onclick=function(){setPaid(s.nxt.n,true)};
+    $("r_nextCard").hidden=false;var d=dueOf(l,s.nxt.n),isLate=d<thisMonth();
+    $("r_nextCard").innerHTML='<div class="next"><div class="grow"><div class="small muted">下一期</div><b>第 '+s.nxt.n+' 期　'+fmtM(d)+'</b><div class="small" style="color:'+(isLate?"var(--warn)":"var(--muted)")+'">'+(isLate?"已過預定月份，還了就勾一下":"NT$ "+nf(l.amount)+"・"+(d===thisMonth()?"就是這個月":"預定 "+monthsTxt(d)))+'</div></div><button class="btn pri" id="r_btnPay" type="button" aria-label="這期還了" title="這期還了" style="width:48px;height:48px;padding:0;border-radius:50%;flex:none">'+CK+'</button></div>';
+    $("r_btnPay").onclick=function(){setPaid(l,s.nxt.n,true)};
   }
 
   var cm=thisMonth(),cur=-1;
-  for(var i=0;i<D.periods.length;i++){if(dueOf(D.periods[i].n)>=cm){cur=i;break}}
-  if(cur<0)cur=D.periods.length-1;
+  for(var i=0;i<l.periods.length;i++){if(dueOf(l,l.periods[i].n)>=cm){cur=i;break}}
+  if(cur<0)cur=l.periods.length-1;
   var h="",yrs={},order=[];
-  D.periods.forEach(function(p){var y=dueOf(p.n).slice(0,4);if(!yrs[y]){yrs[y]=[];order.push(y)}yrs[y].push(p)});
+  l.periods.forEach(function(p){var y=dueOf(l,p.n).slice(0,4);if(!yrs[y]){yrs[y]=[];order.push(y)}yrs[y].push(p)});
   order.forEach(function(y){
     var a=yrs[y],c=a.filter(function(p){return p.paid}).length;
     h+='<div class="yr"><b>'+y+'</b><span>'+c+' / '+a.length+' 期</span></div>';
     a.forEach(function(p){
-      var d=dueOf(p.n),late=!p.paid&&d<cm,idx=p.n-1,tag=idx===cur?'<span class="tg2">本期</span>':idx===cur+1?'<span class="tg2 nx">下期</span>':'';
+      var d=dueOf(l,p.n),late=!p.paid&&d<cm,idx=p.n-1,tag=idx===cur?'<span class="tg2">本期</span>':idx===cur+1?'<span class="tg2 nx">下期</span>':'';
       var pm=p.date||d,sub=p.paid?'還款月份 <span class="dt"><u>'+fmtM(pm)+'</u><input type="month" value="'+pm+'" data-n="'+p.n+'" aria-label="第'+p.n+'期還款月份"></span>':(late?'已逾預定月份 '+fmtM(d):'預定 '+fmtM(d));
-      h+='<div class="p'+(p.paid?" done":"")+(late?" late":"")+'"><button class="ck" type="button" data-n="'+p.n+'" aria-label="第'+p.n+'期'+(p.paid?"，已還，點一下取消":"，未還，點一下標記已還")+'">'+CK+'</button><div class="main"><div class="t">第 '+p.n+' 期'+tag+'</div><div class="s">'+sub+'</div></div><div class="amt">'+nf(D.amount)+'</div></div>';
+      h+='<div class="p'+(p.paid?" done":"")+(late?" late":"")+'"><button class="ck" type="button" data-n="'+p.n+'" aria-label="第'+p.n+'期'+(p.paid?"，已還，點一下取消":"，未還，點一下標記已還")+'">'+CK+'</button><div class="main"><div class="t">第 '+p.n+' 期'+tag+'</div><div class="s">'+sub+'</div></div><div class="amt">'+nf(l.amount)+'</div></div>';
     });
   });
   var old=$("r_plist"),oldTop=old?old.scrollTop:null,same=old&&old.dataset.laid==="1"&&(old.classList.contains("col")===!EXP);
-  $("r_listCard").innerHTML='<div class="lh"><h2>還款明細</h2></div>'+(EXP?'':'<div class="hint">第一筆是本期，上下滑可看前後的期數</div>')+'<div class="plist'+(EXP?"":" col")+'" id="r_plist">'+h+'</div><div class="xp"><button class="ib2" id="r_exp" type="button" aria-expanded="'+EXP+'" aria-label="'+(EXP?"收合":"展開全部 "+D.total+" 期")+'" title="'+(EXP?"收合":"展開全部")+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(EXP?"M6 15l6-6 6 6":"M6 9l6 6 6-6")+'"/></svg></button></div>';
+  $("r_listCard").innerHTML='<div class="lh"><h2>還款明細</h2></div>'+(EXP?'':'<div class="hint">第一筆是本期，上下滑可看前後的期數</div>')+'<div class="plist'+(EXP?"":" col")+'" id="r_plist">'+h+'</div><div class="xp"><button class="ib2" id="r_exp" type="button" aria-expanded="'+EXP+'" aria-label="'+(EXP?"收合":"展開全部 "+l.total+" 期")+'" title="'+(EXP?"收合":"展開全部")+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(EXP?"M6 15l6-6 6 6":"M6 9l6 6 6-6")+'"/></svg></button></div>';
   $("r_exp").onclick=function(){EXP=!EXP;draw();if(EXP)$("r_listCard").scrollIntoView({behavior:"smooth",block:"start"})};
   var pl=$("r_plist");
   if(!EXP){
@@ -494,49 +564,65 @@ function draw(){
       var upd=function(){pl.classList.toggle("more",pl.scrollTop+pl.clientHeight<pl.scrollHeight-4)};upd();pl.onscroll=upd;
     }
   }
-  [].forEach.call($("r_listCard").querySelectorAll(".ck"),function(b){b.onclick=function(){var n=+b.dataset.n,row=b.closest(".p");if(row){row.classList.toggle("done");b.disabled=true}setTimeout(function(){setPaid(n,!D.periods[n-1].paid)},row?260:0)}});
-  [].forEach.call($("r_listCard").querySelectorAll('input[type=month]'),function(i){i.onchange=function(){if(i.value){D.periods[+i.dataset.n-1].date=i.value;save();draw();toast("已更新月份")}}});
+  [].forEach.call($("r_listCard").querySelectorAll(".ck"),function(b){b.onclick=function(){var n=+b.dataset.n,row=b.closest(".p");if(row){row.classList.toggle("done");b.disabled=true}setTimeout(function(){setPaid(l,n,!l.periods[n-1].paid)},row?260:0)}});
+  [].forEach.call($("r_listCard").querySelectorAll('input[type=month]'),function(i){i.onchange=function(){if(i.value){l.periods[+i.dataset.n-1].date=i.value;save();draw();toast("已更新月份")}}});
 }
-function monthsTxt(d){var a=d.split("-"),t=new Date(),n=(+a[0]-t.getFullYear())*12+(+a[1]-1-t.getMonth());return n+" 個月後"}
-function setPaid(n,v){
-  var p=D.periods[n-1];p.paid=v;p.date=v?thisMonth():"";save();draw();
-  toast(v?"第 "+n+" 期已記錄 ✓":"已取消第 "+n+" 期");
+
+/* ---------- 新增・編輯 ---------- */
+function editLoan(id){
+  var l=L(id),nw=!l;l=l||blank();
+  var c=$("r_setCard");c.hidden=false;
+  c.innerHTML='<h2>'+(nw?"新增貸款":"編輯貸款")+'</h2>'+
+   '<label class="f"><span>名稱</span><input type="text" id="r_sName" maxlength="24" placeholder="例：信貸、媽媽、車貸" value="'+esc(l.name)+'"></label>'+
+   '<div class="set"><label class="f"><span>每期本息</span><input type="number" id="r_sAmt" inputmode="numeric" min="1" value="'+(l.amount||"")+'"></label><label class="f"><span>總期數</span><input type="number" id="r_sTot" inputmode="numeric" min="1" max="360" value="'+(l.total||"")+'"></label>'+
+   '<label class="f"><span>第 1 期的年月</span><input type="number" id="r_sY" inputmode="numeric" value="'+l.startY+'" style="margin-bottom:6px"><input type="number" id="r_sM" inputmode="numeric" min="1" max="12" value="'+l.startM+'"></label></div>'+
+   '<label class="f"><span>貸款本金（選填，用來算利息）</span><input type="number" id="r_sPri" inputmode="numeric" min="0" value="'+(l.principal||"")+'"></label>'+
+   '<div class="acts"><button class="btn pri" id="r_sSave" type="button">'+(nw?"新增":"儲存")+'</button><button class="btn" id="r_sCancel" type="button">取消</button>'+(nw?"":'<button class="btn" id="r_sDel" type="button" style="color:var(--warn);border-color:var(--warn)">刪除</button>')+'</div>'+
+   '<div class="small" id="r_sMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  $("r_sCancel").onclick=function(){c.hidden=true};
+  $("r_sSave").onclick=function(){
+    var a=+$("r_sAmt").value,t=Math.round(+$("r_sTot").value);
+    if(!(a>0)||!(t>=1&&t<=360)){$("r_sMsg").textContent="每期本息要大於 0，期數 1～360。";return}
+    var ps=[];for(var n=1;n<=t;n++)ps.push(l.periods[n-1]||{n:n,paid:false,date:""});
+    var o=cleanLoan({id:l.id,name:$("r_sName").value.trim(),amount:a,total:t,startY:+$("r_sY").value,startM:+$("r_sM").value,principal:+$("r_sPri").value,periods:ps},0);
+    if(nw)D.loans.push(o);else D.loans[D.loans.indexOf(L(l.id))]=o;
+    save();c.hidden=true;if(nw)SEL=o.id;draw();toast(nw?"已新增":"已儲存");
+  };
+  if(!nw)$("r_sDel").onclick=function(){
+    if(!confirm("確定刪除「"+(l.name||"未命名貸款")+"」？所有勾選都會一起刪除。"))return;
+    D.loans=D.loans.filter(function(x){return x.id!==l.id});SEL="";save();c.hidden=true;draw();toast("已刪除");
+  };
 }
 
 /* ---------- 設定與備份 ---------- */
 window.repaySettings=function(){
   var c=$("r_setCard");if(!c.hidden){c.hidden=true;return}
   c.hidden=false;
-  c.innerHTML='<h2>設定與備份</h2><p class="small muted" style="margin:0">資料只存在這個瀏覽器，不會上傳。換手機或清除瀏覽資料前，請先「匯出備份」。</p>'+
-   '<div class="set"><label class="f"><span>每期金額</span><input type="number" id="r_sAmt" inputmode="numeric" min="1" value="'+D.amount+'"></label><label class="f"><span>總期數</span><input type="number" id="r_sTot" inputmode="numeric" min="1" max="120" value="'+D.total+'"></label>'+
-   '<label class="f"><span>第 1 期的年月</span><input type="number" id="r_sY" inputmode="numeric" value="'+D.startY+'" style="margin-bottom:6px"><input type="number" id="r_sM" inputmode="numeric" min="1" max="12" value="'+D.startM+'"></label></div>'+
-   '<div class="acts"><button class="btn pri" id="r_sSave" type="button">儲存設定</button><button class="btn" id="r_sExp" type="button">匯出備份</button><label class="btn" style="cursor:pointer">匯入備份<input type="file" id="r_sImp" accept="application/json,.json" hidden></label><button class="btn" id="r_sRst" type="button" style="color:var(--warn);border-color:var(--warn)">全部重來</button></div><div class="small" id="r_sMsg" style="margin-top:8px;color:var(--warn)"></div>';
-  $("r_sSave").onclick=function(){
-    var a=+$("r_sAmt").value,t=Math.round(+$("r_sTot").value);
-    if(!(a>0)||!(t>=1&&t<=120)){$("r_sMsg").textContent="金額要大於 0，期數 1～120。";return}
-    var ps=[];for(var n=1;n<=t;n++)ps.push(D.periods[n-1]||{n:n,paid:false,date:""});
-    D=clean({amount:a,total:t,startY:+$("r_sY").value,startM:+$("r_sM").value,periods:ps});save();draw();toast("已儲存");
-  };
+  c.innerHTML='<h2>備份與還原</h2><p class="small muted" style="margin:0">資料只存在這個瀏覽器；登入雲端同步後，會自動同步到你的其他裝置。</p>'+
+   '<div class="acts"><button class="btn pri" id="r_sAdd" type="button">新增貸款</button><button class="btn" id="r_sExp" type="button">匯出備份</button><label class="btn" style="cursor:pointer">匯入備份<input type="file" id="r_sImp" accept="application/json,.json" hidden></label><button class="btn" id="r_sRst" type="button" style="color:var(--warn);border-color:var(--warn)">清空</button></div>'+
+   '<div class="small" id="r_sMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  $("r_sAdd").onclick=function(){editLoan("")};
   $("r_sExp").onclick=function(){
     var b=new Blob([JSON.stringify(D,null,1)],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");
-    a.href=u;a.download="repay-"+today()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);
+    a.href=u;a.download="loans-"+today()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);
   };
   $("r_sImp").onchange=function(){
     var f=this.files[0];if(!f)return;var r=new FileReader();
-    r.onload=function(){try{var x=JSON.parse(r.result);if(!x||!Array.isArray(x.periods))throw 0;D=clean(x);save();draw();$("r_setCard").hidden=true;toast("已匯入備份")}catch(e){$("r_sMsg").textContent="這不是有效的備份檔。"}};
+    r.onload=function(){try{var x=JSON.parse(r.result);var y=clean(x);if(!y.loans.length)throw 0;D=y;SEL="";save();draw();$("r_setCard").hidden=true;toast("已匯入備份")}catch(e){$("r_sMsg").textContent="這不是有效的備份檔。"}};
     r.readAsText(f);
   };
   $("r_sRst").onclick=function(){
-    if(!confirm("確定要全部重來？所有勾選會回到最初的狀態（前 16 期已還）。"))return;
-    D=seed();save();draw();$("r_setCard").hidden=true;toast("已重設");
+    if(!confirm("確定清空所有貸款？金額、期數和所有勾選都會刪除。"))return;
+    D={loans:[]};SEL="";save();draw();$("r_setCard").hidden=true;toast("已清空");
   };
+  if(window.syncBoxInject)syncBoxInject();
 };
 
-function fillD(){D.periods.forEach(function(p){if(p.paid&&!p.date)p.date=dueOf(p.n)})}
-D=load();fillD();draw();window.repayDraw=draw;
+function fillD(){D.loans.forEach(function(l){l.periods.forEach(function(p){if(p.paid&&!p.date)p.date=dueOf(l,p.n)})})}
+D=load();fillD();try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}
+draw();window.repayDraw=draw;
 window.repayGet=function(){return D};
 window.repayApply=function(o){D=clean(o);fillD();try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}draw()};
-window.repaySeedJson=JSON.stringify(seed());
 
 })();
 if(location.hash==="#repay")setView("repay");
@@ -552,7 +638,7 @@ requestAnimationFrame(function(){requestAnimationFrame(function(){document.docum
   function sync(){
     var open=els().filter(function(e){return !e.hidden});
     bk.classList.toggle("on",open.length>0);document.body.classList.toggle("mlock",open.length>0);
-    open.forEach(function(e){if(!e.querySelector(":scope>.mx")){var b=document.createElement("button");b.type="button";b.className="mx";b.setAttribute("aria-label","關閉");b.innerHTML=X;b.onclick=closeAll;e.appendChild(b)}});
+    open.forEach(function(e){if(e.parentNode!==document.body)document.body.appendChild(e);if(!e.querySelector(":scope>.mx")){var b=document.createElement("button");b.type="button";b.className="mx";b.setAttribute("aria-label","關閉");b.innerHTML=X;b.onclick=closeAll;e.appendChild(b)}});
   }
   var mo=new MutationObserver(sync);
   els().forEach(function(e){e.classList.add("modal");mo.observe(e,{attributes:true,attributeFilter:["hidden"],childList:true})});
@@ -594,7 +680,7 @@ try {
 (function(){
 "use strict";
 var NM={bills:{key:"bills-v1",get:function(){return window.billsGet()},apply:function(o){window.billsApply(o)},isDef:function(){return window.billsGet().bills.length===0}},
-        repay:{key:"repay-v1",get:function(){return window.repayGet()},apply:function(o){window.repayApply(o)},isDef:function(){return !localStorage.getItem("repay-v1")||JSON.stringify(window.repayGet())===window.repaySeedJson}}};
+        repay:{key:"repay-v1",get:function(){return window.repayGet()},apply:function(o){window.repayApply(o)},isDef:function(){var r=window.repayGet();return !r||!r.loans||!r.loans.length}}};
 var SY={user:null,api:null,timers:{},unsub:[],applying:false,err:""};
 function $(id){return document.getElementById(id)}
 function lts(n){try{return +localStorage.getItem(NM[n].key+"-ts")||0}catch(e){return 0}}
