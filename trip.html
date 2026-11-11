@@ -578,10 +578,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .brandblk .tools{margin-left:auto;display:flex;gap:6px;flex:none}
 .brandblk .tools button{background:color-mix(in srgb,var(--on-blue,#fff) 22%,transparent)!important;border:0!important;width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;display:inline-grid!important;place-items:center;color:var(--on-blue,#fff)!important;padding:0!important;font-size:1.05rem;line-height:1;cursor:pointer}
 .brandblk .tools button[hidden]{display:none!important}body.viewer #splitBtn{display:none!important}
-#splitOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden]{display:none}
-#splitOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
-#splitOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-@media (min-width:700px){#splitOv{align-items:center}#splitOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
+#splitOv,#rtOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden]{display:none}
+#splitOv,#rtOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
+#splitOv,#rtOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+@media (min-width:700px){#splitOv,#rtOv{align-items:center}#splitOv iframe,#rtOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
 #vSplit{position:fixed;right:16px;bottom:298px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSplit.ok{display:grid}#vSplit:active{transform:scale(.92)}
 
 /* ===== 彈出視窗統一：比照分帳頁（置中卡片、粗標題、圓形關閉鈕、分隔線） ===== */
@@ -621,10 +621,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #tripSheet.on .sh,#histSheet.on .sh{animation:tpop .2s ease}
 .fxs:not([hidden]) .fxb{animation:fxpop .2s ease}
 @keyframes fxpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-#splitOv:not([hidden]) .bk{animation:sfade .18s ease}
-#splitOv:not([hidden]) iframe{animation:fxpop .22s ease}
+#splitOv,#rtOv:not([hidden]) .bk{animation:sfade .18s ease}
+#splitOv,#rtOv:not([hidden]) iframe{animation:fxpop .22s ease}
 /* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
-@media (max-width:699px){#splitOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
+@media (max-width:699px){#splitOv,#rtOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 /* ===== 按鈕一律漸層（比照分帳頁）；編輯頁的匯率、分帳獨立成右下角浮動按鈕，和分享頁一致 ===== */
 button.primary,.libadd,.tripbar .ib.on,#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug,body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
 .libadd{opacity:1}
@@ -1225,7 +1225,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
-<a id="rtBtn" href="routes.html" aria-label="交通查詢紀錄" title="交通查詢紀錄"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18c0-4.5 0-6.5 3-6.5s6 0 6-4.5"/><circle cx="7" cy="19.5" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="5.5" r="2" fill="currentColor" stroke="none"/></svg></a>
+<button type="button" id="rtBtn" aria-label="交通查詢紀錄" title="交通查詢紀錄"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18c0-4.5 0-6.5 3-6.5s6 0 6-4.5"/><circle cx="7" cy="19.5" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="5.5" r="2" fill="currentColor" stroke="none"/></svg></button>
 <div id="mapBk" hidden></div><button type="button" id="mapBtn" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
 <section class="panel" id="mapPanel"><div class="mphd"><h2>地圖</h2><button type="button" class="sx" id="mapPX" aria-label="關閉地圖"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
@@ -1636,6 +1636,21 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   function closeSplit(){
     if(!splitOv)return;splitOv.hidden=true;splitOv.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
   }
+  var rtOv=null;
+  function closeRt(){if(rtOv){rtOv.hidden=true;document.documentElement.style.overflow=""}}
+  function openRt(){
+    if(!rtOv){
+      rtOv=document.createElement("div");rtOv.id="rtOv";rtOv.hidden=true;
+      rtOv.innerHTML='<div class="bk"></div><iframe title="交通查詢紀錄" allow=""></iframe>';
+      document.body.appendChild(rtOv);
+      rtOv.querySelector(".bk").addEventListener("click",closeRt);
+      window.addEventListener("message",function(e){if(e.data&&e.data.rtClose&&rtOv&&e.source===rtOv.querySelector("iframe").contentWindow)closeRt()});
+      document.addEventListener("keydown",function(e){if(e.key==="Escape"&&rtOv&&!rtOv.hidden)closeRt()});
+    }
+    rtOv.querySelector("iframe").src="routes.html?embed=1&v="+Date.now();
+    rtOv.hidden=false;document.documentElement.style.overflow="hidden";
+  }
+  (function(){var r=$("rtBtn");if(r)r.onclick=function(){if(viewerMode)return;openRt()}})();
   (function(){var b=$("splitBtn");if(b)b.onclick=function(){if(viewerMode||!IDX)return;openSplit("trip="+encodeURIComponent(IDX.cur)+"&autoshare=1")};
     var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}})();
   var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
@@ -5060,7 +5075,8 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       '<h3>'+esc(e.from)+' → '+esc(e.to)+'</h3><div class="sub">'+(e.trip?esc(e.trip)+'・':'')+(e.day?'第 '+e.day+' 天・':'')+'以 '+esc(e.dep||"")+' 出發查詢</div>'+
       trHtml(e)+
       '<p class="fo">時間是 Google 依明天同一時段的班表估算，實際班次與票價請以現場或 Google 地圖為準。</p>'+
-      '<div class="ac"><a href="'+g+'" target="_blank" rel="noopener">在 Google 地圖開啟</a><a href="routes.html">查看全部紀錄</a></div></div>';
+      '<div class="ac"><a href="'+g+'" target="_blank" rel="noopener">在 Google 地圖開啟</a><button type="button" id="trAll">查看全部紀錄</button></div></div>';
+    var ba=document.getElementById("trAll");if(ba)ba.onclick=function(){a.classList.remove("on");openRt()};
     a.classList.add("on");
   }
   /* ---- 交通時間（真實查詢，失敗就用估算） ---- */
