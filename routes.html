@@ -158,6 +158,17 @@ function pad(n){return n<10?"0"+n:""+n}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},2000)}
 var VEH={SUBWAY:"地鐵",METRO_RAIL:"地鐵",HEAVY_RAIL:"火車",RAIL:"鐵路",COMMUTER_TRAIN:"通勤車",HIGH_SPEED_TRAIN:"高鐵",LONG_DISTANCE_TRAIN:"城際列車",BUS:"公車",INTERCITY_BUS:"客運",TROLLEYBUS:"電車",TRAM:"路面電車",MONORAIL:"單軌",FERRY:"渡輪",CABLE_CAR:"纜車",GONDOLA_LIFT:"空中纜車",FUNICULAR:"纜索鐵路",SHARE_TAXI:"共乘計程車",OTHER:"交通工具"};
+function mergeSteps(st){
+  var out=[];
+  (st||[]).forEach(function(x){
+    if(!x)return;
+    if(x.m==="T"){out.push(x);return}
+    var p=out.length?out[out.length-1]:null;
+    if(p&&p.m!=="T"){p.sec=(p.sec||0)+(x.sec||0);p.dm=(p.dm||0)+(x.dm||0);if(x.t&&p.ts.indexOf(x.t)<0)p.ts.push(x.t);return}
+    out.push({m:"W",sec:x.sec||0,dm:x.dm||0,ts:x.t?[x.t]:[]});
+  });
+  return out.filter(function(x){return x.m==="T"||x.sec>0||x.dm>0||x.ts.length});
+}
 function mmss(sec){var m=Math.round((sec||0)/60);return m<60?m+" 分":Math.floor(m/60)+" 小時"+(m%60?" "+(m%60)+" 分":"")}
 function mdist(d){return d>=1000?(Math.round(d/100)/10)+" 公里":Math.round(d)+" 公尺"}
 function when(ts){var d=new Date(ts),n=new Date(),sd=d.getFullYear()+"/"+pad(d.getMonth()+1)+"/"+pad(d.getDate());
@@ -185,8 +196,8 @@ window.rtApply=function(o){D=clean(o);try{localStorage.setItem(KEY,JSON.stringif
 
 /* ---------- 報告 ---------- */
 function trHtml(e){
-  var h='<div class="tot"><div><b>'+mmss(e.sec)+'</b><small>全程</small></div><div><b>'+(e.km||0)+' 公里</b><small>距離</small></div><div><b>'+((e.steps||[]).filter(function(x){return x.m==="T"}).length)+' 段</b><small>搭乘</small></div></div><div class="trs">';
-  var st=e.steps||[];
+  var h='<div class="tot"><div><b>'+mmss(e.sec)+'</b><small>全程</small></div><div><b>'+(e.km||0)+' 公里</b><small>距離</small></div><div><b>'+(mergeSteps(e.steps).filter(function(x){return x.m==="T"}).length)+' 段</b><small>搭乘</small></div></div><div class="trs">';
+  var st=mergeSteps(e.steps);
   if(!st.length)h+='<div class="r"><div class="ti">沒有分段資訊</div><div class="de">這段路的總時間是 '+mmss(e.sec)+'。'+(e.lines&&e.lines.length?'會經過：'+esc(e.lines.join(" → ")):'')+'</div></div>';
   st.forEach(function(x){
     if(x.m==="T"){
@@ -197,7 +208,7 @@ function trHtml(e){
         (x.to?'在 <b>'+esc(x.to)+'</b> 下車':'下車')+(x.n?'（'+x.n+' 站）':'')+'・'+mmss(x.sec)+
         (x.ln&&x.ln!==x.line?'<br>'+esc(x.ln):'')+'</div></div>';
     }else{
-      h+='<div class="r w" style="--c:var(--muted)"><div class="ti">步行 '+mmss(x.sec)+'</div><div class="de">'+(x.dm?'約 '+mdist(x.dm):'')+(x.t?'・'+esc(x.t):'')+'</div></div>';
+      h+='<div class="r w" style="--c:var(--muted)"><div class="ti">步行'+(x.sec>0?' '+mmss(x.sec):'')+'</div><div class="de">'+[x.dm?'約 '+mdist(x.dm):'',(x.ts||[]).join('・')].filter(Boolean).join('・')+'</div></div>';
     }
   });
   return h+'</div>';

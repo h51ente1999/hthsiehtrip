@@ -1137,7 +1137,8 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #ctSheet .ctg b{font-size:1rem}#ctSheet .ctg small{color:var(--muted,#6b7387);font-size:.8rem}
 #trSheet{position:fixed;inset:0;z-index:97;display:none}#trSheet.on{display:block}
 #trSheet .bk{position:absolute;inset:0;background:rgba(18,22,32,.5)}
-#trSheet .sh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:22px;padding:18px 18px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+#trSheet .sh::-webkit-scrollbar{display:none}
+#trSheet .sh{scrollbar-width:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:22px;padding:18px 18px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
 #trSheet h3{margin:0 0 2px;font-size:1.1rem;padding-right:40px}
 #trSheet .sub{font-size:.82rem;color:var(--muted,#6b7387);margin-bottom:14px}
 #trSheet .x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:inherit;display:grid;place-items:center;cursor:pointer}
@@ -1301,6 +1302,23 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     var kn=noKids?[]:kidNames(it);if(kn.length)a.push("含："+kn.join("、"));
     var nsp=spot(it.sid);if(nsp&&nsp.note)a.push(nsp.note.replace(/\n/g," "));
     return a.join("　");
+  }
+  function cleanRt(x){
+    if(!x||typeof x!=="object"||!Array.isArray(x.steps)||!x.steps.length)return null;
+    var n=function(v,m){v=Number(v);return isFinite(v)&&v>=0&&v<=m?v:0},t=function(v,m){return String(v==null?"":v).slice(0,m)};
+    var st=[];
+    x.steps.slice(0,40).forEach(function(p){
+      if(!p||typeof p!=="object")return;
+      var o={m:p.m==="T"?"T":"W",sec:n(p.sec,86400),dm:n(p.dm,500000)};
+      if(o.m==="T"){["line","ln","col","veh","vn","ag","head","from","to"].forEach(function(k){if(p[k])o[k]=t(p[k],40)});
+        if(p.dep)o.dep=t(p.dep,5);if(p.arr)o.arr=t(p.arr,5);if(p.n)o.n=n(p.n,200)}
+      else if(p.t)o.t=t(p.t,120);
+      st.push(o);
+    });
+    if(!st.length)return null;
+    var r={sec:n(x.sec,86400),km:n(x.km,10000),steps:st};
+    if(x.dep)r.dep=t(x.dep,5);if(x.bus)r.bus=true;
+    return r;
   }
   function driveLbl(it,n){return (it&&it.mode==="drive"?"開車 ":it&&it.mode==="walk"?"走路 ":it&&it.mode==="transit"?"大眾運輸 ":"路程 ")+n+" 分"}
   function validItems(d){return d.filter(function(it){return spot(it.sid)})}
@@ -1653,6 +1671,13 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     rtOv.querySelector("iframe").src="routes.html?embed=1&v="+Date.now();
     rtOv.hidden=false;document.documentElement.style.overflow="hidden";
   }
+  document.addEventListener("click",function(ev){
+    var el=ev.target.closest&&ev.target.closest("[data-rt]");if(!el)return;
+    ev.preventDefault();ev.stopPropagation();
+    var u=String(el.dataset.rt||""),f=dayItems(u);if(!f||!f.vl[f.k]||!f.vl[f.k].rt)return;
+    var it2=f.vl[f.k],p0=f.k>0?spot(f.vl[f.k-1].sid):null,p1=spot(it2.sid);
+    trOpen({from:(p0&&p0.name)||"",to:(p1&&p1.name)||"",fc:(p0&&okLL(p0.lat,p0.lng))?p0.lat+","+p0.lng:"",tc:(p1&&okLL(p1.lat,p1.lng))?p1.lat+","+p1.lng:"",sec:it2.rt.sec,km:it2.rt.km,dep:it2.rt.dep,bus:!!it2.rt.bus,steps:it2.rt.steps,trip:(s&&s.title)||"",day:0});
+  },true);
   (function(){var r=$("rtBtn");if(r)r.onclick=function(){if(viewerMode)return;openRt()}})();
   (function(){var b=$("splitBtn");if(b)b.onclick=function(){if(viewerMode||!IDX)return;openSplit("trip="+encodeURIComponent(IDX.cur)+"&autoshare=1")};
     var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}})();
@@ -2164,7 +2189,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     });
     var days=d.days.map(function(day){
       return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){var o={uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)};
-        var sy=numv(it.stay),dr=numv(it.drive);if(sy!=null)o.stay=sy;if(dr!=null)o.drive=dr;if(it.fixed===true)o.fixed=true;if(dr!=null&&(it.mode==="drive"||it.mode==="walk"||it.mode==="transit"||it.mode==="manual"))o.mode=it.mode;
+        var sy=numv(it.stay),dr=numv(it.drive);if(sy!=null)o.stay=sy;if(dr!=null)o.drive=dr;if(it.fixed===true)o.fixed=true;if(dr!=null&&(it.mode==="drive"||it.mode==="walk"||it.mode==="transit"||it.mode==="manual"))o.mode=it.mode;var rtc=cleanRt(it.rt);if(rtc)o.rt=rtc;
         if(Array.isArray(it.kids)){var ks=it.kids.filter(function(k){return k&&ids[k.sid]&&typeof k.uid==="string"&&IDRE.test(k.uid)}).map(function(k){return {uid:k.uid,sid:k.sid}});if(ks.length)o.kids=ks}
         return o});
     });
@@ -4513,7 +4538,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     s.days.forEach(function(d,i){
       var vl=validItems(d),cr=calcDay(vl);
       var cl=vCollapsed[i]?' collapsed':'';
-      h+='<div class="vdaycol"><h2 class="vday'+cl+'" data-vday="'+i+'" role="button" tabindex="0" aria-expanded="'+(!vCollapsed[i])+'"><span>第 '+(i+1)+' 天'+(function(){var dt=dayDate(i);return dt?'<small class="vdt">'+("0"+(dt.getMonth()+1)).slice(-2)+"/"+("0"+dt.getDate()).slice(-2)+"（週"+WDN[dt.getDay()]+"）</small>":""})()+'</span><span class="vcnt">'+vl.length+' 站<span class="vchev" aria-hidden="true"></span></span></h2>'+(vl.length?'<div class="vlist vl2'+(cr.some(function(c){return c.arr!=null})?'':' notime')+cl+'">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo2">'+(it.mode==="drive"?'<span class="vmi" title="開車"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span>':it.mode==="walk"?'<span class="vmi" title="步行"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2.5-6-2-3 2-4 3 2.5 3 .5M11.5 15l3 2 1 4M8 11l-2 3"/></svg></span>':it.mode==="transit"?'<span class="vmi" title="大眾運輸"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17l-2 4M16 17l2 4"/></svg></span>':'')+cr[q].drive+' 分'+'</div>':'')+vitem2(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint'+cl+'">（尚無行程）</p>')+'</div>';
+      h+='<div class="vdaycol"><h2 class="vday'+cl+'" data-vday="'+i+'" role="button" tabindex="0" aria-expanded="'+(!vCollapsed[i])+'"><span>第 '+(i+1)+' 天'+(function(){var dt=dayDate(i);return dt?'<small class="vdt">'+("0"+(dt.getMonth()+1)).slice(-2)+"/"+("0"+dt.getDate()).slice(-2)+"（週"+WDN[dt.getDay()]+"）</small>":""})()+'</span><span class="vcnt">'+vl.length+' 站<span class="vchev" aria-hidden="true"></span></span></h2>'+(vl.length?'<div class="vlist vl2'+(cr.some(function(c){return c.arr!=null})?'':' notime')+cl+'">'+vl.map(function(it,q){return (cr[q].drive!=null?'<div class="vgo2'+(it.mode==="transit"&&it.rt&&q>0?' tx" data-rt="'+esc(it.uid)+'" role="button" tabindex="0':'')+'">'+(it.mode==="drive"?'<span class="vmi" title="開車"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span>':it.mode==="walk"?'<span class="vmi" title="步行"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2.5-6-2-3 2-4 3 2.5 3 .5M11.5 15l3 2 1 4M8 11l-2 3"/></svg></span>':it.mode==="transit"?'<span class="vmi" title="大眾運輸"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17l-2 4M16 17l2 4"/></svg></span>':'')+cr[q].drive+' 分'+'</div>':'')+vitem2(spot(it.sid),it,cr[q])}).join("")+'</div>':'<p class="hint'+cl+'">（尚無行程）</p>')+'</div>';
     });
     h+='</div>';
     $("vBody").innerHTML=h;
@@ -5045,12 +5070,23 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     });
   }
   var VEH={SUBWAY:"地鐵",METRO_RAIL:"地鐵",HEAVY_RAIL:"火車",RAIL:"鐵路",COMMUTER_TRAIN:"通勤車",HIGH_SPEED_TRAIN:"高鐵",LONG_DISTANCE_TRAIN:"城際列車",BUS:"公車",INTERCITY_BUS:"客運",TROLLEYBUS:"電車",TRAM:"路面電車",MONORAIL:"單軌",FERRY:"渡輪",CABLE_CAR:"纜車",GONDOLA_LIFT:"空中纜車",FUNICULAR:"纜索鐵路",SHARE_TAXI:"共乘計程車",OTHER:"交通工具"};
+  function mergeSteps(st){
+    var out=[];
+    (st||[]).forEach(function(x){
+      if(!x)return;
+      if(x.m==="T"){out.push(x);return}
+      var p=out.length?out[out.length-1]:null;
+      if(p&&p.m!=="T"){p.sec=(p.sec||0)+(x.sec||0);p.dm=(p.dm||0)+(x.dm||0);if(x.t&&p.ts.indexOf(x.t)<0)p.ts.push(x.t);return}
+      out.push({m:"W",sec:x.sec||0,dm:x.dm||0,ts:x.t?[x.t]:[]});
+    });
+    return out.filter(function(x){return x.m==="T"||x.sec>0||x.dm>0||x.ts.length});
+  }
   function mmss(sec){var m=Math.round((sec||0)/60);return m<60?m+" 分":Math.floor(m/60)+" 小時"+(m%60?" "+(m%60)+" 分":"")}
   function mdist(d){return d>=1000?(Math.round(d/100)/10)+" 公里":Math.round(d)+" 公尺"}
   function trHtml(e){
-    var h='<div class="tot"><div><b>'+mmss(e.sec)+'</b><small>全程</small></div><div><b>'+(e.km||0)+' 公里</b><small>距離</small></div><div><b>'+((e.steps||[]).filter(function(x){return x.m==="T"}).length)+' 段</b><small>搭乘</small></div></div>';
+    var h='<div class="tot"><div><b>'+mmss(e.sec)+'</b><small>全程</small></div><div><b>'+(e.km||0)+' 公里</b><small>距離</small></div><div><b>'+(mergeSteps(e.steps).filter(function(x){return x.m==="T"}).length)+' 段</b><small>搭乘</small></div></div>';
     h+='<div class="trs">';
-    var st=e.steps||[];
+    var st=mergeSteps(e.steps);
     if(!st.length)h+='<div class="r"><div class="ti">沒有拿到分段資訊</div><div class="de">這段路的總時間是 '+mmss(e.sec)+'。'+(e.lines&&e.lines.length?'會經過：'+esc(e.lines.join(" → ")):'')+'</div></div>';
     st.forEach(function(x){
       if(x.m==="T"){
@@ -5061,7 +5097,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
           (x.to?'在 <b>'+esc(x.to)+'</b> 下車':'下車')+(x.n?'（'+x.n+' 站）':'')+'・'+mmss(x.sec)+
           (x.ln&&x.ln!==x.line?'<br>'+esc(x.ln):'')+'</div></div>';
       }else{
-        h+='<div class="r w" style="--c:var(--muted,#8aa)"><div class="ti">步行 '+mmss(x.sec)+'</div><div class="de">'+(x.dm?'約 '+mdist(x.dm):'')+(x.t?'・'+esc(x.t):'')+'</div></div>';
+        h+='<div class="r w" style="--c:var(--muted,#8aa)"><div class="ti">步行'+(x.sec>0?' '+mmss(x.sec):'')+'</div><div class="de">'+[x.dm?'約 '+mdist(x.dm):'',(x.ts||[]).join('・')].filter(Boolean).join('・')+'</div></div>';
       }
     });
     h+='</div>';
@@ -5466,6 +5502,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
           if(r.min){it.drive=r.min;it.mode="transit";save();render();say("已填入大眾運輸時間"+(r.lines&&r.lines.length?"（"+r.lines.slice(0,3).join("→")+"）":"")+"，已多留 5 分鐘。");
             var di=Math.max(0,dayIdxOf(tb.dataset.esttransit));
             var ev={id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),trip:(s&&s.title)||"",day:di+1,date:(function(){var d=dayDate(di);return d?d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2):""})(),from:(a&&a.name)||"",to:(bb&&bb.name)||"",fc:c[0].join(","),tc:c[1].join(","),sec:r.sec,km:r.km,dep:r.dep||"",bus:!!r.bus,lines:r.lines,steps:r.steps};
+            it.rt={sec:r.sec,km:r.km,dep:r.dep||"",bus:!!r.bus,steps:r.steps||[]};save();
             rtSave(ev);trOpen(ev)}
           else{render();say(r.err==="limit"?"本月大眾運輸查詢已達上限，請改用開車或步行估算。":r.err==="none"?"這段路找不到大眾運輸路線。":r.err==="no-helper"?"還沒設定助手網址，無法查詢。":"查詢失敗（"+(r.st||"無回應")+(r.code?" "+r.code:"")+(r.detail?"："+r.detail:"")+"），請把這行訊息回報。")}
         });
