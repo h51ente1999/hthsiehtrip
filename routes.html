@@ -130,6 +130,10 @@ body.mlock{overflow:hidden}
 .trs .tm{float:right;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .fo{font-size:.76rem;color:var(--muted);line-height:1.6;margin:12px 0 0}
 .srch{width:100%;margin-bottom:4px}
+select{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font:inherit;font-size:1rem;min-height:40px;color:var(--ink)}
+select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+body.tbar-closed #tripBar{display:none}
+#btnBar svg{transition:transform .2s}body:not(.tbar-closed) #btnBar svg{transform:rotate(180deg)}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -142,8 +146,9 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
   <div class="hero">
     <button class="ib" id="btnClose" type="button" title="關閉" aria-label="關閉" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><a class="ib" id="back" href="trip.html" title="回 Trip" aria-label="回 Trip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
     <h1><b>hthsieh</b> Routes</h1><span class="sp"></span>
-    <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnSet" type="button" title="備份與同步" aria-label="備份與同步"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></span>
+    <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnBar" type="button" title="依行程篩選" aria-label="展開行程列" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><button class="ib" id="btnSet" type="button" title="備份與同步" aria-label="備份與同步"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></span>
   </div>
+  <div class="card" id="tripBar" style="padding:8px"><select id="tripSel" aria-label="選擇行程" style="width:100%"></select></div>
   <div class="card" id="editCard" hidden></div>
   <div class="card" id="setCard" hidden></div>
   <div class="card" id="listCard"></div>
@@ -152,7 +157,7 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
 <div class="toast" id="toast" role="status"></div>
 <script>
 "use strict";
-var KEY="routes-v1";
+var KEY="routes-v1",TSK="routes-v1-trip";
 function $(id){return document.getElementById(id)}
 function pad(n){return n<10?"0"+n:""+n}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -176,7 +181,9 @@ function when(ts){var d=new Date(ts),n=new Date(),sd=d.getFullYear()+"/"+pad(d.g
   return sd}
 
 /* ---------- 資料 ---------- */
-var D=null,Q="";
+var D=null,Q="",TF="";
+try{TF=localStorage.getItem(TSK)||""}catch(e){}
+try{var _t=new URLSearchParams(location.search).get("tid");if(_t)TF=_t.slice(0,32)}catch(e){}
 function clean(x){
   var it=[];(x.items||[]).slice(0,400).forEach(function(o,i){
     if(!o||typeof o!=="object")return;
@@ -184,7 +191,7 @@ function clean(x){
       if(!p||typeof p!=="object")return;
       st.push({m:p.m==="T"?"T":p.m==="W"?"W":"O",sec:+p.sec||0,dm:+p.dm||0,t:String(p.t||"").slice(0,120),line:String(p.line||"").slice(0,30),ln:String(p.ln||"").slice(0,40),col:String(p.col||"").slice(0,9),veh:String(p.veh||"").slice(0,20),vn:String(p.vn||"").slice(0,20),head:String(p.head||"").slice(0,40),from:String(p.from||"").slice(0,40),to:String(p.to||"").slice(0,40),dep:String(p.dep||"").slice(0,5),arr:String(p.arr||"").slice(0,5),n:+p.n||0});
     });
-    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,24):"r"+Date.now().toString(36)+i,ts:+o.ts||Date.now(),trip:String(o.trip||"").slice(0,40),day:+o.day||0,date:String(o.date||"").slice(0,10),from:String(o.from||"").slice(0,60),to:String(o.to||"").slice(0,60),fc:String(o.fc||"").slice(0,48),tc:String(o.tc||"").slice(0,48),sec:+o.sec||0,km:+o.km||0,dep:String(o.dep||"").slice(0,5),bus:!!o.bus,lines:(o.lines||[]).slice(0,8).map(function(v){return String(v).slice(0,30)}),steps:st});
+    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,24):"r"+Date.now().toString(36)+i,ts:+o.ts||Date.now(),trip:String(o.trip||"").slice(0,40),day:+o.day||0,tid:String(o.tid||"").slice(0,32),date:String(o.date||"").slice(0,10),from:String(o.from||"").slice(0,60),to:String(o.to||"").slice(0,60),fc:String(o.fc||"").slice(0,48),tc:String(o.tc||"").slice(0,48),sec:+o.sec||0,km:+o.km||0,dep:String(o.dep||"").slice(0,5),bus:!!o.bus,lines:(o.lines||[]).slice(0,8).map(function(v){return String(v).slice(0,30)}),steps:st});
   });
   it.sort(function(a,b){return b.ts-a.ts});
   return {items:it};
@@ -225,19 +232,35 @@ function openItem(id){
 }
 
 /* ---------- 清單 ---------- */
-function draw(){
+function trips(){
+  var m={},out=[];
+  D.items.forEach(function(e){var k=e.tid||("n:"+e.trip);if(!m[k]){m[k]={k:k,name:e.trip||"未命名行程",n:0,ts:0};out.push(m[k])}m[k].n++;if(e.ts>m[k].ts)m[k].ts=e.ts});
+  out.sort(function(a,b){return b.ts-a.ts});return out;
+}
+function drawBar(){
+  var ts=trips(),sel=$("tripSel");
+  if(ts.length&&TF&&!ts.some(function(t){return t.k===TF}))TF="";
+  sel.innerHTML='<option value="">全部行程（'+D.items.length+'）</option>'+ts.map(function(t){return '<option value="'+esc(t.k)+'">'+esc(t.name)+'（'+t.n+'）</option>'}).join("");
+  sel.value=TF;
+  $("btnBar").hidden=ts.length<2;
+  if(ts.length<2)document.body.classList.add("tbar-closed");
+  sel.onchange=function(){TF=this.value;try{localStorage.setItem(TSK,TF)}catch(e){}drawList()};
+}
+function draw(){drawBar();drawList()}
+function drawList(){
   var q=Q.trim().toLowerCase();
-  var rows=D.items.filter(function(e){return !q||(e.from+" "+e.to+" "+e.trip+" "+(e.lines||[]).join(" ")).toLowerCase().indexOf(q)>=0});
-  var h='<div class="lh"><h2>查詢紀錄</h2><span class="small muted">'+D.items.length+' 筆</span></div>';
-  if(D.items.length>6)h+='<input class="srch" type="text" id="q" placeholder="搜尋地點、行程或路線" value="'+esc(Q)+'">';
+  var rows=D.items.filter(function(e){return !TF||(e.tid||("n:"+e.trip))===TF}).filter(function(e){return !q||(e.from+" "+e.to+" "+e.trip+" "+(e.lines||[]).join(" ")).toLowerCase().indexOf(q)>=0});
+  var tn=TF?((trips().filter(function(t){return t.k===TF})[0]||{}).name||"") :"";
+  var h='<div class="lh"><h2>'+(tn?esc(tn):'查詢紀錄')+'</h2><span class="small muted">'+rows.length+' 筆</span></div>';
+  if(rows.length>6||q)h+='<input class="srch" type="text" id="q" placeholder="搜尋地點、行程或路線" value="'+esc(Q)+'">';
   if(!D.items.length)h+='<div class="empty">還沒有紀錄。<br>在 Trip 裡按「大眾運輸」查詢路程，結果會自動收到這裡。</div>';
   else if(!rows.length)h+='<div class="empty">沒有符合的紀錄</div>';
   rows.forEach(function(e){
     var ls=(e.lines||[]).slice(0,3).join(" → ");
-    h+='<div class="rh" data-e="'+esc(e.id)+'" role="button" tabindex="0"><div class="main"><div class="t">'+esc(e.from)+'<i>→</i>'+esc(e.to)+'</div><div class="s">'+(e.trip?'<span class="pill">'+esc(e.trip)+(e.day?' D'+e.day:'')+'</span>':'')+(ls?esc(ls)+'・':'')+when(e.ts)+'</div></div><div class="r"><b>'+mmss(e.sec)+'</b><small>'+(e.km||0)+' 公里</small></div></div>';
+    h+='<div class="rh" data-e="'+esc(e.id)+'" role="button" tabindex="0"><div class="main"><div class="t">'+esc(e.from)+'<i>→</i>'+esc(e.to)+'</div><div class="s">'+((e.trip&&!TF)?'<span class="pill">'+esc(e.trip)+(e.day?' D'+e.day:'')+'</span>':(e.day?'<span class="pill">第 '+e.day+' 天</span>':''))+(ls?esc(ls)+'・':'')+when(e.ts)+'</div></div><div class="r"><b>'+mmss(e.sec)+'</b><small>'+(e.km||0)+' 公里</small></div></div>';
   });
   $("listCard").innerHTML=h;
-  if($("q")){var qq=$("q");qq.oninput=function(){Q=this.value;var p=this.selectionStart;draw();var n=$("q");if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}}
+  if($("q")){var qq=$("q");qq.oninput=function(){Q=this.value;var p=this.selectionStart;drawList();var n=$("q");if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}}
   [].forEach.call($("listCard").querySelectorAll(".rh[data-e]"),function(el){el.onclick=function(){openItem(el.dataset.e)};el.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();openItem(el.dataset.e)}}});
 }
 
@@ -251,6 +274,8 @@ $("btnSet").onclick=function(){
   if(window.syncBoxInject)syncBoxInject();
 };
 
+document.body.classList.add("tbar-closed");
+$("btnBar").onclick=function(){var c=document.body.classList.toggle("tbar-closed");this.setAttribute("aria-expanded",String(!c));this.setAttribute("aria-label",c?"展開行程列":"收合行程列")};
 if(document.documentElement.getAttribute("data-embed")==="1"){
   document.body.classList.add("embed");$("back").hidden=true;$("btnClose").hidden=false;
   $("btnClose").onclick=function(){try{parent.postMessage({rtClose:1},/^https?:$/.test(location.protocol)?location.origin:"*")}catch(e){}};

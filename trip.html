@@ -1668,7 +1668,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       window.addEventListener("message",function(e){if(e.data&&e.data.rtClose&&rtOv&&e.source===rtOv.querySelector("iframe").contentWindow)closeRt()});
       document.addEventListener("keydown",function(e){if(e.key==="Escape"&&rtOv&&!rtOv.hidden)closeRt()});
     }
-    rtOv.querySelector("iframe").src="routes.html?embed=1&v="+Date.now();
+    rtOv.querySelector("iframe").src="routes.html?embed=1&tid="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now();
     rtOv.hidden=false;document.documentElement.style.overflow="hidden";
   }
   document.addEventListener("click",function(ev){
@@ -5501,7 +5501,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
         var cr0=calcDay(f.vl),lv=cr0[f.k-1]&&cr0[f.k-1].leave;return aiTransitDetail(c[0],c[1],lv!=null?lv:600).then(function(r){
           if(r.min){it.drive=r.min;it.mode="transit";save();render();say("已填入大眾運輸時間"+(r.lines&&r.lines.length?"（"+r.lines.slice(0,3).join("→")+"）":"")+"，已多留 5 分鐘。");
             var di=Math.max(0,dayIdxOf(tb.dataset.esttransit));
-            var ev={id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),trip:(s&&s.title)||"",day:di+1,date:(function(){var d=dayDate(di);return d?d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2):""})(),from:(a&&a.name)||"",to:(bb&&bb.name)||"",fc:c[0].join(","),tc:c[1].join(","),sec:r.sec,km:r.km,dep:r.dep||"",bus:!!r.bus,lines:r.lines,steps:r.steps};
+            var ev={id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),tid:(IDX&&IDX.cur)||"",trip:(s&&s.title)||"",day:di+1,date:(function(){var d=dayDate(di);return d?d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2):""})(),from:(a&&a.name)||"",to:(bb&&bb.name)||"",fc:c[0].join(","),tc:c[1].join(","),sec:r.sec,km:r.km,dep:r.dep||"",bus:!!r.bus,lines:r.lines,steps:r.steps};
             it.rt={sec:r.sec,km:r.km,dep:r.dep||"",bus:!!r.bus,steps:r.steps||[]};save();
             rtSave(ev);trOpen(ev)}
           else{render();say(r.err==="limit"?"本月大眾運輸查詢已達上限，請改用開車或步行估算。":r.err==="none"?"這段路找不到大眾運輸路線。":r.err==="no-helper"?"還沒設定助手網址，無法查詢。":"查詢失敗（"+(r.st||"無回應")+(r.code?" "+r.code:"")+(r.detail?"："+r.detail:"")+"），請把這行訊息回報。")}
