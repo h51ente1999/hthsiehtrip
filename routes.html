@@ -173,7 +173,7 @@ function clean(x){
       if(!p||typeof p!=="object")return;
       st.push({m:p.m==="T"?"T":p.m==="W"?"W":"O",sec:+p.sec||0,dm:+p.dm||0,t:String(p.t||"").slice(0,120),line:String(p.line||"").slice(0,30),ln:String(p.ln||"").slice(0,40),col:String(p.col||"").slice(0,9),veh:String(p.veh||"").slice(0,20),vn:String(p.vn||"").slice(0,20),head:String(p.head||"").slice(0,40),from:String(p.from||"").slice(0,40),to:String(p.to||"").slice(0,40),dep:String(p.dep||"").slice(0,5),arr:String(p.arr||"").slice(0,5),n:+p.n||0});
     });
-    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,24):"r"+Date.now().toString(36)+i,ts:+o.ts||Date.now(),trip:String(o.trip||"").slice(0,40),day:+o.day||0,date:String(o.date||"").slice(0,10),from:String(o.from||"").slice(0,60),to:String(o.to||"").slice(0,60),fc:String(o.fc||"").slice(0,48),tc:String(o.tc||"").slice(0,48),sec:+o.sec||0,km:+o.km||0,dep:String(o.dep||"").slice(0,5),lines:(o.lines||[]).slice(0,8).map(function(v){return String(v).slice(0,30)}),steps:st});
+    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,24):"r"+Date.now().toString(36)+i,ts:+o.ts||Date.now(),trip:String(o.trip||"").slice(0,40),day:+o.day||0,date:String(o.date||"").slice(0,10),from:String(o.from||"").slice(0,60),to:String(o.to||"").slice(0,60),fc:String(o.fc||"").slice(0,48),tc:String(o.tc||"").slice(0,48),sec:+o.sec||0,km:+o.km||0,dep:String(o.dep||"").slice(0,5),bus:!!o.bus,lines:(o.lines||[]).slice(0,8).map(function(v){return String(v).slice(0,30)}),steps:st});
   });
   it.sort(function(a,b){return b.ts-a.ts});
   return {items:it};
@@ -207,7 +207,7 @@ function openItem(id){
   var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
   var g="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin="+encodeURIComponent(e.fc||e.from)+"&destination="+encodeURIComponent(e.tc||e.to);
   c.innerHTML='<h2 style="line-height:1.35">'+esc(e.from)+' → '+esc(e.to)+'</h2><p class="small muted" style="margin:0 0 14px">'+(e.trip?esc(e.trip)+'・':'')+(e.day?'第 '+e.day+' 天・':'')+'以 '+esc(e.dep||"")+' 出發查詢・'+when(e.ts)+'</p>'+
-   trHtml(e)+'<p class="fo">時間是 Google 依查詢當下的班表估算，實際班次與票價請以現場或 Google 地圖為準。</p>'+
+   trHtml(e)+'<p class="fo">'+(e.bus?'這段路沒有不搭公車的走法，以下包含公車。<br>':'')+'時間是 Google 依查詢當下的班表估算，實際班次與票價請以現場或 Google 地圖為準。</p>'+
    '<div class="acts"><a class="btn pri" href="'+g+'" target="_blank" rel="noopener">在 Google 地圖開啟</a><button class="btn" id="eClose" type="button">關閉</button><button class="btn danger" id="eDel" type="button">刪除</button></div>';
   $("eClose").onclick=function(){c.hidden=true};
   $("eDel").onclick=function(){if(!confirm("刪除這筆查詢紀錄？"))return;D.items=D.items.filter(function(x){return x.id!==id});save();c.hidden=true;draw();toast("已刪除")};
