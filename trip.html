@@ -578,9 +578,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .brandblk .tools{margin-left:auto;display:flex;gap:6px;flex:none}
 .brandblk .tools button{background:color-mix(in srgb,var(--on-blue,#fff) 22%,transparent)!important;border:0!important;width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;display:inline-grid!important;place-items:center;color:var(--on-blue,#fff)!important;padding:0!important;font-size:1.05rem;line-height:1;cursor:pointer}
 .brandblk .tools button[hidden]{display:none!important}body.viewer #splitBtn{display:none!important}
-#splitOv,#rtOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden]{display:none}
-#splitOv,#rtOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
-#splitOv,#rtOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+#splitOv,#rtOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden]{display:none}
+#splitOv .bk,#rtOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
+#splitOv iframe,#rtOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
 @media (min-width:700px){#splitOv,#rtOv{align-items:center}#splitOv iframe,#rtOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
 #vSplit{position:fixed;right:16px;bottom:298px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSplit.ok{display:grid}#vSplit:active{transform:scale(.92)}
 
@@ -621,10 +621,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #tripSheet.on .sh,#histSheet.on .sh{animation:tpop .2s ease}
 .fxs:not([hidden]) .fxb{animation:fxpop .2s ease}
 @keyframes fxpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-#splitOv,#rtOv:not([hidden]) .bk{animation:sfade .18s ease}
-#splitOv,#rtOv:not([hidden]) iframe{animation:fxpop .22s ease}
+#splitOv:not([hidden]) .bk,#rtOv:not([hidden]) .bk{animation:sfade .18s ease}
+#splitOv:not([hidden]) iframe,#rtOv:not([hidden]) iframe{animation:fxpop .22s ease}
 /* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
-@media (max-width:699px){#splitOv,#rtOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
+@media (max-width:699px){#splitOv,#rtOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe,#rtOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 /* ===== 按鈕一律漸層（比照分帳頁）；編輯頁的匯率、分帳獨立成右下角浮動按鈕，和分享頁一致 ===== */
 button.primary,.libadd,.tripbar .ib.on,#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug,body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
 .libadd{opacity:1}
