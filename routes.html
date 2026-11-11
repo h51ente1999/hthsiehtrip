@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.gstatic.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src https://*.googleapis.com https://*.firebaseio.com https://www.gstatic.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>hthsieh Routes</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%233fa4e0'/%3E%3Cstop%20offset='1'%20stop-color='%238a6fb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url(%23g)'/%3E%3Cpath%20d='M20%2048C20%2036,20%2030,28%2030C36%2030,44%2030,44%2018'%20fill='none'%20stroke='%23fff'%20stroke-width='4.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3Ccircle%20cx='20'%20cy='48'%20r='4.5'%20fill='%23fff'/%3E%3Ccircle%20cx='44'%20cy='17'%20r='4.5'%20fill='%23fff'/%3E%3C/svg%3E">
+<script>document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<style>
+html.pre body{visibility:hidden}
+html.pre *{transition:none!important;animation:none!important}
+:root{--page:#d8dfec;--blue:#5a8dbd;--bg:#f3f5fa;--surface:#ffffff;--ink:#232a3c;--on-blue:#ffffff;--tag-food:#c8805f;--line:#d3c7c7;
+--dayg2:color-mix(in srgb,var(--blue) 55%,var(--tag-food));--muted:color-mix(in srgb,var(--ink) 62%,var(--blue));--soft:color-mix(in srgb,var(--blue) 12%,var(--surface));
+--card:var(--surface);--accent:var(--blue);--accent2:var(--dayg2);--on:var(--on-blue);--warn:#b3453b;--ok:#2f8f5b;--shadow:0 6px 20px -12px rgba(40,50,90,.35)}
+@media (prefers-color-scheme:dark){:root{--bg:#123838;--surface:#0D2626;--ink:#F2EBEB;--blue:#025373;--on-blue:#F2EBEB;--line:#1f4a4a;--page:#0b1f1f;--warn:#e58b80;--ok:#6fcf97;--shadow:0 6px 20px -12px #000}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:16px/1.6 "Huninn","Noto Serif TC",-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%;min-height:100vh;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{width:100%;max-width:760px;margin:0 auto;padding:16px 16px 40px;flex:1}
+h2{font-size:1.02rem;margin:0 0 8px}
+.hero{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue);border-radius:14px;padding:8px 10px 8px 10px;margin-bottom:12px}
+.hero h1{font-size:1.12rem;font-weight:400;letter-spacing:.5px;margin:0;color:inherit;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}.hero h1 b{font-weight:800}.hero .sp{flex:1}
+.hero .tools{display:flex;gap:6px;flex:none}
+.hero .ib{flex:none;width:36px;height:36px;border-radius:50%;border:0;padding:0;background:color-mix(in srgb,var(--on-blue) 22%,transparent);color:var(--on-blue);display:inline-grid;place-items:center;text-decoration:none;transition:transform .2s cubic-bezier(.3,.8,.3,1)}
+.hero .ib:active{transform:scale(.92)}.hero .ib[hidden]{display:none}
+.sbi{display:block}.sbi.spin{animation:sbspin 1s linear infinite}@keyframes sbspin{to{transform:rotate(360deg)}}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.muted{color:var(--muted)}.small{font-size:.84rem}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;min-height:40px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:var(--ink);transition:background-color .25s,color .25s,border-color .25s,transform .2s cubic-bezier(.3,.8,.3,1)}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:scale(.95)}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--on);border-color:transparent;font-weight:600}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.ib2{width:36px;height:36px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);display:inline-grid;place-items:center;padding:0;transition:transform .2s cubic-bezier(.3,.8,.3,1),background-color .25s}
+.ib2:active{transform:scale(.92)}
+input[type=text],input[type=date]{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font-size:1rem;min-height:40px}
+input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+label.f{display:block;font-size:.82rem;color:var(--muted);margin-top:10px}
+label.f>*:not(span){margin-top:4px}
+.sw{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:.95rem}
+.sw input{width:20px;height:20px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* 主角倒數 */
+.star{text-align:center;padding:22px 16px 20px}
+.star .nm{font-size:1.15rem;font-weight:700;overflow-wrap:anywhere}
+.star .dt{font-size:.88rem;color:var(--muted);margin-top:2px}
+.ring{position:relative;width:200px;height:200px;margin:14px auto 6px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .bg{stroke:var(--soft)}
+.ring .fg{stroke:url(#cd_rg);transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.num{font-size:4.2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.num.sm{font-size:2.6rem}.num.md{font-size:3.2rem}
+.noring{display:flex;flex-direction:column;align-items:center;line-height:1;padding:22px 0 10px}
+.lead{font-size:.95rem;color:var(--muted);margin-bottom:8px}
+.unit{font-size:.9rem;color:var(--muted);margin-top:6px}
+.star .wk{font-size:.9rem;color:var(--muted)}
+.star .pin{display:inline-block;font-size:.7rem;padding:0 9px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:2px;font-weight:400}
+
+/* 清單 */
+.lh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lh h2{margin:0}
+.it{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;transition:opacity .2s}
+.it:active{opacity:.7}
+.it+.it{border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.bd{width:50px;height:54px;border-radius:14px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;color:var(--c)}
+.bd b{font-size:1.7rem;font-weight:800}.bd span{font-size:.66rem;opacity:.85;margin-top:2px}
+.it .main{flex:1;min-width:0}
+.it .t{font-weight:700;overflow-wrap:anywhere}
+.it .s{font-size:.78rem;color:var(--muted);line-height:1.4}
+.it .r{text-align:right;flex:none;line-height:1.1}
+.it .r b{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--c),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.it .r small{display:block;font-size:.7rem;color:var(--muted);margin-top:3px}
+.it.past .r b{background:none;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.it.past{opacity:.75}
+.tg{display:inline-block;font-size:.68rem;padding:0 8px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:1px;font-weight:400}
+.xp{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px;color:var(--muted);font-size:.84rem}
+.empty{text-align:center;padding:24px 8px;color:var(--muted)}
+.vin{animation:vin .32s cubic-bezier(.3,.8,.3,1) both}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:99px;font-size:.9rem;opacity:0;pointer-events:none;transition:all .25s;z-index:9;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:10px 16px 22px;line-height:1.9}
+footer a{color:var(--muted)}
+.sbox{padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 彈出視窗 */
+.mbk{position:fixed;inset:0;z-index:40;background:rgba(10,20,30,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .22s}
+.mbk.on{opacity:1;pointer-events:auto}
+.card.modal:not([hidden]){position:fixed;inset:0;margin:auto;z-index:41;width:min(500px,calc(100vw - 24px));height:fit-content;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow-y:auto;padding:18px 20px;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:mpop .22s cubic-bezier(.3,.8,.3,1) both}
+@keyframes mpop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.card.modal>h2:first-of-type,.card.modal>.sbox>h2{padding-right:44px}
+.mx{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;padding:0;background:var(--soft);color:var(--ink);display:grid;place-items:center;transition:transform .2s cubic-bezier(.3,.8,.3,1)}
+.mx:active{transform:scale(.92)}
+body.mlock{overflow:hidden}
+
+.rh{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;transition:opacity .2s}
+.rh:active{opacity:.7}.rh+.rh{border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.rh .main{flex:1;min-width:0}
+.rh .t{font-weight:700;overflow-wrap:anywhere;line-height:1.35}
+.rh .t i{font-style:normal;color:var(--muted);margin:0 5px}
+.rh .s{font-size:.78rem;color:var(--muted);line-height:1.5;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rh .r{text-align:right;flex:none;line-height:1.2}
+.rh .r b{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;display:block}
+.rh .r small{font-size:.72rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.7rem;padding:0 8px;border-radius:999px;background:var(--soft);color:var(--muted);margin-right:4px}
+.tot{display:flex;gap:14px;justify-content:center;padding:4px 0 14px;border-bottom:1px dashed var(--line);margin-bottom:14px}
+.tot div{text-align:center}.tot b{display:block;font-size:1.2rem}.tot small{font-size:.76rem;color:var(--muted)}
+.trs{position:relative;padding:0 0 2px 30px}
+.trs .r{position:relative;padding:0 0 16px}
+.trs .r::before{content:"";position:absolute;left:-22px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--c,#8aa);box-shadow:0 0 0 3px var(--card)}
+.trs .r::after{content:"";position:absolute;left:-17.5px;top:14px;bottom:-3px;width:2px;background:var(--c,#8aa);opacity:.45}
+.trs .r:last-child::after{display:none}
+.trs .r.w::after{background-image:linear-gradient(var(--c,#8aa) 50%,transparent 0);background-size:2px 7px;background-color:transparent}
+.trs b.ln{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.84rem;background:var(--c,#8aa);color:#fff;vertical-align:1px}
+.trs .ti{font-size:.95rem;font-weight:600}
+.trs .de{font-size:.82rem;color:var(--muted);line-height:1.6;margin-top:2px}
+.trs .tm{float:right;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.fo{font-size:.76rem;color:var(--muted);line-height:1.6;margin:12px 0 0}
+.srch{width:100%;margin-bottom:4px}
+</style>
+<script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
+try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
+var st=document.documentElement.style;Object.keys(th).forEach(function(k){if(k!=="--hit")st.setProperty(k,th[k])});
+if(th["--blue2"])st.setProperty("--dayg2",th["--blue2"]);
+if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;st.setProperty("--on-blue",l>0.55?"#0D2626":"#fff")}})();</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <a class="ib" href="index.html" title="回主頁" aria-label="回主頁"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <h1><b>hthsieh</b> Routes</h1><span class="sp"></span>
+    <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnSet" type="button" title="備份與同步" aria-label="備份與同步"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></span>
+  </div>
+  <div class="card" id="editCard" hidden></div>
+  <div class="card" id="setCard" hidden></div>
+  <div class="card" id="listCard"></div>
+</div>
+<footer>Copyright &#169; 2026 hthsieh. All rights reserved.</footer>
+<div class="toast" id="toast" role="status"></div>
+<script>
+"use strict";
+var KEY="routes-v1";
+function $(id){return document.getElementById(id)}
+function pad(n){return n<10?"0"+n:""+n}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},2000)}
+var VEH={SUBWAY:"地鐵",METRO_RAIL:"地鐵",HEAVY_RAIL:"火車",RAIL:"鐵路",COMMUTER_TRAIN:"通勤車",HIGH_SPEED_TRAIN:"高鐵",LONG_DISTANCE_TRAIN:"城際列車",BUS:"公車",INTERCITY_BUS:"客運",TROLLEYBUS:"電車",TRAM:"路面電車",MONORAIL:"單軌",FERRY:"渡輪",CABLE_CAR:"纜車",GONDOLA_LIFT:"空中纜車",FUNICULAR:"纜索鐵路",SHARE_TAXI:"共乘計程車",OTHER:"交通工具"};
+function mmss(sec){var m=Math.round((sec||0)/60);return m<60?m+" 分":Math.floor(m/60)+" 小時"+(m%60?" "+(m%60)+" 分":"")}
+function mdist(d){return d>=1000?(Math.round(d/100)/10)+" 公里":Math.round(d)+" 公尺"}
+function when(ts){var d=new Date(ts),n=new Date(),sd=d.getFullYear()+"/"+pad(d.getMonth()+1)+"/"+pad(d.getDate());
+  if(d.toDateString()===n.toDateString())return "今天 "+pad(d.getHours())+":"+pad(d.getMinutes());
+  return sd}
+
+/* ---------- 資料 ---------- */
+var D=null,Q="";
+function clean(x){
+  var it=[];(x.items||[]).slice(0,400).forEach(function(o,i){
+    if(!o||typeof o!=="object")return;
+    var st=[];(o.steps||[]).slice(0,40).forEach(function(p){
+      if(!p||typeof p!=="object")return;
+      st.push({m:p.m==="T"?"T":p.m==="W"?"W":"O",sec:+p.sec||0,dm:+p.dm||0,t:String(p.t||"").slice(0,120),line:String(p.line||"").slice(0,30),ln:String(p.ln||"").slice(0,40),col:String(p.col||"").slice(0,9),veh:String(p.veh||"").slice(0,20),vn:String(p.vn||"").slice(0,20),head:String(p.head||"").slice(0,40),from:String(p.from||"").slice(0,40),to:String(p.to||"").slice(0,40),dep:String(p.dep||"").slice(0,5),arr:String(p.arr||"").slice(0,5),n:+p.n||0});
+    });
+    it.push({id:typeof o.id==="string"&&o.id?o.id.slice(0,24):"r"+Date.now().toString(36)+i,ts:+o.ts||Date.now(),trip:String(o.trip||"").slice(0,40),day:+o.day||0,date:String(o.date||"").slice(0,10),from:String(o.from||"").slice(0,60),to:String(o.to||"").slice(0,60),fc:String(o.fc||"").slice(0,48),tc:String(o.tc||"").slice(0,48),sec:+o.sec||0,km:+o.km||0,dep:String(o.dep||"").slice(0,5),lines:(o.lines||[]).slice(0,8).map(function(v){return String(v).slice(0,30)}),steps:st});
+  });
+  it.sort(function(a,b){return b.ts-a.ts});
+  return {items:it};
+}
+function load(){try{var x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.items))return clean(x)}catch(e){}return {items:[]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast("儲存失敗，瀏覽器空間可能已滿")}if(window.syncTouch)syncTouch("routes")}
+window.rtGet=function(){return D};
+window.rtApply=function(o){D=clean(o);try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}draw()};
+
+/* ---------- 報告 ---------- */
+function trHtml(e){
+  var h='<div class="tot"><div><b>'+mmss(e.sec)+'</b><small>全程</small></div><div><b>'+(e.km||0)+' 公里</b><small>距離</small></div><div><b>'+((e.steps||[]).filter(function(x){return x.m==="T"}).length)+' 段</b><small>搭乘</small></div></div><div class="trs">';
+  var st=e.steps||[];
+  if(!st.length)h+='<div class="r"><div class="ti">沒有分段資訊</div><div class="de">這段路的總時間是 '+mmss(e.sec)+'。'+(e.lines&&e.lines.length?'會經過：'+esc(e.lines.join(" → ")):'')+'</div></div>';
+  st.forEach(function(x){
+    if(x.m==="T"){
+      var c=/^#?[0-9A-Fa-f]{6}$/.test(x.col||"")?(x.col.charAt(0)==="#"?x.col:"#"+x.col):"var(--accent)";
+      h+='<div class="r" style="--c:'+c+'">'+(x.dep?'<span class="tm">'+esc(x.dep)+(x.arr?'–'+esc(x.arr):'')+'</span>':'')+
+        '<div class="ti">'+(x.line?'<b class="ln">'+esc(x.line)+'</b> ':'')+esc(VEH[x.veh]||x.vn||"搭車")+'</div>'+
+        '<div class="de">'+(x.from?'從 <b>'+esc(x.from)+'</b> 上車':'上車')+(x.head?'，往 '+esc(x.head)+' 方向':'')+'<br>'+
+        (x.to?'在 <b>'+esc(x.to)+'</b> 下車':'下車')+(x.n?'（'+x.n+' 站）':'')+'・'+mmss(x.sec)+
+        (x.ln&&x.ln!==x.line?'<br>'+esc(x.ln):'')+'</div></div>';
+    }else{
+      h+='<div class="r w" style="--c:var(--muted)"><div class="ti">步行 '+mmss(x.sec)+'</div><div class="de">'+(x.dm?'約 '+mdist(x.dm):'')+(x.t?'・'+esc(x.t):'')+'</div></div>';
+    }
+  });
+  return h+'</div>';
+}
+function openItem(id){
+  var e=D.items.filter(function(x){return x.id===id})[0];if(!e)return;
+  var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
+  var g="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin="+encodeURIComponent(e.fc||e.from)+"&destination="+encodeURIComponent(e.tc||e.to);
+  c.innerHTML='<h2 style="line-height:1.35">'+esc(e.from)+' → '+esc(e.to)+'</h2><p class="small muted" style="margin:0 0 14px">'+(e.trip?esc(e.trip)+'・':'')+(e.day?'第 '+e.day+' 天・':'')+'以 '+esc(e.dep||"")+' 出發查詢・'+when(e.ts)+'</p>'+
+   trHtml(e)+'<p class="fo">時間是 Google 依查詢當下的班表估算，實際班次與票價請以現場或 Google 地圖為準。</p>'+
+   '<div class="acts"><a class="btn pri" href="'+g+'" target="_blank" rel="noopener">在 Google 地圖開啟</a><button class="btn" id="eClose" type="button">關閉</button><button class="btn danger" id="eDel" type="button">刪除</button></div>';
+  $("eClose").onclick=function(){c.hidden=true};
+  $("eDel").onclick=function(){if(!confirm("刪除這筆查詢紀錄？"))return;D.items=D.items.filter(function(x){return x.id!==id});save();c.hidden=true;draw();toast("已刪除")};
+}
+
+/* ---------- 清單 ---------- */
+function draw(){
+  var q=Q.trim().toLowerCase();
+  var rows=D.items.filter(function(e){return !q||(e.from+" "+e.to+" "+e.trip+" "+(e.lines||[]).join(" ")).toLowerCase().indexOf(q)>=0});
+  var h='<div class="lh"><h2>查詢紀錄</h2><span class="small muted">'+D.items.length+' 筆</span></div>';
+  if(D.items.length>6)h+='<input class="srch" type="text" id="q" placeholder="搜尋地點、行程或路線" value="'+esc(Q)+'">';
+  if(!D.items.length)h+='<div class="empty">還沒有紀錄。<br>在 Trip 裡按「大眾運輸」查詢路程，結果會自動收到這裡。</div>';
+  else if(!rows.length)h+='<div class="empty">沒有符合的紀錄</div>';
+  rows.forEach(function(e){
+    var ls=(e.lines||[]).slice(0,3).join(" → ");
+    h+='<div class="rh" data-e="'+esc(e.id)+'" role="button" tabindex="0"><div class="main"><div class="t">'+esc(e.from)+'<i>→</i>'+esc(e.to)+'</div><div class="s">'+(e.trip?'<span class="pill">'+esc(e.trip)+(e.day?' D'+e.day:'')+'</span>':'')+(ls?esc(ls)+'・':'')+when(e.ts)+'</div></div><div class="r"><b>'+mmss(e.sec)+'</b><small>'+(e.km||0)+' 公里</small></div></div>';
+  });
+  $("listCard").innerHTML=h;
+  if($("q")){var qq=$("q");qq.oninput=function(){Q=this.value;var p=this.selectionStart;draw();var n=$("q");if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}}
+  [].forEach.call($("listCard").querySelectorAll(".rh[data-e]"),function(el){el.onclick=function(){openItem(el.dataset.e)};el.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();openItem(el.dataset.e)}}});
+}
+
+/* ---------- 備份 ---------- */
+$("btnSet").onclick=function(){
+  var c=$("setCard");if(!c.hidden){c.hidden=true;return}c.hidden=false;$("editCard").hidden=true;
+  c.innerHTML='<h2>備份與還原</h2><p class="small muted" style="margin:0">紀錄只存在這個瀏覽器；登入雲端同步後，會自動同步到你的其他裝置。</p><div class="acts"><button class="btn pri" id="sExp" type="button">匯出備份</button><label class="btn" style="cursor:pointer">匯入備份<input type="file" id="sImp" accept="application/json,.json" hidden></label><button class="btn danger" id="sClr" type="button">全部清空</button></div><div class="small" id="sMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  $("sExp").onclick=function(){var bl=new Blob([JSON.stringify(D,null,1)],{type:"application/json"}),u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download="routes-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+  $("sImp").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var x=JSON.parse(r.result);if(!x||!Array.isArray(x.items))throw 0;D=clean(x);save();draw();c.hidden=true;toast("已匯入備份")}catch(e){$("sMsg").textContent="這不是有效的備份檔。"}};r.readAsText(f)};
+  $("sClr").onclick=function(){if(!confirm("確定清空所有查詢紀錄？"))return;D={items:[]};save();draw();c.hidden=true;toast("已清空")};
+  if(window.syncBoxInject)syncBoxInject();
+};
+
+D=load();draw();
+document.addEventListener("visibilitychange",function(){if(!document.hidden){D=load();draw()}});
+requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.className=""})});
+</script>
+<script>
+/* 彈出視窗：開關、遮罩、關閉鈕 */
+(function(){
+  var ids=["editCard","setCard"],bk=document.createElement("div");bk.className="mbk";document.body.appendChild(bk);
+  var X='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function els(){return ids.map(function(i){return document.getElementById(i)}).filter(Boolean)}
+  function closeAll(){els().forEach(function(e){e.hidden=true})}
+  function sync(){
+    var open=els().filter(function(e){return !e.hidden});
+    bk.classList.toggle("on",open.length>0);document.body.classList.toggle("mlock",open.length>0);
+    open.forEach(function(e){if(!e.querySelector(":scope>.mx")){var b=document.createElement("button");b.type="button";b.className="mx";b.setAttribute("aria-label","關閉");b.innerHTML=X;b.onclick=closeAll;e.appendChild(b)}});
+  }
+  var mo=new MutationObserver(sync);
+  els().forEach(function(e){e.classList.add("modal");mo.observe(e,{attributes:true,attributeFilter:["hidden"],childList:true})});
+  bk.onclick=closeAll;
+  document.addEventListener("keydown",function(ev){if(ev.key==="Escape")closeAll()});
+})();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { initializeFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
+  authDomain: "hthsieh-7b870.firebaseapp.com",
+  projectId: "hthsieh-7b870",
+  storageBucket: "hthsieh-7b870.firebasestorage.app",
+  messagingSenderId: "537319375553",
+  appId: "1:537319375553:web:4fabfc4ee2259776048a40"
+};
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+  const fref = (uid, name) => doc(db, "users", uid, "finance", name);
+  window.cloud = {
+    onAuth(cb) { return onAuthStateChanged(auth, (u) => cb(u && !u.isAnonymous ? { uid: u.uid, email: u.email, displayName: u.displayName } : null)); },
+    signIn() { return signInWithPopup(auth, new GoogleAuthProvider()); },
+    signOut() { return signOut(auth); },
+    async pullDoc(uid, name) { const d = await getDoc(fref(uid, name)); return d.exists() ? d.data() : null; },
+    async pushDoc(uid, name, data) { await setDoc(fref(uid, name), data); },
+    listenDoc(uid, name, cb) { return onSnapshot(fref(uid, name), (d) => cb(d.exists() ? d.data() : null), () => {}); }
+  };
+  window.dispatchEvent(new Event("cloud-ready"));
+} catch (e) {
+  console.error("Firebase init failed", e);
+}
+</script>
+<script>
+(function(){
+"use strict";
+var NM={routes:{key:"routes-v1",get:function(){return window.rtGet()},apply:function(o){window.rtApply(o)},isDef:function(){return window.rtGet().items.length===0}}};
+var SY={user:null,api:null,timers:{},unsub:[],applying:false,err:""};
+function $(id){return document.getElementById(id)}
+function lts(n){try{return +localStorage.getItem(NM[n].key+"-ts")||0}catch(e){return 0}}
+function sts(n,v){try{localStorage.setItem(NM[n].key+"-ts",String(v))}catch(e){}}
+var BI={sync:'<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',ok:'%s<path d="m9 12.5 2.2 2.2L15.5 10.5"/>',bad:'%s<path d="M12 10v3M12 15.8h.01"/>',off:'%s<path d="M4 4l16 16"/>'};
+var BTXT="";
+function setBadge(t){
+  var b=$("syncBadge");if(!b)return;BTXT=t||"";
+  if(!t){b.innerHTML="";b.hidden=true;return}
+  var k=/同步中|待同步/.test(t)?"sync":/已同步/.test(t)?"ok":/失敗/.test(t)?"bad":"off";
+  var p=BI[k].replace("%s",'<path d="M18 18a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/>');
+  b.innerHTML='<svg class="sbi'+(k==="sync"?" spin":"")+'" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+  b.title=t;b.setAttribute("aria-label",t);b.hidden=false;
+}
+$("syncBadge").onclick=function(){var m=$("toast");m.textContent=BTXT||"";m.classList.add("on");clearTimeout(window.__tt);window.__tt=setTimeout(function(){m.classList.remove("on")},1800)};
+function pending(){return Object.keys(SY.timers).length>0}
+function refresh(){if(!SY.user)return;setBadge(SY.err?"同步失敗，稍後會再試":pending()?"待同步…":"已同步")}
+function sched(n){if(!SY.user||!SY.api)return;clearTimeout(SY.timers[n]);SY.timers[n]=setTimeout(function(){push(n)},1500);setBadge("待同步…")}
+async function push(n){
+  clearTimeout(SY.timers[n]);delete SY.timers[n];
+  if(!SY.user||!SY.api)return;
+  try{if(!lts(n))sts(n,Date.now());setBadge("同步中…");await SY.api.pushDoc(SY.user.uid,n,{json:JSON.stringify(NM[n].get()),ts:lts(n)});SY.err="";refresh()}
+  catch(e){SY.err="x";setBadge("同步失敗，稍後會再試");SY.timers[n]=setTimeout(function(){push(n)},15000)}
+}
+window.syncTouch=function(n){if(SY.applying)return;sts(n,Date.now());sched(n)};
+function applyRemote(n,r){
+  try{var o=JSON.parse(r.json);SY.applying=true;NM[n].apply(o);sts(n,+r.ts||Date.now());var m=$("toast");m.textContent="已從雲端更新";m.classList.add("on");setTimeout(function(){m.classList.remove("on")},1800)}
+  catch(e){}finally{SY.applying=false}
+}
+async function reconcile(n){
+  var r=await SY.api.pullDoc(SY.user.uid,n),l=lts(n);
+  if(!r){if(!NM[n].isDef())await push(n);return}
+  var rt=+r.ts||0;
+  if(l===0){if(NM[n].isDef())applyRemote(n,r);else{sts(n,Date.now());await push(n)}return}
+  if(rt>l)applyRemote(n,r);else if(rt<l)await push(n);
+}
+function startSync(){
+  stopSync();SY.err="";setBadge("同步中…");var u=SY.user;
+  Promise.all(Object.keys(NM).map(function(n){return reconcile(n)})).then(function(){
+    if(SY.user!==u)return;refresh();
+    Object.keys(NM).forEach(function(n){SY.unsub.push(SY.api.listenDoc(u.uid,n,function(r){if(SY.user!==u||!r)return;if((+r.ts||0)>lts(n))applyRemote(n,r)}))});
+  }).catch(function(){setBadge("同步失敗，稍後會再試");SY.err="x"});
+}
+function stopSync(){SY.unsub.forEach(function(f){try{f()}catch(e){}});SY.unsub=[];Object.keys(SY.timers).forEach(function(k){clearTimeout(SY.timers[k])});SY.timers={}}
+window.syncBoxInject=function(){
+  [].forEach.call(document.querySelectorAll(".sbox"),function(e){e.remove()});
+  var c=$("setCard");if(!c||c.hidden||!SY.api)return;
+  var d=document.createElement("div");d.className="sbox";
+  d.innerHTML='<h2>雲端同步</h2><p class="small muted" style="margin:0">'+(SY.user?'已登入：'+(SY.user.email||SY.user.displayName||"")+'。查詢紀錄會自動同步到登入同一個帳號的其他裝置。':'登入後，查詢紀錄會自動同步到你的其他裝置。未登入時，資料只存在這個瀏覽器。')+'</p><div class="acts"><button class="btn pri" id="syIn" type="button"'+(SY.user?" hidden":"")+'>用 Google 登入</button><button class="btn" id="syOut" type="button"'+(SY.user?"":" hidden")+'>登出</button></div><div class="small" id="syMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  c.insertBefore(d,c.firstChild);
+  $("syIn").onclick=async function(){try{await SY.api.signIn()}catch(e){$("syMsg").textContent=(e&&e.code==="auth/popup-closed-by-user")?"":"登入失敗，請再試一次。"}};
+  $("syOut").onclick=async function(){try{await SY.api.signOut()}catch(e){}};
+};
+function initCloud(){
+  if(SY.api||!window.cloud)return;
+  SY.api=window.cloud;
+  SY.api.onAuth(function(u){SY.user=u;if(u)startSync();else{stopSync();setBadge("未登入")}syncBoxInject()});
+  document.addEventListener("visibilitychange",function(){if(document.hidden&&SY.user)Object.keys(SY.timers).forEach(function(n){push(n)})});
+  window.addEventListener("online",function(){if(SY.user)startSync()});
+}
+window.addEventListener("cloud-ready",initCloud);
+if(window.cloud)initCloud();
+})();
+</script>
+</body>
+</html>
