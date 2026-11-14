@@ -105,8 +105,8 @@ footer a{color:var(--muted)}
 .mx:active{transform:scale(.92)}
 body.mlock{overflow:hidden}
 
-input[type=number],input[type=url],input[type=search]{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font:inherit;font-size:1rem;min-height:40px;color:var(--ink)}
-input[type=number]:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+input[type=number],input[type=url],input[type=search],input[type=password]{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font:inherit;font-size:1rem;min-height:40px;color:var(--ink)}
+input[type=number]:focus,input[type=password]:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
 select,textarea{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px;font:inherit;font-size:1rem;min-height:40px;color:var(--ink)}
 textarea{min-height:68px;resize:vertical}
 select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
@@ -168,6 +168,7 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
     <span class="tools"><button class="ib" id="syncBadge" type="button" aria-label="同步狀態" hidden></button><button class="ib" id="btnBar" type="button" title="切換行程" aria-label="展開行程列" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><button class="ib" id="btnSet" type="button" title="設定" aria-label="設定"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></span>
   </div>
   <div class="card" id="tripBar" style="padding:8px"><select id="tripSel" aria-label="選擇行程"></select></div>
+  <div class="card" id="joinCard" hidden></div>
   <div class="card" id="editCard" hidden></div>
   <div class="card" id="setCard" hidden></div>
   <div class="card" id="listCard"></div>
@@ -396,43 +397,18 @@ function drawList(){
     return;
   }
   if(ERR==="NEEDJOIN"){
-    c.innerHTML='<div class="notice">你還沒加入這個行程的共用清單。<br>輸入擁有者給你的分帳密碼就可以加入。</div>'+
-      '<label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label>'+
-      '<div class="acts"><button class="btn pri" id="jGo" type="button">加入</button></div>'+
-      '<div class="small" id="jMsg" style="margin-top:8px;color:var(--warn)"></div>';
-    var go=async function(){
-      var pw=$("jPw").value,m=$("jMsg");
-      if(!pw){m.textContent="請輸入密碼。";return}
-      var btn=$("jGo");btn.disabled=true;btn.textContent="加入中…";m.textContent="";
-      try{
-        var h=await pwHash(pw,META.salt);
-        await API.join(META.sid,ME.uid,{pwHash:h,ts:Date.now()});
-        ERR="";toast("已加入");connect();
-      }catch(e){
-        btn.disabled=false;btn.textContent="加入";
-        m.textContent=(e&&e.code==="permission-denied")?"密碼不對，或這個帳本已經被刪除。":"加入失敗（"+((e&&e.code)||"error")+"）。";
-      }
-    };
-    $("jGo").onclick=go;
-    $("jPw").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
+    c.innerHTML='<div class="notice">這個行程的必買清單是和旅伴共用的。<br>輸入擁有者給你的密碼就能加入。</div><div style="text-align:center"><button class="btn pri" id="jOpen" type="button">加入共用清單</button></div>';
+    $("jOpen").onclick=function(){joinModal.declined=false;joinModal()};
+    if(!joinModal.declined&&$("joinCard").hidden)joinModal();
     return;
   }
   if(ERR){c.innerHTML='<div class="notice" style="color:var(--warn)">'+esc(ERR)+'</div>';return}
   if(!LED){c.innerHTML='<div class="ld" style="justify-content:center;padding:22px"><i class="lsp"></i>連線中…</div>';return}
-  if(ME&&PEOPLE[ME.uid]&&!PEOPLE[ME.uid].memberId&&members().length){
-    var taken={};Object.keys(PEOPLE).forEach(function(k){if(PEOPLE[k]&&PEOPLE[k].memberId)taken[PEOPLE[k].memberId]=1});
-    var free=members().filter(function(m){return !taken[m.id]});
-    if(free.length){
-      c.innerHTML='<div class="notice">你是哪一位？選好之後，你加的東西才會掛上你的名字。</div>'+
-        '<label class="f"><span>成員</span><select id="meSel">'+free.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join("")+'</select></label>'+
-        '<div class="acts"><button class="btn pri" id="meGo" type="button">就是我</button></div><div class="small" id="meMsg" style="margin-top:8px;color:var(--warn)"></div>';
-      $("meGo").onclick=async function(){
-        this.disabled=true;
-        try{await API.join(META.sid,ME.uid,{memberId:$("meSel").value,ts:Date.now()});toast("已設定")}
-        catch(e){this.disabled=false;$("meMsg").textContent=(LED&&LED.pinOn)?"這個帳本有開成員 PIN，請到分帳頁選身分。":"設定失敗（"+((e&&e.code)||"error")+"）。"}
-      };
-      return;
-    }
+  if(ME&&PEOPLE[ME.uid]&&!PEOPLE[ME.uid].memberId&&members().length&&freeMembers().length){
+    c.innerHTML='<div class="notice">還差一步：選一下你是哪一位，<br>你加的東西才會掛上你的名字。</div><div style="text-align:center"><button class="btn pri" id="mOpen" type="button">選身分</button></div>';
+    $("mOpen").onclick=function(){pickMeModal.declined=false;pickMeModal()};
+    if(!pickMeModal.declined&&$("joinCard").hidden)pickMeModal();
+    return;
   }
   var mine=ITEMS.filter(function(x){return FILTER==="all"||(FILTER==="todo"?!x.got:x.got)});
   var left=ITEMS.filter(function(x){return !x.got}).length,got=ITEMS.length-left;
@@ -469,6 +445,68 @@ async function toggleGot(id){
   var x=ITEMS.filter(function(v){return v.id===id})[0];if(!x||!API||!META)return;
   var n=Object.assign({},x,{got:!x.got});
   try{await API.saveBuy(META.sid,n)}catch(e){toast("更新失敗："+((e&&e.code)||"error"))}
+}
+
+/* ---------- 加入與身分（彈出視窗，和分帳頁一致） ---------- */
+function joinModal(){
+  var c=$("joinCard");c.hidden=false;$("editCard").hidden=true;$("setCard").hidden=true;
+  c.innerHTML='<h2>加入共用清單</h2><p class="small muted" style="margin:0">請輸入擁有者給你的密碼。這組密碼和分帳是同一組。</p>'+
+    '<label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label>'+
+    '<div class="acts"><button class="btn pri" id="jGo" type="button">加入</button><button class="btn" id="jNo" type="button">取消</button></div>'+
+    '<div class="small" id="jMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  c.dataset.kind="join";
+  $("jNo").onclick=function(){joinModal.declined=true;c.hidden=true};
+  var go=async function(){
+    var pw=$("jPw").value,m=$("jMsg");
+    if(!pw){m.textContent="請輸入密碼。";return}
+    if(!META||!META.salt||!API||!ME){m.textContent="還沒連上雲端。";return}
+    var b=$("jGo");b.disabled=true;b.textContent="加入中…";m.textContent="";
+    try{
+      await API.join(META.sid,ME.uid,{pwHash:await pwHash(pw,META.salt),ts:Date.now()});
+      if(c.dataset.kind==="join")c.hidden=true;
+      ERR="";toast("已加入");connect();
+    }catch(e){
+      b.disabled=false;b.textContent="加入";
+      m.textContent=(e&&e.code==="permission-denied")?"密碼不對，或這個帳本已經被刪除。":"加入失敗（"+((e&&e.code)||"error")+"）。";
+    }
+  };
+  $("jGo").onclick=go;
+  $("jPw").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
+  $("jPw").focus();
+}
+function freeMembers(){
+  var taken={};Object.keys(PEOPLE).forEach(function(k){if(PEOPLE[k]&&PEOPLE[k].memberId&&(!ME||k!==ME.uid))taken[PEOPLE[k].memberId]=1});
+  return members().filter(function(m){return !taken[m.id]});
+}
+function pickMeModal(){
+  var free=freeMembers();if(!free.length)return;
+  var isOwner=!!(LED&&ME&&LED.owner===ME.uid),needPin=!isOwner&&LED&&LED.pinOn===true;
+  var c=$("joinCard");c.hidden=false;$("editCard").hidden=true;$("setCard").hidden=true;
+  c.innerHTML='<h2>你是哪一位？</h2><p class="small muted" style="margin:0">選好之後，你加進清單的東西會掛上你的名字。'+(needPin?'請輸入擁有者給你的<b>個人 PIN</b>，之後換手機或清除瀏覽器資料，用同一組 PIN 就能登回自己。':'')+'</p>'+
+    '<label class="f"><span>成員</span><select id="meSel">'+free.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.name)+'</option>'}).join("")+'</select></label>'+
+    (needPin?'<label class="f"><span>個人 PIN</span><input type="text" id="mePin" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"></label>':'')+
+    '<div class="acts"><button class="btn pri" id="meGo" type="button">就是我</button><button class="btn" id="meNo" type="button">稍後再選</button></div>'+
+    '<div class="small" id="meMsg" style="margin-top:8px;color:var(--warn)"></div>';
+  c.dataset.kind="me";
+  $("meNo").onclick=function(){pickMeModal.declined=true;c.hidden=true};
+  $("meGo").onclick=async function(){
+    var mid=$("meSel").value,m=$("meMsg"),b=this;
+    var pin=needPin?($("mePin").value||"").trim():"";
+    if(needPin&&!pin){m.textContent="請輸入個人 PIN。";return}
+    b.disabled=true;m.textContent="";
+    try{
+      if(needPin){
+        if(!META.salt)throw {code:"no-salt"};
+        await API.setClaim(META.sid,ME.uid,{memberId:mid,pinHash:await pwHash(pin,META.salt)});
+      }
+      await API.join(META.sid,ME.uid,{memberId:mid,ts:Date.now()});
+      if(c.dataset.kind==="me")c.hidden=true;
+      toast("已設定");
+    }catch(e){
+      b.disabled=false;
+      m.textContent=needPin?"PIN 不對，或這個身分已經被別人選走了。":"設定失敗（"+((e&&e.code)||"error")+"）。";
+    }
+  };
 }
 
 /* ---------- 新增・編輯 ---------- */
@@ -624,7 +662,7 @@ $("btnSet").onclick=function(){
 <script>
 /* 彈出視窗：開關、遮罩、關閉鈕 */
 (function(){
-  var ids=["editCard","setCard"],bk=document.createElement("div");bk.className="mbk";document.body.appendChild(bk);
+  var ids=["joinCard","editCard","setCard"],bk=document.createElement("div");bk.className="mbk";document.body.appendChild(bk);
   var X='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   function els(){return ids.map(function(i){return document.getElementById(i)}).filter(Boolean)}
   function closeAll(){els().forEach(function(e){e.hidden=true})}
@@ -660,6 +698,7 @@ try {
   const sp = (sid) => doc(db, "splits", sid);
   const buyRef = (sid, id) => doc(db, "splits", sid, "buys", id);
   window.__cloudRes({
+    setClaim(sid, uid, data) { return setDoc(doc(db, "splits", sid, "claims", uid), data); },
     join(sid, uid, data) { return setDoc(doc(db, "splits", sid, "people", uid), data, { merge: true }); },
     setShareSplit(shareId, sid, salt) { return updateDoc(doc(db, "shares", shareId), { split: { sid, salt } }); },
     async getShareSplit(shareId) { const d = await getDoc(doc(db, "shares", shareId)); const s = d.exists() ? d.data().split : null; return s && typeof s.sid === "string" ? { sid: s.sid, salt: String(s.salt || "") } : null; },
