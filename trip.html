@@ -593,7 +593,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #splitOv,#rtOv,#buyOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden],#buyOv[hidden]{display:none}
 #splitOv .bk,#rtOv .bk,#buyOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
 #splitOv .ovload,#rtOv .ovload,#buyOv .ovload{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--ink);overflow:hidden}
-#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:fxpop .22s ease}
+#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
 #splitOv.loading iframe,#rtOv.loading iframe,#buyOv.loading iframe{position:absolute;visibility:hidden;pointer-events:none}
 .ovload .vpl{display:block;filter:drop-shadow(0 4px 7px rgba(30,42,74,.28));animation:vbob 2.4s ease-in-out infinite}
 .ovload .vpl svg{display:block;transform:rotate(90deg)}
@@ -648,8 +648,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #tripSheet.on .sh,#histSheet.on .sh{animation:tpop .2s ease}
 .fxs:not([hidden]) .fxb{animation:fxpop .2s ease}
 @keyframes fxpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-#splitOv:not([hidden]) .bk,#rtOv:not([hidden]) .bk,#buyOv:not([hidden]) .bk{animation:sfade .18s ease}
-#splitOv:not([hidden]) iframe,#rtOv:not([hidden]) iframe,#buyOv:not([hidden]) iframe{animation:fxpop .22s ease}
+#splitOv .bk,#rtOv .bk,#buyOv .bk{opacity:0;transition:opacity .2s ease}
+#splitOv.on .bk,#rtOv.on .bk,#buyOv.on .bk{opacity:1}
+#splitOv iframe,#rtOv iframe,#buyOv iframe,#splitOv .ovload,#rtOv .ovload,#buyOv .ovload{opacity:0;transform:translateY(10px) scale(.985);transition:opacity .22s ease,transform .22s cubic-bezier(.3,.8,.3,1)}
+#splitOv.on iframe,#rtOv.on iframe,#buyOv.on iframe,#splitOv.on .ovload,#rtOv.on .ovload,#buyOv.on .ovload{opacity:1;transform:none}
 /* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
 @media (max-width:699px){#splitOv,#rtOv,#buyOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe,#rtOv iframe,#buyOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 /* ===== 按鈕一律漸層（比照分帳頁）；編輯頁的匯率、分帳獨立成右下角浮動按鈕，和分享頁一致 ===== */
@@ -1677,7 +1679,11 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   /* 分帳：在原視窗彈出（內嵌 split.html），不另開網頁。編輯頁預設開共同編輯並設密碼；分享頁則加入朋友給的共同帳本 */
   var splitOv=null;
   var OVT={};
-  function ovShow(ov){if(!ov||ov.dataset.want!=="1")return;ov.hidden=false;document.documentElement.style.overflow="hidden"}
+  function ovShow(ov){
+    if(!ov||ov.dataset.want!=="1"||!ov.hidden)return;
+    ov.hidden=false;document.documentElement.style.overflow="hidden";
+    requestAnimationFrame(function(){requestAnimationFrame(function(){if(ov.dataset.want==="1")ov.classList.add("on")})});
+  }
   function ovStart(ov,key,src){
     ov.dataset.want="1";ov.classList.add("loading");
     ov.querySelector("iframe").src=src;
@@ -1687,7 +1693,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     clearTimeout(OVT[key]);ov.classList.remove("loading");ovShow(ov);
   }
   function ovHide(ov,key){
-    if(!ov)return;clearTimeout(OVT[key]);ov.dataset.want="";ov.hidden=true;
+    if(!ov)return;clearTimeout(OVT[key]);ov.dataset.want="";ov.classList.remove("on");ov.hidden=true;
     ov.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
   }
   function openSplit(qs){

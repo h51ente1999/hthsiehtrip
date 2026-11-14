@@ -1396,6 +1396,47 @@ function editExp(id){
 function drawAll(){drawLedgerSel();if(!cur())return;drawSum();drawForm();drawList()}
 
 /* ---------- 備份匯出／匯入（JSON，含截圖，未加密） ---------- */
+/* ---------- 找回雲端帳本（這台裝置上看不到，但你擁有的） ---------- */
+function recoverModal(){
+  modal('<h2>找回雲端帳本</h2><p class="muted small" style="margin:0">列出你 Google 帳號底下所有的共同帳本。清單裡如果有這台裝置看不到的，按「加回來」就會回到上面的選單，不用密碼。</p>'+
+    '<div id="rcList" class="pplist"><span class="muted small">讀取中…</span></div>'+
+    '<div class="row"><button class="btn pri" type="button" id="rcOk">完成</button></div>',
+  function(){
+    $("rcOk").onclick=closeModal;
+    (async function(){
+      var box=$("rcList");
+      var api=await getApi();
+      if(!api||!api.listMine){box.textContent="連不上雲端服務。";return}
+      var u=null;try{u=await api.ensureUser()}catch(e){}
+      if(!u||u.isAnonymous){box.textContent="這台裝置還沒登入 Google。";return}
+      var mine=[];try{mine=await api.listMine(u.uid)}catch(e){box.textContent="讀取失敗："+((e&&e.code)||"error");return}
+      if(!mine.length){box.textContent="你的帳號底下沒有共同帳本。";return}
+      box.textContent="";
+      mine.forEach(function(m){
+        var here=LEDGERS.some(function(L){return L.id===m.sid});
+        var d=document.createElement("div");d.className="pl";
+        var sp=document.createElement("span");sp.textContent=(m.name||"共同帳本")+(here?"（已在這台裝置）":"");
+        d.appendChild(sp);
+        if(!here){
+          var b=document.createElement("button");b.type="button";b.className="btn sm";b.textContent="加回來";
+          b.onclick=async function(){
+            b.disabled=true;b.textContent="加入中…";
+            try{
+              var salt=await api.getTripSplitSalt(m.sid);
+              if(!salt)throw {code:"no-salt"};
+              var meta={id:m.sid,cloud:true,sid:m.sid,salt:salt,name:m.name||"共同帳本",tripId:"",ts:Date.now()};
+              if(!LEDGERS.some(function(x){return x.id===m.sid})){LEDGERS.push(meta);await dbPut(meta)}
+              closeModal();S.id=m.sid;drawLedgerSel();openLedger(m.sid);toast("已加回「"+(m.name||"共同帳本")+"」");
+            }catch(e){b.disabled=false;b.textContent="加回來";toast("加不回來："+((e&&e.code)||"error"))}
+          };
+          d.appendChild(b);
+        }
+        box.appendChild(d);
+      });
+    })();
+  });
+}
+
 function backupModal(){
   modal('<h2>備份與還原</h2><p class="muted small" style="margin:0">換手機、換電腦或清除瀏覽器資料前，請先匯出備份。備份檔含收據截圖，<b>沒有加密</b>，請自行妥善保管。</p>'+
     '<div class="row"><button class="btn" type="button" id="mExp">匯出全部帳本</button><button class="btn" type="button" id="mImp">匯入備份檔</button></div>'+
@@ -1419,14 +1460,14 @@ async function hubModal(){
     if(L.cloud&&L.role!=="owner")fs.push(guestModal);
     else{fs.push(L.cloud?shareModal:enableModal);fs.push(settingsModal)}
   }
-  fs.push(backupModal);
+  fs.push(recoverModal);fs.push(backupModal);
   var parts=[];
   try{for(var i=0;i<fs.length;i++){COLLECT=[];await fs[i]();parts=parts.concat(COLLECT);COLLECT=null}}finally{COLLECT=null}
   if(!parts.length)return;
   modal('<div class="hubhead"><span>設定</span><button type="button" class="ib2" id="hubX" aria-label="關閉">'+ico("x",18)+'</button></div>'+parts.map(function(x){return '<section class="hubsec">'+x.html+'</section>'}).join(""),function(){
     $("hubX").onclick=closeModal;
     parts.forEach(function(x){if(x.mount)x.mount()});
-    ["shOk","enNo","gOk","mOk"].forEach(function(id){var e=$(id);if(e){var r=e.parentNode;e.remove();if(r&&!r.children.length)r.remove()}});
+    ["shOk","enNo","gOk","mOk","rcOk"].forEach(function(id){var e=$(id);if(e){var r=e.parentNode;e.remove();if(r&&!r.children.length)r.remove()}});
   },"hub");
 }
 $("btnMenu").onclick=hubModal;

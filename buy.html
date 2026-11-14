@@ -200,19 +200,21 @@ function readLedgers(){
       rq.onsuccess=function(){
         var db=rq.result;
         try{var g=db.transaction("ledgers").objectStore("ledgers").getAll();
-          g.onsuccess=function(){res((g.result||[]).filter(function(L){return L&&L.cloud&&L.sid}))};
+          g.onsuccess=function(){res((g.result||[]).filter(function(L){return L&&L.id}))};
           g.onerror=function(){res([])}}catch(e){res([])}
       };
       rq.onerror=rq.onblocked=function(){res([])};
     }catch(e){res([])}
   });
 }
-function metaFor(tid){
-  if(!tid)return null;
+function forTrip(tid){
+  if(!tid)return [];
   var t=TRIPS.filter(function(x){return x.id===tid})[0];
   var tags=[tid];if(t&&t.shareId)tags.push("s:"+t.shareId);
-  return METAS.filter(function(L){return tags.indexOf(L.tripId)>=0})[0]||null;
+  return METAS.filter(function(L){return tags.indexOf(L.tripId)>=0});
 }
+function metaFor(tid){return forTrip(tid).filter(function(L){return L.cloud&&L.sid})[0]||null}
+function localFor(tid){return forTrip(tid).filter(function(L){return !L.cloud})[0]||null}
 
 /* ---------- 自動開帳本（和分帳頁同一套） ---------- */
 function ruid(){var a=crypto.getRandomValues(new Uint8Array(9));return Array.prototype.map.call(a,function(x){return x.toString(36).padStart(2,"0")}).join("").slice(0,12)}
@@ -240,6 +242,8 @@ var MAKING=false;
 async function makeLedger(){
   if(MAKING||!TRIP)return;
   var tr=TRIPS.filter(function(x){return x.id===TRIP})[0];if(!tr)return;
+  var lo=localFor(TRIP);
+  if(lo){ERR="「"+lo.name+"」這本分帳還沒開啟共同編輯。請先到分帳頁按「共同編輯」把它搬上雲端，必買清單才能和旅伴共用。";setBadge("未同步");drawList();return}
   MAKING=true;setBadge("連線中…");drawList();
   var api=await getApi();
   if(!api){MAKING=false;ERR="連不上雲端服務。";setBadge("連不上雲端");drawList();return}
@@ -328,7 +332,7 @@ function bytesOf(imgs){var n=0;imgs.forEach(function(v){n+=v.length});return n}
 function draw(){drawBar();drawList()}
 function drawBar(){
   var sel=$("tripSel");
-  sel.innerHTML=TRIPS.map(function(t){var has=!!metaFor(t.id);return '<option value="'+esc(t.id)+'">'+esc(t.name)+(has?"":"（沒有帳本）")+'</option>'}).join("")||'<option value="">沒有行程</option>';
+  sel.innerHTML=TRIPS.map(function(t){var has=!!metaFor(t.id);return '<option value="'+esc(t.id)+'">'+esc(t.name)+(has?"":(localFor(t.id)?"（未上雲端）":"")) +'</option>'}).join("")||'<option value="">沒有行程</option>';
   sel.value=TRIP;
   $("btnBar").hidden=TRIPS.length<2;
   if(TRIPS.length<2)document.body.classList.add("tbar-closed");
