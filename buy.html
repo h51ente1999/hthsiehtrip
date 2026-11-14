@@ -128,6 +128,7 @@ body.tbar-closed #tripBar{display:none}
 .it2 .bd2{padding:9px 10px 11px}
 .it2 .t{font-size:.9rem;font-weight:700;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .it2 .p{font-size:.86rem;font-weight:800;margin-top:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.it2 .og{font-size:.7rem;color:var(--muted);line-height:1.35;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .it2 .w{font-size:.72rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .it2.got{opacity:.55}
 .it2.got .t{text-decoration:line-through}
@@ -186,7 +187,8 @@ var CUR={TWD:"NT$",JPY:"¥",KRW:"₩",USD:"US$",EUR:"€",CNY:"¥",HKD:"HK$",THB
 function money(p,c){if(!(p>0))return "";return (CUR[c]||(c?c+" ":""))+nf(p)}
 
 /* ---------- 行程與帳本 ---------- */
-var TRIPS=[],METAS=[],TRIP="",META=null,FILTER="all";
+var TRIPS=[],METAS=[],TRIP="",META=null,FILTER="all",VIEW="";
+try{VIEW=(new URLSearchParams(location.search).get("view")||"").replace(/[^A-Za-z0-9_-]/g,"").slice(0,64)}catch(e){}
 function readTrips(){
   try{var x=JSON.parse(localStorage.getItem(APP+"-idx")||"null");
     if(x&&Array.isArray(x.list))return x.list.filter(function(e){return e&&typeof e.id==="string"}).map(function(e){return {id:e.id,name:String(e.name||"（未命名行程）").slice(0,40)}})}catch(e){}
@@ -208,6 +210,7 @@ function readLedgers(){
   });
 }
 function forTrip(tid){
+  if(VIEW)return METAS.filter(function(L){return L.tripId==="s:"+VIEW});
   if(!tid)return [];
   var t=TRIPS.filter(function(x){return x.id===tid})[0];
   var tags=[tid];if(t&&t.shareId)tags.push("s:"+t.shareId);
@@ -241,6 +244,7 @@ function dbPutMeta(m){
 var MAKING=false;
 async function makeLedger(){
   if(MAKING||!TRIP)return;
+  if(VIEW){ERR="這個行程還沒有共用的必買清單。請行程的擁有者先打開一次必買清單，之後你就看得到了。";setBadge("");drawList();return}
   var tr=TRIPS.filter(function(x){return x.id===TRIP})[0];if(!tr)return;
   var lo=localFor(TRIP);
   if(lo){ERR="「"+lo.name+"」這本分帳還沒開啟共同編輯。請先到分帳頁按「共同編輯」把它搬上雲端，必買清單才能和旅伴共用。";setBadge("未同步");drawList();return}
@@ -291,7 +295,7 @@ function clean(o,id){
   var imgs=[];(Array.isArray(o.imgs)?o.imgs:[]).slice(0,MAXIMG).forEach(function(v){if(typeof v==="string"&&/^data:image\//.test(v)&&v.length<900000)imgs.push(v)});
   return {id:id,title:String(o.title||"").slice(0,80),url:String(o.url||"").slice(0,600),site:String(o.site||"").slice(0,40),
     price:Number(o.price)>0?Number(o.price):0,ccy:String(o.ccy||"").slice(0,5).toUpperCase(),qty:Math.min(99,Math.max(1,Math.round(Number(o.qty)||1))),
-    note:String(o.note||"").slice(0,200),shop:String(o.shop||"").slice(0,40),got:o.got===true,imgs:imgs,
+    note:String(o.note||"").slice(0,200),shop:String(o.shop||"").slice(0,40),orig:String(o.orig||"").slice(0,120),got:o.got===true,imgs:imgs,
     by:String(o.by||"").slice(0,64),ts:Number(o.ts)||0};
 }
 async function connect(){
@@ -307,6 +311,22 @@ async function connect(){
   UNSUB.push(api.listenLedger(META.sid,function(d){if(my!==RUN)return;LED=d;if(!d){ERR="這個帳本已不存在。";setBadge("連不上雲端")}else{ERR="";setBadge("已同步")}draw()},function(){if(my!==RUN)return;ERR="沒有權限讀這個帳本，請先在分帳頁加入。";setBadge("連不上雲端");draw()}));
   UNSUB.push(api.listenPeople(META.sid,function(m){if(my!==RUN)return;PEOPLE=m;draw()},function(){}));
   UNSUB.push(api.listenBuys(META.sid,function(a){if(my!==RUN)return;ITEMS=a.map(function(x){return clean(x,x.id)}).sort(function(p,q){return (p.got?1:0)-(q.got?1:0)||q.ts-p.ts});ERR="";setBadge("已同步");draw()},function(e){if(my!==RUN)return;ERR=(e&&e.code==="permission-denied")?"沒有權限，請確認 Firebase 規則已加上必買清單那一段。":"同步失敗。";setBadge("同步失敗");draw()}));
+}
+
+/* ---------- 翻成繁體 ---------- */
+var SIMP=/[们这为个说对会时还后么点种东车门问题际华银产业务经济开关实现电话语书馆机计论级农队习觉爱汉认识师结给亲园圆医药养营卫]/;
+function needZh(t){
+  t=String(t||"");
+  if(!t)return false;
+  if(/[\u3040-\u30ff\uac00-\ud7af]/.test(t))return true;
+  if(/[\u4e00-\u9fff]/.test(t))return SIMP.test(t);
+  return /[A-Za-z]{3,}/.test(t);
+}
+async function toZh(t,hint){
+  var r=await fetch(HELPER+"/zh?q="+encodeURIComponent(String(t).slice(0,120))+(hint?"&hint="+encodeURIComponent(String(hint).slice(0,60)):""));
+  var j=await r.json();
+  if(!r.ok||!j.zh)throw new Error((j&&j.error)||"fail");
+  return j.zh;
 }
 
 /* ---------- 圖片 ---------- */
@@ -331,6 +351,7 @@ function bytesOf(imgs){var n=0;imgs.forEach(function(v){n+=v.length});return n}
 /* ---------- 清單 ---------- */
 function draw(){drawBar();drawList()}
 function drawBar(){
+  if(VIEW){$("tripBar").hidden=true;$("btnBar").hidden=true;document.body.classList.add("tbar-closed");return}
   var sel=$("tripSel");
   sel.innerHTML=TRIPS.map(function(t){var has=!!metaFor(t.id);return '<option value="'+esc(t.id)+'">'+esc(t.name)+(has?"":(localFor(t.id)?"（未上雲端）":"")) +'</option>'}).join("")||'<option value="">沒有行程</option>';
   sel.value=TRIP;
@@ -340,7 +361,7 @@ function drawBar(){
 }
 function drawList(){
   var c=$("listCard");
-  if(!TRIPS.length){c.innerHTML='<div class="notice">還沒有行程。<br>先到 Trip 建立行程，再回來記必買。</div>';return}
+  if(!VIEW&&!TRIPS.length){c.innerHTML='<div class="notice">還沒有行程。<br>先到 Trip 建立行程，再回來記必買。</div>';return}
   if(!META){
     if(MAKING){c.innerHTML='<div class="ld" style="justify-content:center;padding:22px"><i class="lsp"></i>正在幫這個行程開共用清單…</div>';return}
     if(ERR){
@@ -372,6 +393,7 @@ function drawList(){
         '<button class="chk" type="button" data-g="'+esc(x.id)+'" aria-label="'+(x.got?"取消已買":"標記已買")+'"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>'+
         (x.imgs.length>1?'<span class="n">'+x.imgs.length+' 張</span>':'')+'</div>'+
         '<div class="bd2"><div class="t">'+esc(x.title||"（未命名）")+(x.qty>1?' ×'+x.qty:'')+'</div>'+
+        (x.orig?'<div class="og">'+esc(x.orig)+'</div>':'')+
         (x.price>0?'<div class="p">'+esc(money(x.price,x.ccy))+'</div>':'')+
         '<div class="w">'+esc([nameOf(x.by),x.shop||x.site].filter(Boolean).join("・"))+'</div></div></div>';
     });
@@ -395,17 +417,18 @@ async function toggleGot(id){
 }
 
 /* ---------- 新增・編輯 ---------- */
-var IMGS=[],VIEW=[];
+var IMGS=[],ORIG="";
 function edit(id){
   var x=ITEMS.filter(function(v){return v.id===id})[0],nw=!x;
   x=x||{id:"",title:"",url:"",site:"",price:0,ccy:(LED&&LED.cur)||"JPY",qty:1,note:"",shop:"",got:false,imgs:[],by:ME?ME.uid:"",ts:0};
-  IMGS=x.imgs.slice();
+  IMGS=x.imgs.slice();ORIG=x.orig||"";
   var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
   var opts=Object.keys(CUR).map(function(k){return '<option value="'+k+'"'+(x.ccy===k?" selected":"")+'>'+k+'</option>'}).join("");
   c.innerHTML='<h2>'+(nw?"新增必買":"編輯")+'</h2>'+
    '<label class="f"><span>商品網址（貼上後按抓取，會自動填名稱、價格和照片）</span><input type="text" id="eU" inputmode="url" placeholder="https://…" value="'+esc(x.url)+'"></label>'+
    '<div class="acts" style="margin-top:8px"><button class="btn" id="eFetch" type="button">從網址抓取</button></div><div id="eFs"></div>'+
    '<label class="f"><span>名稱</span><input type="text" id="eT" maxlength="80" value="'+esc(x.title)+'"></label>'+
+   '<div class="acts" style="margin-top:6px"><button class="btn" id="eZh" type="button">翻成繁體中文</button></div><div id="eZs" class="small muted" style="margin-top:6px">'+(x.orig?'原文：'+esc(x.orig):'')+'</div>'+
    '<div class="row3"><label class="f"><span>價格</span><input type="number" id="eP" inputmode="decimal" min="0" step="any" value="'+(x.price||"")+'"></label><label class="f"><span>幣別</span><select id="eC">'+opts+'</select></label></div>'+
    '<div class="row2"><label class="f"><span>數量</span><input type="number" id="eQ" inputmode="numeric" min="1" max="99" value="'+x.qty+'"></label><label class="f"><span>在哪買</span><input type="text" id="eS" maxlength="40" placeholder="店名或地點" value="'+esc(x.shop||x.site)+'"></label></div>'+
    '<label class="f"><span>備註</span><textarea id="eN" maxlength="200">'+esc(x.note)+'</textarea></label>'+
@@ -426,12 +449,21 @@ function edit(id){
     }
   };
   $("eFetch").onclick=function(){fetchInfo()};
+  $("eZh").onclick=async function(){
+    var t=$("eT").value.trim(),z=$("eZs");
+    if(!t){z.textContent="請先填名稱。";return}
+    z.innerHTML='<div class="ld"><i class="lsp"></i>翻譯中…</div>';
+    try{var zh=await toZh(t,$("eS").value.trim());
+      if(zh===t){z.textContent="看起來已經是繁體中文了。";return}
+      ORIG=t;$("eT").value=zh;z.textContent="原文："+ORIG;
+    }catch(e){z.textContent="翻譯失敗，等一下再試，或自己改。"}
+  };
   $("eSave").onclick=async function(){
     var t=$("eT").value.trim();
     if(!t){$("eMsg").textContent="請填名稱。";return}
     if(!API||!META){$("eMsg").textContent="還沒連上雲端。";return}
     var o=clean({title:t,url:$("eU").value.trim(),site:x.site,price:$("eP").value,ccy:$("eC").value,qty:$("eQ").value,
-      note:$("eN").value.trim(),shop:$("eS").value.trim(),got:$("eG").checked,imgs:IMGS,
+      note:$("eN").value.trim(),shop:$("eS").value.trim(),got:$("eG").checked,imgs:IMGS,orig:ORIG,
       by:x.by||(ME&&ME.uid)||"",ts:x.ts||Date.now()},x.id||("b"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)));
     this.disabled=true;$("eMsg").textContent="";
     try{await API.saveBuy(META.sid,o);c.hidden=true;toast(nw?"已新增":"已儲存")}
@@ -458,8 +490,15 @@ async function fetchInfo(){
   try{var r=await fetch(HELPER+"/shop?u="+encodeURIComponent(u));j=await r.json();if(!r.ok)throw 0}
   catch(e){s.innerHTML='<div class="small" style="color:var(--warn)">抓不到這一頁，可能是需要登入或擋了機器人。手動填就好。</div>';return}
   var hit=[];
-  if(j.title&&!$("eT").value.trim()){$("eT").value=j.title;hit.push("名稱")}
-  else if(j.title){$("eT").value=j.title;hit.push("名稱")}
+  if(j.title){
+    $("eT").value=j.title;hit.push("名稱");
+    if(needZh(j.title)){
+      s.innerHTML='<div class="ld"><i class="lsp"></i>翻成繁體中文…</div>';
+      try{var zh=await toZh(j.title,j.site);
+        if(zh&&zh!==j.title){ORIG=j.title;$("eT").value=zh;hit.push("翻譯");var z0=$("eZs");if(z0)z0.textContent="原文："+ORIG}
+      }catch(e){}
+    }
+  }
   if(j.price&&Number(j.price)>0){$("eP").value=Number(j.price);hit.push("價格")}
   if(j.ccy&&CUR[j.ccy]){$("eC").value=j.ccy}
   if(j.site&&!$("eS").value.trim()){$("eS").value=j.site}
@@ -516,10 +555,10 @@ $("btnSet").onclick=function(){
   }
   document.body.classList.add("tbar-closed");
   $("btnBar").onclick=function(){var cl=document.body.classList.toggle("tbar-closed");this.setAttribute("aria-expanded",String(!cl));this.setAttribute("aria-label",cl?"展開行程列":"收合行程列")};
-  TRIPS=readTrips();
+  TRIPS=VIEW?[]:readTrips();
   var q="";try{q=new URLSearchParams(location.search).get("trip")||""}catch(e){}
   var last="";try{last=localStorage.getItem("buy-v1-trip")||""}catch(e){}
-  TRIP=(q&&TRIPS.some(function(t){return t.id===q}))?q:((last&&TRIPS.some(function(t){return t.id===last}))?last:(TRIPS[0]?TRIPS[0].id:""));
+  TRIP=VIEW?("s:"+VIEW):((q&&TRIPS.some(function(t){return t.id===q}))?q:((last&&TRIPS.some(function(t){return t.id===last}))?last:(TRIPS[0]?TRIPS[0].id:"")));
   METAS=await readLedgers();
   META=metaFor(TRIP);
   draw();connect();
