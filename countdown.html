@@ -9,6 +9,7 @@
 <title>hthsieh Countdown</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%233fa4e0'/%3E%3Cstop%20offset='1'%20stop-color='%238a6fb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url(%23g)'/%3E%3Cpath%20d='M21%2015h22M21%2049h22M25%2015C25%2027,31%2030,32%2032C33%2030,39%2027,39%2015M25%2049C25%2037,31%2034,32%2032C33%2034,39%2037,39%2049'%20fill='none'%20stroke='%23fff'%20stroke-width='4.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-countdown.png">
+<meta name="apple-mobile-web-app-capable" content="no">
 <meta name="apple-mobile-web-app-title" content="Countdown">
 <script>document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
@@ -372,11 +373,11 @@ function startSync(){
 function stopSync(){SY.unsub.forEach(function(f){try{f()}catch(e){}});SY.unsub=[];Object.keys(SY.timers).forEach(function(k){clearTimeout(SY.timers[k])});SY.timers={}}
 window.syncBoxInject=function(){
   [].forEach.call(document.querySelectorAll(".sbox"),function(e){e.remove()});
-  var c=$("setCard");if(!c||c.hidden||!SY.api)return;
+  var c=$("setCard");if(!c||c.hidden)return;if(!SY.api){var w=document.createElement("div");w.className="sbox";w.innerHTML='<h2>雲端同步</h2><p class="small muted" style="margin:0">雲端同步模組沒有載入，這台裝置現在只能用本機資料。請檢查網路，或重新整理這一頁。</p>';c.insertBefore(w,c.firstChild);return}
   var d=document.createElement("div");d.className="sbox";
   d.innerHTML='<h2>雲端同步</h2><p class="small muted" style="margin:0">'+(SY.user?'已登入：'+(SY.user.email||SY.user.displayName||"")+'。倒數日會自動同步到登入同一個帳號的其他裝置。':'登入後，倒數日會自動同步到你的其他裝置。未登入時，資料只存在這個瀏覽器。')+'</p><div class="acts"><button class="btn pri" id="syIn" type="button"'+(SY.user?" hidden":"")+'>用 Google 登入</button><button class="btn" id="syOut" type="button"'+(SY.user?"":" hidden")+'>登出</button></div><div class="small" id="syMsg" style="margin-top:8px;color:var(--warn)"></div>';
   c.insertBefore(d,c.firstChild);
-  $("syIn").onclick=async function(){try{await SY.api.signIn()}catch(e){$("syMsg").textContent=(e&&e.code==="auth/popup-closed-by-user")?"":"登入失敗，請再試一次。"}};
+  $("syIn").onclick=async function(){var m=$("syMsg");m.textContent="";var sa=(window.navigator.standalone===true)||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);try{await SY.api.signIn()}catch(e){var c=(e&&e.code)||"";if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;if(sa||c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment")m.textContent="這裡開不了登入視窗。請用 Safari 開啟本頁再登入（主畫面圖示開的是獨立視窗，不能跳出登入畫面）。"+(c?"（"+c+"）":"");else if(c==="auth/unauthorized-domain")m.textContent="這個網域還沒加進 Firebase 的允許網域清單。";else if(c==="auth/network-request-failed")m.textContent="連不上網路，請檢查連線後再試一次。";else m.textContent="登入失敗，請再試一次。"+(c?"（"+c+"）":"");}};
   $("syOut").onclick=async function(){try{await SY.api.signOut()}catch(e){}};
 };
 function initCloud(){
