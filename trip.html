@@ -593,7 +593,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #splitOv,#rtOv,#buyOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden],#buyOv[hidden]{display:none}
 #splitOv .bk,#rtOv .bk,#buyOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
 #splitOv .ovload,#rtOv .ovload,#buyOv .ovload{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--ink);overflow:hidden}
-#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:fxpop .24s ease .28s both}
 #splitOv.loading iframe,#rtOv.loading iframe,#buyOv.loading iframe{position:absolute;opacity:0;pointer-events:none}
 .ovload .vpl{display:block;filter:drop-shadow(0 4px 7px rgba(30,42,74,.28));animation:vbob 2.4s ease-in-out infinite}
 .ovload .vpl svg{display:block;transform:rotate(90deg)}
