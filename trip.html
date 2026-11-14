@@ -593,8 +593,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #splitOv,#rtOv,#buyOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden],#buyOv[hidden]{display:none}
 #splitOv .bk,#rtOv .bk,#buyOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
 #splitOv .ovload,#rtOv .ovload,#buyOv .ovload{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--ink);overflow:hidden}
-#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:fxpop .24s ease .28s both}
-#splitOv.loading iframe,#rtOv.loading iframe,#buyOv.loading iframe{position:absolute;opacity:0;pointer-events:none}
+#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:fxpop .22s ease}
+#splitOv.loading iframe,#rtOv.loading iframe,#buyOv.loading iframe{position:absolute;visibility:hidden;pointer-events:none}
 .ovload .vpl{display:block;filter:drop-shadow(0 4px 7px rgba(30,42,74,.28));animation:vbob 2.4s ease-in-out infinite}
 .ovload .vpl svg{display:block;transform:rotate(90deg)}
 .ovload p{margin:0;font-size:.92rem;letter-spacing:.12em;opacity:.7}
@@ -1676,30 +1676,40 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   /* 分帳：在原視窗彈出（內嵌 split.html），不另開網頁。編輯頁預設開共同編輯並設密碼；分享頁則加入朋友給的共同帳本 */
   var splitOv=null;
+  var OVT={};
+  function ovShow(ov){if(!ov||ov.dataset.want!=="1")return;ov.hidden=false;document.documentElement.style.overflow="hidden"}
+  function ovStart(ov,key,src){
+    ov.dataset.want="1";ov.classList.add("loading");
+    ov.querySelector("iframe").src=src;
+    clearTimeout(OVT[key]);OVT[key]=setTimeout(function(){ovShow(ov)},300);
+  }
+  function ovLoaded(ov,key){
+    clearTimeout(OVT[key]);ov.classList.remove("loading");ovShow(ov);
+  }
+  function ovHide(ov,key){
+    if(!ov)return;clearTimeout(OVT[key]);ov.dataset.want="";ov.hidden=true;
+    ov.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
+  }
   function openSplit(qs){
     if(!splitOv){
       splitOv=document.createElement("div");splitOv.id="splitOv";splitOv.hidden=true;
       splitOv.innerHTML='<div class="bk"></div><div class="ovload"><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="ovpg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#ovpg1)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span><i class="oc oc1"></i><i class="oc oc2"></i><i class="oc oc3"></i><p>開啟中</p></div><iframe title="分帳" allow=""></iframe>';
-      splitOv.querySelector("iframe").addEventListener("load",function(){splitOv.classList.remove("loading")});
+      splitOv.querySelector("iframe").addEventListener("load",function(){ovLoaded(splitOv,"s")});
       document.body.appendChild(splitOv);
       splitOv.querySelector(".bk").addEventListener("click",closeSplit);
       window.addEventListener("message",function(e){if(e.data&&e.data.splitClose&&splitOv&&e.source===splitOv.querySelector("iframe").contentWindow)closeSplit()});
     }
-    splitOv.classList.add("loading");
-    splitOv.querySelector("iframe").src="split.html?embed=1&v="+Date.now()+"&"+qs;
-    splitOv.hidden=false;document.documentElement.style.overflow="hidden";
+    ovStart(splitOv,"s","split.html?embed=1&v="+Date.now()+"&"+qs);
   }
-  function closeSplit(){
-    if(!splitOv)return;splitOv.hidden=true;splitOv.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
-  }
+  function closeSplit(){ovHide(splitOv,"s")}
   var buyOv=null;
-  function closeBuy(){if(buyOv){buyOv.hidden=true;document.documentElement.style.overflow=""}}
+  function closeBuy(){ovHide(buyOv,"b")}
   function openBuy(){
     if(!buyOv){
       buyOv=document.createElement("div");buyOv.id="buyOv";buyOv.hidden=true;
       buyOv.innerHTML='<div class="bk"></div><div class="ovload"><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="ovpg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#ovpg3)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span><i class="oc oc1"></i><i class="oc oc2"></i><i class="oc oc3"></i><p>開啟中</p></div><iframe title="必買清單" allow=""></iframe>';
       document.body.appendChild(buyOv);
-      buyOv.querySelector("iframe").addEventListener("load",function(){buyOv.classList.remove("loading")});
+      buyOv.querySelector("iframe").addEventListener("load",function(){ovLoaded(buyOv,"b")});
       buyOv.querySelector(".bk").addEventListener("click",closeBuy);
       window.addEventListener("message",function(e){
         if(!buyOv||!e.data)return;
@@ -1710,26 +1720,22 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       });
       document.addEventListener("keydown",function(e){if(e.key==="Escape"&&buyOv&&!buyOv.hidden)closeBuy()});
     }
-    buyOv.classList.add("loading");
-    buyOv.querySelector("iframe").src="buy.html?embed=1&trip="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now();
-    buyOv.hidden=false;document.documentElement.style.overflow="hidden";
+    ovStart(buyOv,"b","buy.html?embed=1&trip="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now());
   }
   (function(){var q=$("buyBtn");if(q)q.onclick=function(){if(viewerMode)return;openBuy()}})();
   var rtOv=null;
-  function closeRt(){if(rtOv){rtOv.hidden=true;document.documentElement.style.overflow=""}}
+  function closeRt(){ovHide(rtOv,"r")}
   function openRt(){
     if(!rtOv){
       rtOv=document.createElement("div");rtOv.id="rtOv";rtOv.hidden=true;
       rtOv.innerHTML='<div class="bk"></div><div class="ovload"><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="ovpg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#ovpg2)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span><i class="oc oc1"></i><i class="oc oc2"></i><i class="oc oc3"></i><p>開啟中</p></div><iframe title="交通查詢紀錄" allow=""></iframe>';
-      rtOv.querySelector("iframe").addEventListener("load",function(){rtOv.classList.remove("loading")});
+      rtOv.querySelector("iframe").addEventListener("load",function(){ovLoaded(rtOv,"r")});
       document.body.appendChild(rtOv);
       rtOv.querySelector(".bk").addEventListener("click",closeRt);
       window.addEventListener("message",function(e){if(e.data&&e.data.rtClose&&rtOv&&e.source===rtOv.querySelector("iframe").contentWindow)closeRt()});
       document.addEventListener("keydown",function(e){if(e.key==="Escape"&&rtOv&&!rtOv.hidden)closeRt()});
     }
-    rtOv.classList.add("loading");
-    rtOv.querySelector("iframe").src="routes.html?embed=1&tid="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now();
-    rtOv.hidden=false;document.documentElement.style.overflow="hidden";
+    ovStart(rtOv,"r","routes.html?embed=1&tid="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now());
   }
   document.addEventListener("click",function(ev){
     var el=ev.target.closest&&ev.target.closest("[data-rt]");if(!el)return;

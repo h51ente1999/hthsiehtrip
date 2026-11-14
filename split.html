@@ -7,6 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex,nofollow">
 <title>hthsieh Split</title>
+<script>document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
 <script>window.__cloudP=new Promise(function(r){window.__cloudRes=r});</script>
@@ -160,6 +161,9 @@ footer a{color:var(--muted)}
 #cloudMsg .sc3::before{width:26px;height:26px;top:-13px;left:10px}
 @keyframes spdrift{to{transform:translateX(calc(-100vw - 140px))}}
 @media (prefers-reduced-motion:reduce){#cloudMsg .spl,#cloudMsg .sc{animation:none}}
+
+html.pre body{visibility:hidden}
+html.pre *{transition:none!important;animation:none!important}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -1489,6 +1493,7 @@ function tripFlow(trip,view){
 }
 }
 (async function(){
+  requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.className=""})});
   await dbOpen();
   LEDGERS=(await dbAll()).map(function(x){return x&&x.cloud?cleanMeta(x):cleanLedger(x)}).filter(Boolean);
   var p=new URLSearchParams(location.search),trip=p.get("trip")||"",view=(p.get("view")||"").replace(/[^A-Za-z0-9_-]/g,"").slice(0,64);
