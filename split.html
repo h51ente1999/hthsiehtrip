@@ -460,7 +460,7 @@ async function startListen(meta){
 function rebuild(){
   var C=CLED;if(!C||!C.doc)return;
   var d=C.doc,mem=(Array.isArray(d.members)?d.members:[]).filter(function(m){return m&&typeof m.id==="string"&&typeof m.name==="string"&&m.name}).map(function(m){return {id:m.id,name:m.name.slice(0,20)}});
-  if(mem.length<2){C.err="帳本資料不完整。";drawLedgerSel();return}
+  if(!mem.length){C.err="帳本資料不完整。";drawLedgerSel();return}
   setBadge("ok","已同步 "+hhmm()+"（雲端帳本，所有裝置即時更新）");
   var me=ME&&C.people[ME.uid];
   var L={id:C.meta.id,cloud:true,role:ME&&d.owner===ME.uid?"owner":"guest",name:String(d.name||"共同帳本").slice(0,40),cur:CUR[d.cur]?d.cur:"KRW",
@@ -574,12 +574,14 @@ function shareModal(){
   var link=shareLink(C.meta.id,C.meta.salt),ids=Object.keys(L.people||{});
   var h='<h2>共同編輯</h2><p class="muted small" style="margin:0">把連結傳給朋友，<b>密碼另外告訴他們</b>。朋友只能修改、刪除自己上傳的款項；結算會合併所有人的款項。</p>';
   h+='<span class="lbl">邀請連結</span><div class="linkbox"><input type="text" id="shLink" readonly><button class="btn sm" type="button" id="shCopy">'+ico("copy",14)+' 複製</button></div>';
+  if(C.meta.pw)h+='<span class="lbl">帳本密碼（系統自動產生）</span><div class="linkbox"><input type="text" id="shPwv" readonly><button class="btn sm" type="button" id="shPwc">'+ico("copy",14)+' 複製</button></div><p class="muted small" style="margin:4px 0 0">這組密碼只存在你這台裝置。想換成自己好記的，按下面的「變更密碼」。</p>';
   h+='<span class="lbl">已加入（'+ids.length+' 人）</span><div class="pplist">'+(ids.map(function(k){var p=L.people[k],self=ME&&k===ME.uid;return '<div class="pl"><span>'+esc(p.memberId?mname(L,p.memberId):"（還沒選成員）")+(self?"（你）":"")+'</span>'+(self?'':'<button type="button" class="btn sm" data-reset="'+esc(k)+'">重設身分</button>')+'</div>'}).join("")||"—")+'</div><p class="muted small" style="margin:4px 0 0">朋友選好身分後無法自行更改；按「重設身分」後，他可以重新選一次。</p>';
   h+='<span class="lbl">成員個人 PIN（只有你看得到）</span><div id="shPins" class="pplist"><span class="muted small">讀取中…</span></div><p class="muted small" style="margin:4px 0 0">朋友換手機或清除瀏覽器資料後，輸入帳本密碼加入，再選自己的角色並輸入這組 PIN，就能登回自己。</p>';
   h+='<div class="row"><button class="btn" type="button" id="shPw">變更密碼</button><button class="btn danger" type="button" id="shStop">停止共同編輯</button></div><div class="row"><button class="btn pri" type="button" id="shOk">完成</button></div>';
   modal(h,function(){
     $("shLink").value=link;$("shLink").onfocus=function(){this.select()};
     $("shCopy").onclick=function(){copyText(link,"已複製連結")};
+    if($("shPwv")){$("shPwv").value=C.meta.pw;$("shPwv").onfocus=function(){this.select()};$("shPwc").onclick=function(){copyText(C.meta.pw,"已複製密碼")}}
     document.querySelectorAll("[data-reset]").forEach(function(b){b.onclick=function(){var k=this.dataset.reset;API.updatePerson(L.id,k,{memberId:""}).then(function(){toast("已重設，對方可以重新選身分")},function(){toast("重設失敗：請確認 Firestore 規則已更新")})}});
     drawPins();
     function drawPins(){
@@ -635,7 +637,7 @@ function pwModal(){
       try{
         var salt=b64u(crypto.getRandomValues(new Uint8Array(16))),hash=await pwHash(pw,salt);
         await API.updateLedger(C.meta.id,{pwHash:hash,pwSalt:salt});
-        C.meta.salt=salt;dbPut(C.meta);toast("密碼已變更");hubModal();
+        C.meta.salt=salt;C.meta.pw=pw.slice(0,24);dbPut(C.meta);toast("密碼已變更");hubModal();
       }catch(e){$("pwErr2").textContent="變更失敗（"+(e&&e.code||"網路或權限")+"）。"}
     };
     $("pwN").focus();
@@ -674,6 +676,49 @@ function joinModal(sid,salt,tag){
     $("jGo").onclick=go;$("jPw").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
     $("jPw").focus();
   });
+}
+
+/* ---------- 自動幫行程開一本雲端帳本 ---------- */
+function autoPw(){
+  var A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",a=crypto.getRandomValues(new Uint8Array(8)),t="";
+  for(var i=0;i<8;i++)t+=A[a[i]%A.length];
+  return t;
+}
+function myDisplayName(u){
+  var n=String((u&&u.displayName)||"").trim();
+  if(!n){var e=String((u&&u.email)||"");n=e.split("@")[0]}
+  n=n.split(/\s+/)[0]||"";
+  return n.slice(0,20)||"我";
+}
+async function autoLedger(trip){
+  var trips=readTrips(),tr=trips.filter(function(x){return x.id===trip})[0];
+  if(!tr){newLedgerModal(trip);return}
+  var api=await getApi();
+  if(!api){toast("連不上雲端服務，先手動建立帳本。");newLedgerModal(trip);return}
+  var u=null;try{u=await api.getUser()}catch(e){}
+  if(!u||u.isAnonymous){
+    modal('<h2>要先登入</h2><p class="muted small" style="margin:0">分帳和必買清單會存在雲端，請先到旅遊網用 Google 登入（同一個網域共用登入狀態），再回到這裡，帳本就會自動開好。</p><div class="row"><button class="btn pri" type="button" id="alOk">知道了</button></div>',function(){
+      $("alOk").onclick=function(){closeModal();if(document.body.classList.contains("embed")){try{parent.postMessage({splitClose:1},"*")}catch(e){}}};
+    });
+    return;
+  }
+  if(LEDGERS.some(function(L){return sameTrip(L,trip)}))return;
+  var busy=true;setBadge("sync","正在幫這個行程開帳本…");
+  try{
+    var pw=autoPw(),salt=b64u(crypto.getRandomValues(new Uint8Array(16))),hash=await pwHash(pw,salt),sid=b64u(crypto.getRandomValues(new Uint8Array(16)));
+    var me={id:uid(),name:myDisplayName(u)};
+    await api.createLedger(sid,{owner:u.uid,name:tr.name,cur:tripCur(trip),rate:null,members:[me],pwHash:hash,pwSalt:salt,ts:Date.now(),v:1},
+      {uid:u.uid,data:{memberId:me.id,pwHash:hash,ts:Date.now()}},[]);
+    var meta={id:sid,cloud:true,sid:sid,salt:salt,name:tr.name,tripId:trip,pw:pw,ts:Date.now()};
+    LEDGERS.push(meta);dbPut(meta);openLedger(sid);
+    toast("已自動幫「"+tr.name+"」開好帳本");
+  }catch(e){
+    setBadge("bad","開帳本失敗");
+    modal('<h2>開帳本失敗</h2><p class="muted small" style="margin:0">'+esc((e&&e.code)||"網路或權限問題")+'。可以改成手動建立。</p><div class="row"><button class="btn" type="button" id="alNo">關閉</button><button class="btn pri" type="button" id="alGo">手動建立</button></div>',function(){
+      $("alNo").onclick=closeModal;$("alGo").onclick=function(){closeModal();newLedgerModal(trip)};
+    });
+  }
+  busy=false;
 }
 
 /* ---------- 新增帳本 ---------- */
@@ -1388,7 +1433,7 @@ if(document.documentElement.getAttribute("data-embed")==="1"){
 }
 function cleanMeta(x){
   if(typeof x.id!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.id)||typeof x.salt!=="string"||!/^[A-Za-z0-9_-]{8,64}$/.test(x.salt))return null;
-  return {id:x.id,cloud:true,sid:x.id,salt:x.salt,name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"共同帳本",tripId:typeof x.tripId==="string"?x.tripId:"",ts:Number(x.ts)||0};
+  return {id:x.id,cloud:true,sid:x.id,salt:x.salt,name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"共同帳本",tripId:typeof x.tripId==="string"?x.tripId:"",pw:typeof x.pw==="string"?x.pw.slice(0,24):"",ts:Number(x.ts)||0};
 }
 function cleanLedger(x){
   if(!x||typeof x!=="object"||typeof x.id!=="string"||!Array.isArray(x.members)||!Array.isArray(x.expenses))return null;
@@ -1439,7 +1484,7 @@ function tripFlow(trip,view){
       if(have){bindTrip(have,trip);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
     }else joinLinkModal(trip);
   })()}
-  else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return sameTrip(L,trip)}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else newLedgerModal(trip)})}
+  else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return sameTrip(L,trip)}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else autoLedger(trip)})}
   else toast("找不到這個行程，請手動建立帳本。");
 }
 }

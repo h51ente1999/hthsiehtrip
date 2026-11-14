@@ -590,11 +590,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .brandblk .tools{margin-left:auto;display:flex;gap:6px;flex:none}
 .brandblk .tools button{background:color-mix(in srgb,var(--on-blue,#fff) 22%,transparent)!important;border:0!important;width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;display:inline-grid!important;place-items:center;color:var(--on-blue,#fff)!important;padding:0!important;font-size:1.05rem;line-height:1;cursor:pointer}
 .brandblk .tools button[hidden]{display:none!important}body.viewer #splitBtn{display:none!important}
-#splitOv,#rtOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden]{display:none}
-#splitOv .bk,#rtOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
-#splitOv .ovload,#rtOv .ovload{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--ink);overflow:hidden}
-#splitOv.loading .ovload,#rtOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
-#splitOv.loading iframe,#rtOv.loading iframe{position:absolute;opacity:0;pointer-events:none}
+#splitOv,#rtOv,#buyOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden],#rtOv[hidden],#buyOv[hidden]{display:none}
+#splitOv .bk,#rtOv .bk,#buyOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
+#splitOv .ovload,#rtOv .ovload,#buyOv .ovload{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--ink);overflow:hidden}
+#splitOv.loading .ovload,#rtOv.loading .ovload,#buyOv.loading .ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#splitOv.loading iframe,#rtOv.loading iframe,#buyOv.loading iframe{position:absolute;opacity:0;pointer-events:none}
 .ovload .vpl{display:block;filter:drop-shadow(0 4px 7px rgba(30,42,74,.28));animation:vbob 2.4s ease-in-out infinite}
 .ovload .vpl svg{display:block;transform:rotate(90deg)}
 .ovload p{margin:0;font-size:.92rem;letter-spacing:.12em;opacity:.7}
@@ -607,8 +607,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .ovload .oc3{width:58px;height:15px;top:56%;left:100%;animation-duration:5.6s;animation-delay:2s;opacity:.4}
 .ovload .oc3::before{width:26px;height:26px;top:-13px;left:10px}
 @keyframes vdrift2{to{transform:translateX(calc(-100vw - 140px))}}
-#splitOv iframe,#rtOv iframe,#splitOv .ovload,#rtOv .ovload{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-@media (min-width:700px){#splitOv,#rtOv{align-items:center}#splitOv iframe,#rtOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
+#splitOv iframe,#rtOv iframe,#buyOv iframe,#splitOv .ovload,#rtOv .ovload,#buyOv .ovload{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+@media (min-width:700px){#splitOv,#rtOv,#buyOv{align-items:center}#splitOv iframe,#rtOv iframe,#buyOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
 #vSplit{position:fixed;right:16px;bottom:298px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSplit.ok{display:grid}#vSplit:active{transform:scale(.92)}
 
 /* ===== 彈出視窗統一：比照分帳頁（置中卡片、粗標題、圓形關閉鈕、分隔線） ===== */
@@ -648,10 +648,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #tripSheet.on .sh,#histSheet.on .sh{animation:tpop .2s ease}
 .fxs:not([hidden]) .fxb{animation:fxpop .2s ease}
 @keyframes fxpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-#splitOv:not([hidden]) .bk,#rtOv:not([hidden]) .bk{animation:sfade .18s ease}
-#splitOv:not([hidden]) iframe,#rtOv:not([hidden]) iframe{animation:fxpop .22s ease}
+#splitOv:not([hidden]) .bk,#rtOv:not([hidden]) .bk,#buyOv:not([hidden]) .bk{animation:sfade .18s ease}
+#splitOv:not([hidden]) iframe,#rtOv:not([hidden]) iframe,#buyOv:not([hidden]) iframe{animation:fxpop .22s ease}
 /* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
-@media (max-width:699px){#splitOv,#rtOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe,#rtOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
+@media (max-width:699px){#splitOv,#rtOv,#buyOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe,#rtOv iframe,#buyOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 /* ===== 按鈕一律漸層（比照分帳頁）；編輯頁的匯率、分帳獨立成右下角浮動按鈕，和分享頁一致 ===== */
 button.primary,.libadd,.tripbar .ib.on,#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug,body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
 .libadd{opacity:1}
@@ -662,11 +662,13 @@ body:not(.viewer) #fxBtn[hidden]{display:none!important}
 body:not(.viewer) #splitBtn:active,body:not(.viewer) #fxBtn:active{transform:scale(.92)}
 body.viewer #splitBtn,body.viewer #fxBtn{display:none!important}
 /* ===== 編輯頁地圖：獨立成按鈕，點開彈出 ===== */
+body:not(.viewer) #buyBtn{position:fixed;right:16px;bottom:298px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}
+body.viewer #buyBtn{display:none!important}
 body:not(.viewer) #rtBtn{position:fixed;right:16px;bottom:242px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer;text-decoration:none}
 body.viewer #rtBtn{display:none!important}
 body:not(.viewer) #vDl.ok{display:grid}
-body:not(.viewer) #vDl{bottom:298px}
-body:not(.viewer) #vDlMenu{bottom:298px}
+body:not(.viewer) #vDl{bottom:354px}
+body:not(.viewer) #vDlMenu{bottom:354px}
 body:not(.viewer) #mapBtn{position:fixed;right:16px;bottom:186px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}
 body:not(.viewer) #mapBtn:active{transform:scale(.92)}
 body.viewer #mapBtn,body.viewer #mapBk{display:none!important}
@@ -678,9 +680,9 @@ body:not(.viewer) #mapPanel.pop{display:block;position:fixed;left:50%;top:50%;tr
 body:not(.viewer) #mapPanel.pop .mapbox{height:min(62vh,520px)}
 body.viewer #mapPanel .mphd .sx{display:none}
 /* 浮動按鈕大小一致 */
-#toTop,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
-#toTop svg,#rtBtn svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
-#toTop,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
+#toTop,#buyBtn,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
+#toTop svg,#buyBtn svg,#rtBtn svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
+#toTop,#buyBtn,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
 .mko span{display:block;width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 55%,var(--surface));border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35);opacity:.85}
 /* 設定、景點視窗要蓋過右下角浮動按鈕 */
 .setback{z-index:70!important}.settings{z-index:71!important}
@@ -950,8 +952,8 @@ html.lb-open body{overflow:hidden}
 /* 懸浮按鈕收合 */
 #fabTg{position:fixed;right:18px;bottom:74px;z-index:62;width:40px;height:40px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;line-height:0;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:none}
 #fabTg:active{transform:scale(.92)}#fabTg .i-up{display:none}body.fab-off #fabTg .i-dn{display:none}body.fab-off #fabTg .i-up{display:block}
-:root :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
-:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
+:root :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
+:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
 
 /* 分享頁：資料載入完成後，懸浮按鈕才一起出現 */
 :root.vmode body:not(.vready) :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg,#toTop,#exToggle,#mapBtn,#splitBtn,#fxBtn){display:none!important}
@@ -1256,6 +1258,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
+<button type="button" id="buyBtn" aria-label="必買清單" title="必買清單"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 11.2a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
 <button type="button" id="rtBtn" aria-label="交通查詢紀錄" title="交通查詢紀錄"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18c0-4.5 0-6.5 3-6.5s6 0 6-4.5"/><circle cx="7" cy="19.5" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="5.5" r="2" fill="currentColor" stroke="none"/></svg></button>
 <div id="mapBk" hidden></div><button type="button" id="mapBtn" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
 <section class="panel" id="mapPanel"><div class="mphd"><h2>地圖</h2><button type="button" class="sx" id="mapPX" aria-label="關閉地圖"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
@@ -1689,6 +1692,29 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   function closeSplit(){
     if(!splitOv)return;splitOv.hidden=true;splitOv.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
   }
+  var buyOv=null;
+  function closeBuy(){if(buyOv){buyOv.hidden=true;document.documentElement.style.overflow=""}}
+  function openBuy(){
+    if(!buyOv){
+      buyOv=document.createElement("div");buyOv.id="buyOv";buyOv.hidden=true;
+      buyOv.innerHTML='<div class="bk"></div><div class="ovload"><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="ovpg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#ovpg3)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span><i class="oc oc1"></i><i class="oc oc2"></i><i class="oc oc3"></i><p>開啟中</p></div><iframe title="必買清單" allow=""></iframe>';
+      document.body.appendChild(buyOv);
+      buyOv.querySelector("iframe").addEventListener("load",function(){buyOv.classList.remove("loading")});
+      buyOv.querySelector(".bk").addEventListener("click",closeBuy);
+      window.addEventListener("message",function(e){
+        if(!buyOv||!e.data)return;
+        var w=buyOv.querySelector("iframe").contentWindow;
+        if(e.source!==w)return;
+        if(e.data.buyClose)closeBuy();
+        if(e.data.buyOpenSplit){closeBuy();openSplit(String(e.data.qs||""))}
+      });
+      document.addEventListener("keydown",function(e){if(e.key==="Escape"&&buyOv&&!buyOv.hidden)closeBuy()});
+    }
+    buyOv.classList.add("loading");
+    buyOv.querySelector("iframe").src="buy.html?embed=1&trip="+encodeURIComponent((IDX&&IDX.cur)||"")+"&v="+Date.now();
+    buyOv.hidden=false;document.documentElement.style.overflow="hidden";
+  }
+  (function(){var q=$("buyBtn");if(q)q.onclick=function(){if(viewerMode)return;openBuy()}})();
   var rtOv=null;
   function closeRt(){if(rtOv){rtOv.hidden=true;document.documentElement.style.overflow=""}}
   function openRt(){
