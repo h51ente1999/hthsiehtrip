@@ -191,7 +191,7 @@ var TRIPS=[],METAS=[],TRIP="",META=null,FILTER="all",VIEW="";
 try{VIEW=(new URLSearchParams(location.search).get("view")||"").replace(/[^A-Za-z0-9_-]/g,"").slice(0,64)}catch(e){}
 function readTrips(){
   try{var x=JSON.parse(localStorage.getItem(APP+"-idx")||"null");
-    if(x&&Array.isArray(x.list))return x.list.filter(function(e){return e&&typeof e.id==="string"}).map(function(e){return {id:e.id,name:String(e.name||"（未命名行程）").slice(0,40)}})}catch(e){}
+    if(x&&Array.isArray(x.list))return x.list.filter(function(e){return e&&typeof e.id==="string"}).map(function(e){return {id:e.id,name:String(e.name||"（未命名行程）").slice(0,40),shareId:typeof e.shareId==="string"?e.shareId:""}})}catch(e){}
   return [];
 }
 function readLedgers(){
@@ -244,7 +244,16 @@ function dbPutMeta(m){
 var MAKING=false;
 async function makeLedger(){
   if(MAKING||!TRIP)return;
-  if(VIEW){ERR="這個行程還沒有共用的必買清單。請行程的擁有者先打開一次必買清單，之後你就看得到了。";setBadge("");drawList();return}
+  if(VIEW){
+    MAKING=true;setBadge("連線中…");drawList();
+    var api0=await getApi();
+    if(!api0||!api0.getShareSplit){MAKING=false;ERR="連不上雲端服務。";setBadge("連不上雲端");drawList();return}
+    var sp=null;try{sp=await api0.getShareSplit(VIEW)}catch(e){}
+    MAKING=false;
+    if(!sp||!sp.sid){ERR="這個行程還沒有共用的必買清單。請行程的擁有者先打開一次必買清單，之後你就看得到了。";setBadge("");drawList();return}
+    META={id:sp.sid,cloud:true,sid:sp.sid,salt:sp.salt||"",name:"共用清單",tripId:"s:"+VIEW,ts:Date.now()};
+    METAS.push(META);ERR="";connect();return;
+  }
   var tr=TRIPS.filter(function(x){return x.id===TRIP})[0];if(!tr)return;
   var lo=localFor(TRIP);
   if(lo){ERR="「"+lo.name+"」這本分帳還沒開啟共同編輯。請先到分帳頁按「共同編輯」把它搬上雲端，必買清單才能和旅伴共用。";setBadge("未同步");drawList();return}
@@ -308,9 +317,9 @@ async function connect(){
   API=api;
   try{ME=await api.ensureUser()}catch(e){if(my!==RUN)return;ERR="登入雲端失敗。";setBadge("連不上雲端");draw();return}
   if(my!==RUN)return;
-  UNSUB.push(api.listenLedger(META.sid,function(d){if(my!==RUN)return;LED=d;if(!d){ERR="這個帳本已不存在。";setBadge("連不上雲端")}else{ERR="";setBadge("已同步")}draw()},function(){if(my!==RUN)return;ERR="沒有權限讀這個帳本，請先在分帳頁加入。";setBadge("連不上雲端");draw()}));
+  UNSUB.push(api.listenLedger(META.sid,function(d){if(my!==RUN)return;LED=d;pubLink();if(!d){ERR="這個帳本已不存在。";setBadge("連不上雲端")}else{ERR="";setBadge("已同步")}draw()},function(){if(my!==RUN)return;ERR="沒有權限讀這個帳本，請先在分帳頁加入。";setBadge("連不上雲端");draw()}));
   UNSUB.push(api.listenPeople(META.sid,function(m){if(my!==RUN)return;PEOPLE=m;draw()},function(){}));
-  UNSUB.push(api.listenBuys(META.sid,function(a){if(my!==RUN)return;ITEMS=a.map(function(x){return clean(x,x.id)}).sort(function(p,q){return (p.got?1:0)-(q.got?1:0)||q.ts-p.ts});ERR="";setBadge("已同步");draw()},function(e){if(my!==RUN)return;ERR=(e&&e.code==="permission-denied")?"沒有權限，請確認 Firebase 規則已加上必買清單那一段。":"同步失敗。";setBadge("同步失敗");draw()}));
+  UNSUB.push(api.listenBuys(META.sid,function(a){if(my!==RUN)return;ITEMS=a.map(function(x){return clean(x,x.id)}).sort(function(p,q){return (p.got?1:0)-(q.got?1:0)||q.ts-p.ts});ERR="";setBadge("已同步");draw()},function(e){if(my!==RUN)return;ERR=(e&&e.code==="permission-denied")?(VIEW?"你還沒加入這個行程的分帳，所以看不到必買清單。請先從分帳用邀請連結和密碼加入。":"沒有權限，請確認 Firebase 規則已加上必買清單那一段。"):"同步失敗。";setBadge("同步失敗");draw()}));
 }
 
 /* ---------- 翻成繁體 ---------- */
@@ -327,6 +336,15 @@ async function toZh(t,hint){
   var j=await r.json();
   if(!r.ok||!j.zh)throw new Error((j&&j.error)||"fail");
   return j.zh;
+}
+
+function pubLink(){
+  if(VIEW||pubLink.done||!LED||!ME||!API||!API.setShareSplit)return;
+  if(LED.owner!==ME.uid||!META||!META.salt)return;
+  var t=TRIPS.filter(function(x){return x.id===TRIP})[0];
+  if(!t||!t.shareId)return;
+  pubLink.done=true;
+  API.setShareSplit(t.shareId,META.sid,META.salt).catch(function(){pubLink.done=false});
 }
 
 /* ---------- 圖片 ---------- */
@@ -588,7 +606,7 @@ $("btnSet").onclick=function(){
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-import { initializeFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { initializeFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDOyFkCSTcjRmeodaS-O3w-WKkWfsaJ3ls",
   authDomain: "hthsieh-7b870.firebaseapp.com",
@@ -605,6 +623,8 @@ try {
   const sp = (sid) => doc(db, "splits", sid);
   const buyRef = (sid, id) => doc(db, "splits", sid, "buys", id);
   window.__cloudRes({
+    setShareSplit(shareId, sid, salt) { return updateDoc(doc(db, "shares", shareId), { split: { sid, salt } }); },
+    async getShareSplit(shareId) { const d = await getDoc(doc(db, "shares", shareId)); const s = d.exists() ? d.data().split : null; return s && typeof s.sid === "string" ? { sid: s.sid, salt: String(s.salt || "") } : null; },
     async getUser() { await ready; const u = auth.currentUser; return u ? { uid: u.uid, isAnonymous: u.isAnonymous, displayName: u.displayName || "", email: u.email || "" } : null; },
     async createLedger(sid, led, person) {
       await setDoc(doc(db, "splits", sid), led);
