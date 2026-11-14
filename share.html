@@ -588,10 +588,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .brandblk .tools{margin-left:auto;display:flex;gap:6px;flex:none}
 .brandblk .tools button{background:color-mix(in srgb,var(--on-blue,#fff) 22%,transparent)!important;border:0!important;width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;display:inline-grid!important;place-items:center;color:var(--on-blue,#fff)!important;padding:0!important;font-size:1.05rem;line-height:1;cursor:pointer}
 .brandblk .tools button[hidden]{display:none!important}body.viewer #splitBtn{display:none!important}
-#splitOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}#splitOv[hidden]{display:none}
-#splitOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
-#splitOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-@media (min-width:700px){#splitOv{align-items:center}#splitOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
+#splitOv,#buyOv{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}
+#splitOv[hidden],#buyOv[hidden]{display:none}
+#splitOv .bk,#buyOv .bk,#splitOv iframe,#buyOv iframe{opacity:0;transition:opacity .2s ease,transform .22s cubic-bezier(.3,.8,.3,1)}
+#splitOv iframe,#buyOv iframe{transform:translateY(10px) scale(.985)}
+#splitOv.on .bk,#buyOv.on .bk,#splitOv.on iframe,#buyOv.on iframe{opacity:1;transform:none}#splitOv[hidden],#buyOv[hidden]{display:none}
+#splitOv .bk,#buyOv .bk{position:absolute;inset:0;background:rgba(20,30,50,.5);backdrop-filter:blur(2px)}
+#splitOv iframe,#buyOv iframe{position:relative;border:0;width:100%;height:calc(100% - 36px);height:calc(100dvh - 36px);background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+@media (min-width:700px){#splitOv,#buyOv{align-items:center}#splitOv iframe,#buyOv iframe{border-radius:18px;width:min(780px,calc(100vw - 32px));height:min(94vh,920px);border-radius:18px}}
+#vBuy{position:fixed;right:16px;bottom:410px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}
+body.viewer #vBuy.ok{display:grid}
 #vSplit{position:fixed;right:16px;bottom:298px;z-index:60;width:46px;height:46px;border-radius:50%;border:0;padding:0;display:none;place-items:center;background:var(--surface);color:var(--blue);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vSplit.ok{display:grid}#vSplit:active{transform:scale(.92)}
 
 /* ===== 彈出視窗統一：比照分帳頁（置中卡片、粗標題、圓形關閉鈕、分隔線） ===== */
@@ -634,9 +640,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 #splitOv:not([hidden]) .bk{animation:sfade .18s ease}
 #splitOv:not([hidden]) iframe{animation:fxpop .22s ease}
 /* 手機：分帳彈出畫面四角圓角、四周留邊，像彈出視窗而不是整頁 */
-@media (max-width:699px){#splitOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
+@media (max-width:699px){#splitOv,#buyOv{padding:0 8px calc(8px + env(safe-area-inset-bottom))}#splitOv iframe,#buyOv iframe{border-radius:20px;height:calc(100dvh - 44px);box-shadow:0 10px 40px rgba(0,0,0,.35)}}
 /* ===== 按鈕一律漸層（比照分帳頁）；編輯頁的匯率、分帳獨立成右下角浮動按鈕，和分享頁一致 ===== */
-button.primary,.libadd,.tripbar .ib.on,#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug,body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
+button.primary,.libadd,.tripbar .ib.on,#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug,body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
 .libadd{opacity:1}
 #viewer button.primary,.exrow button.primary{background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;border-color:transparent!important}
 body:not(.viewer) #splitBtn,body:not(.viewer) #fxBtn{position:fixed;right:16px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;min-width:0;display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}
@@ -656,9 +662,9 @@ body:not(.viewer) #mapPanel.pop{display:block;position:fixed;left:50%;top:50%;tr
 body:not(.viewer) #mapPanel.pop .mapbox{height:min(62vh,520px)}
 body.viewer #mapPanel .mphd .sx{display:none}
 /* 浮動按鈕大小一致 */
-#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
-#toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
-#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
+#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
+#toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vBuy svg,#vSug svg{width:20px;height:20px}
+#toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{right:18px!important}
 .mko span{display:block;width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 55%,var(--surface));border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35);opacity:.85}
 /* 設定、景點視窗要蓋過右下角浮動按鈕 */
 .setback{z-index:70!important}.settings{z-index:71!important}
@@ -938,7 +944,7 @@ html.lb-open body{overflow:hidden}
 <style id="flat-theme">
 /* ===== 簡潔主題 v2：保留漸層，移除立體感、陰影、外框 ===== */
 :root:root:root body *,:root:root:root body *::before,:root:root:root body *::after{box-shadow:none!important;text-shadow:none!important}
-:root :is(#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug,#exToggle,#splitBtn,#fxBtn,#mapBtn,#aiBtn,#libBatch,#toast,#aiUndo){box-shadow:none!important;filter:none!important}
+:root :is(#toTop,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug,#exToggle,#splitBtn,#fxBtn,#mapBtn,#aiBtn,#libBatch,#toast,#aiUndo){box-shadow:none!important;filter:none!important}
 /* 面板：白底、無邊框、無立體脊 */
 :root:root body .panel,:root:root body .topcard,:root:root body .addp,:root:root body .side,:root:root body .day{border:0!important;border-radius:14px!important}
 :root:root body .panel:not(.brandblk),:root:root body .topcard,:root:root body .addp,:root:root body .side{background:#fff!important}
@@ -974,11 +980,11 @@ html.lb-open body{overflow:hidden}
 /* 懸浮按鈕收合 */
 #fabTg{position:fixed;right:18px;bottom:74px;z-index:62;width:40px;height:40px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;line-height:0;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:none}
 #fabTg:active{transform:scale(.92)}#fabTg .i-up{display:none}body.fab-off #fabTg .i-dn{display:none}body.fab-off #fabTg .i-up{display:block}
-:root :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
-:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
+:root :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vBuy,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
+:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vBuy,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
 
 /* 分享頁：資料載入完成後，懸浮按鈕才一起出現 */
-:root.vmode body:not(.vready) :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg,#toTop,#exToggle,#mapBtn,#splitBtn,#fxBtn){display:none!important}
+:root.vmode body:not(.vready) :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#vBuy,#fabTg,#toTop,#exToggle,#mapBtn,#splitBtn,#fxBtn){display:none!important}
 @keyframes fabin{from{opacity:0}to{opacity:1}}
 body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fabin .25s ease}
 
@@ -1187,6 +1193,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="匯率計算機"><div class="fxh"><b id="fxTitle">匯率</b><span style="flex:1"></span><button type="button" id="fxX" class="sx" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="fxsel"><select id="fxCur" aria-label="幣別"></select><button type="button" id="fxDef" title="之後新增的行程預設使用這個幣別">設預設</button></div><p class="hint" id="fxInfo"></p><div class="fxd"><button type="button" class="fxrow on" id="fxRK" data-fxrow="k" aria-pressed="true"><span class="fxu" id="fxUK">韓元 ₩</span><span class="fxe" id="fxEK"></span><b class="fxv" id="fxVK">0</b></button><button type="button" class="fxrow" id="fxRT" data-fxrow="t" aria-pressed="false"><span class="fxu">台幣 NT$</span><span class="fxe" id="fxET"></span><b class="fxv" id="fxVT">0</b></button></div><div class="fxk"><button type="button" class="fk fo" data-fk="c">AC</button><button type="button" class="fk fo" data-fk="bs" aria-label="刪除" title="刪除" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M9.5 7.5v9l7-4.5z"/></svg></button><button type="button" class="fk fo" data-fk="pct">%</button><button type="button" class="fk op" data-fk="/">÷</button><button type="button" class="fk" data-fk="7">7</button><button type="button" class="fk" data-fk="8">8</button><button type="button" class="fk" data-fk="9">9</button><button type="button" class="fk op" data-fk="*">×</button><button type="button" class="fk" data-fk="4">4</button><button type="button" class="fk" data-fk="5">5</button><button type="button" class="fk" data-fk="6">6</button><button type="button" class="fk op" data-fk="-">−</button><button type="button" class="fk" data-fk="1">1</button><button type="button" class="fk" data-fk="2">2</button><button type="button" class="fk" data-fk="3">3</button><button type="button" class="fk op" data-fk="+">+</button><button type="button" class="fk" data-fk="0">0</button><button type="button" class="fk" data-fk="00">00</button><button type="button" class="fk" data-fk=".">.</button><button type="button" class="fk op" data-fk="=">=</button></div></div></div>
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
 <div id="sugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="訪客建議"><div class="hd"><h3>訪客建議</h3><button type="button" class="x" id="sugX" aria-label="關閉">✕</button></div><p class="hint">這些是看了分享頁的人推薦的景點。加入後會放進景點庫，略過會直接刪除。</p><div class="ls" id="sugL"></div></div></div>
+<button type="button" id="vBuy" aria-label="必買清單" title="必買清單"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 11.2a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
 <button type="button" id="vFx" aria-label="匯率計算機" title="匯率"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button><button type="button" id="vSplit" aria-label="分帳" title="分帳"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 19 6.5 6.2 10.6 19M3.9 14.4h5.2M13.4 19l4.1-12.8 4.1 12.8M14.9 14.4h5.2"/></svg></button>
 <button type="button" id="vMap" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></button>
 <div id="vPosSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點位置"><div class="hd"><h3 id="vPosT">位置</h3><button type="button" class="x" id="vPosX" aria-label="關閉">✕</button></div><div class="mapst" id="vPosSt"></div><div id="vPosBox" class="mapbox"></div><div style="margin-top:10px" id="vPosL"></div></div></div>
@@ -1670,14 +1677,40 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       splitOv.querySelector(".bk").addEventListener("click",closeSplit);
       window.addEventListener("message",function(e){if(e.data&&e.data.splitClose&&splitOv&&e.source===splitOv.querySelector("iframe").contentWindow)closeSplit()});
     }
+    splitOv.dataset.want="1";
+    if(!splitOv.dataset.wired){splitOv.dataset.wired="1";splitOv.querySelector("iframe").addEventListener("load",function(){clearTimeout(splitOv.__t);ovShow(splitOv)})}
     splitOv.querySelector("iframe").src="split.html?embed=1&v="+Date.now()+"&"+qs;
-    splitOv.hidden=false;document.documentElement.style.overflow="hidden";
+    clearTimeout(splitOv.__t);splitOv.__t=setTimeout(function(){ovShow(splitOv)},6000);
   }
-  function closeSplit(){
-    if(!splitOv)return;splitOv.hidden=true;splitOv.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
+  function closeSplit(){ovHide(splitOv)}
+  var buyOv=null,buyT=null;
+  function ovShow(ov){
+    if(!ov||ov.dataset.want!=="1"||!ov.hidden)return;
+    ov.hidden=false;document.documentElement.style.overflow="hidden";
+    requestAnimationFrame(function(){requestAnimationFrame(function(){if(ov.dataset.want==="1")ov.classList.add("on")})});
+  }
+  function ovHide(ov){
+    if(!ov)return;ov.dataset.want="";ov.classList.remove("on");ov.hidden=true;
+    ov.querySelector("iframe").src="about:blank";document.documentElement.style.overflow="";
+  }
+  function closeBuy(){clearTimeout(buyT);ovHide(buyOv)}
+  function openBuy(qs){
+    if(!buyOv){
+      buyOv=document.createElement("div");buyOv.id="buyOv";buyOv.hidden=true;
+      buyOv.innerHTML='<div class="bk"></div><iframe title="必買清單" allow=""></iframe>';
+      document.body.appendChild(buyOv);
+      buyOv.querySelector(".bk").addEventListener("click",closeBuy);
+      buyOv.querySelector("iframe").addEventListener("load",function(){clearTimeout(buyT);ovShow(buyOv)});
+      window.addEventListener("message",function(e){if(e.data&&e.data.buyClose&&buyOv&&e.source===buyOv.querySelector("iframe").contentWindow)closeBuy()});
+      document.addEventListener("keydown",function(e){if(e.key==="Escape"&&buyOv&&!buyOv.hidden)closeBuy()});
+    }
+    buyOv.dataset.want="1";
+    buyOv.querySelector("iframe").src="buy.html?embed=1&v="+Date.now()+"&"+qs;
+    clearTimeout(buyT);buyT=setTimeout(function(){ovShow(buyOv)},6000);
   }
   (function(){var b=$("splitBtn");if(b)b.onclick=function(){if(viewerMode||!IDX)return;openSplit("trip="+encodeURIComponent(IDX.cur)+"&autoshare=1")};
-    var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}})();
+    var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}
+    var vb=$("vBuy");if(vb&&viewerShare){vb.classList.add("ok");vb.onclick=function(){openBuy("view="+encodeURIComponent(viewerShare))}}})();
   var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
   var NTRE=/(?:\d{1,2}\s*[:：]\s*\d{2}|\d{1,2}\s*(?:點|时|時)(?:半|\d{1,2}分?)?)\s*(?:前\s*)?到(?!\s*(?:\d|上午|下午|晚上|中午|早上|凌晨|隔天))/;
   function noteMask(t){
