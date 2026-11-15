@@ -1525,15 +1525,28 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(btn)btn.disabled=true;
     if(!quiet)say("正在從 Naver 抓圖片…");
     helperFetch("/photos?n="+Math.min(6,room)+"&u="+encodeURIComponent(u)).then(function(j){
-      var list=(j&&j.imgs)||[],i=0,n=0;
+      var list=(j&&j.imgs)||[],i=0,n=0,same=0;
       if(!list.length)return fin(0,"Naver 這一頁沒有抓到圖片。");
-      (function next(){
-        if(i>=list.length||spImgs(sp).length>=SPIMGMAX){
-          if(n){save();render()}
-          return fin(n,n?("已從 Naver 加入 "+n+" 張圖片。"):"抓到的圖片都讀不進來，請改用上傳。");
-        }
-        helperImg(list[i++]).then(function(bl){shrink(bl,function(d){if(d&&addSpImg(sp,d)==="ok")n++;next()})},function(){next()});
-      })();
+      hashAll(spImgs(sp),function(hs){
+        (function next(){
+          if(i>=list.length||spImgs(sp).length>=SPIMGMAX){
+            if(n){save();render()}
+            return fin(n,n?("已從 Naver 加入 "+n+" 張圖片。"+(same?"（跳過 "+same+" 張重複的）":"")):
+              (same?"抓到的 "+same+" 張都跟現有的重複，沒有加入。":"抓到的圖片都讀不進來，請改用上傳。"));
+          }
+          helperImg(list[i++]).then(function(bl){
+            shrink(bl,function(d){
+              if(!d)return next();
+              aHash(d,function(h){
+                var dup=h&&hs.some(function(x){return hdist(x,h)<=4});
+                if(dup){same++;return next()}
+                if(addSpImg(sp,d)==="ok"){n++;if(h)hs.push(h)}
+                next();
+              });
+            });
+          },function(){next()});
+        })();
+      });
     },function(e){
       var c=String((e&&e.message)||"");
       if(/400/.test(c))return fin(0,"這個連結不是 Naver 店家頁。");
@@ -2325,6 +2338,28 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(a.indexOf(d)>=0)return "dup";
     if(a.length>=SPIMGMAX)return "full";
     a.push(d);setSpImgs(sp,a);return "ok";
+  }
+  /* 8x8 灰階指紋：長得一樣的圖只留一張 */
+  function aHash(src,cb){
+    var im=new Image();
+    im.onload=function(){
+      try{
+        var n=8,c=document.createElement("canvas");c.width=n;c.height=n;
+        var x=c.getContext("2d");x.drawImage(im,0,0,n,n);
+        var d=x.getImageData(0,0,n,n).data,g=[],sum=0;
+        for(var i=0;i<n*n;i++){var v=(d[i*4]*299+d[i*4+1]*587+d[i*4+2]*114)/1000;g.push(v);sum+=v}
+        var av=sum/g.length,o="";
+        for(var j=0;j<g.length;j++)o+=g[j]>av?"1":"0";
+        cb(o);
+      }catch(e){cb("")}
+    };
+    im.onerror=function(){cb("")};
+    im.src=src;
+  }
+  function hdist(a,b){if(!a||!b||a.length!==b.length)return 99;var n=0;for(var i=0;i<a.length;i++)if(a[i]!==b[i])n++;return n}
+  function hashAll(list,cb){
+    var out=[],i=0;
+    (function next(){if(i>=list.length){cb(out);return}aHash(list[i++],function(h){if(h)out.push(h);next()})})();
   }
   function shrinkAll(files,cb){
     var list=[].slice.call(files||[]),out=[],i=0;
