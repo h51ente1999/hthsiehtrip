@@ -1215,6 +1215,29 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
 @media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
+
+/* 景點的多張圖片 */
+.spgal{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.spgal::-webkit-scrollbar{display:none}
+.spgal .gi{position:relative;flex:none;width:66px;height:66px;padding:0;border:1px solid var(--line,#dde);border-radius:11px;overflow:hidden;background:var(--bg);cursor:pointer}
+.spgal .gi img{width:100%;height:100%;object-fit:cover;display:block}
+.spgal .gi.cov{border-color:var(--blue);box-shadow:0 0 0 2px color-mix(in srgb,var(--blue) 30%,transparent)}
+.spgal .gi i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.64rem;text-align:center;background:var(--blue);color:var(--on-blue,#fff);padding:1px 0}
+.spgal .gnv{display:grid;place-items:center;gap:1px;color:var(--blue);border-style:dashed}
+.spgal .gnv span{font-size:.64rem}
+.galhint{margin:0 0 6px;font-size:.74rem;color:var(--muted,#6b7387)}
+#galBox{position:fixed;inset:0;z-index:320;display:none}
+#galBox.on{display:block}
+#galBox .bk{position:absolute;inset:0;background:rgba(14,18,26,.72)}
+#galBox .gw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));background:var(--surface);color:var(--ink);border-radius:20px;padding:14px;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+#galBox img{display:block;width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--bg)}
+#galBox .gx{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:inherit;display:grid;place-items:center;cursor:pointer;z-index:2}
+#galBox .gnavs{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px;font-size:.84rem;color:var(--muted,#6b7387)}
+#galBox .gnavs button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;font-size:1.3rem;line-height:1;cursor:pointer}
+#galBox .gacts{display:flex;gap:8px;margin-top:10px}
+#galBox .gacts button,#galBox .gacts .gnow{flex:1;text-align:center;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;border-radius:12px;padding:9px 10px;font:inherit;font-size:.9rem;cursor:pointer}
+#galBox .gacts .gnow{color:var(--muted,#6b7387);cursor:default}
+#galBox .gacts .gdel{color:var(--warn,#c0503f);border-color:color-mix(in srgb,var(--warn,#c0503f) 45%,transparent)}
 </style>
 </head>
 <body>
@@ -1234,7 +1257,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <div class="topgrid"><section class="panel brandblk"><a href="index.html" title="回主頁" aria-label="回主頁" style="text-decoration:none;display:inline-grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,var(--on-blue,#fff) 22%,transparent);color:var(--on-blue,#fff)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a><span class="brandname"><b>hthsieh</b> Trip</span><span class="tools"><button type="button" id="splitBtn" class="ib" title="分帳（代墊款項）" aria-label="分帳（代墊款項）"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 19 6.5 6.2 10.6 19M3.9 14.4h5.2M13.4 19l4.1-12.8 4.1 12.8M14.9 14.4h5.2"/></svg></button><button type="button" id="fxBtn" class="ib" hidden title="匯率" aria-label="匯率計算機"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></button><button type="button" class="gear" id="gear" aria-haspopup="dialog" aria-expanded="false" aria-label="顏色設定" title="設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button></span></section><section class="panel topcard"><div class="tripbar"><div class="titlewrap"><input class="title" id="title" type="text" placeholder="旅程名稱" aria-label="旅程名稱"><button type="button" id="tripOpen" class="chevbtn" aria-label="切換行程" aria-haspopup="dialog" title="切換行程"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><select id="tripSel" aria-label="切換行程" title="切換行程"></select></div><span class="cdbox" id="cd" hidden></span><button type="button" id="tripNew" class="ib" title="新行程" aria-label="新行程">＋</button><button type="button" id="tripDup" class="ib" title="複製這個行程" aria-label="複製這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(.5 .5)"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g></svg></button><button type="button" id="tripDel" class="ib" title="刪除這個行程" aria-label="刪除這個行程"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button type="button" id="tripShare" class="ib" hidden title="分享：複製唯讀連結" aria-label="分享：複製唯讀連結"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button><div class="setback" id="setBack" hidden></div>
 <div id="spotBack" hidden></div>
 <div class="settings spotm" id="spotModal" hidden role="dialog" aria-modal="true" aria-label="景點資料"><div class="shead"><h2 id="spotTitle"></h2><span id="spotBtns"></span><button type="button" class="sx" id="spotX" aria-label="關閉">✕</button></div><div class="spotmap"><div id="spotMapBox" class="mapbox"></div><div class="mapst" id="spotMapSt"></div><button type="button" class="mapfill" id="spotLocate" hidden>查詢位置</button></div><div class="d" id="spotEd"></div></div>
-<div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><a href="manual.html" target="_blank" rel="noopener" style="margin-left:auto;margin-right:10px;font-size:.9rem;color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:99px;padding:2px 12px;white-space:nowrap">說明</a><button type="button" class="sx" id="sx" aria-label="關閉設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div style="margin:14px 0 4px"><h2 style="font-size:1rem">大眾運輸</h2><label style="display:flex;align-items:center;gap:10px;margin-top:8px;font-size:.95rem;cursor:pointer"><input type="checkbox" id="noBus" style="width:18px;height:18px;flex:none"><span>查詢時不搭公車，只找地鐵、火車、輕軌</span></label><p class="hint" style="margin:6px 0 0">如果整段路只有公車到得了，還是會給公車路線，並在報告上註明。</p></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="acctDel" hidden title="永久刪除雲端上的所有行程、分享連結與登入帳號">刪除帳號</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享</button></div></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份</button><button type="button" id="bkLoad">還原</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
+<div class="settings" id="settings" hidden role="dialog" aria-modal="true" aria-label="設定"><div class="shead"><h2>設定</h2><a href="manual.html" target="_blank" rel="noopener" style="margin-left:auto;margin-right:10px;font-size:.9rem;color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:99px;padding:2px 12px;white-space:nowrap">說明</a><button type="button" class="sx" id="sx" aria-label="關閉設定"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><h2 style="font-size:1rem">顏色</h2><div class="presets" id="presets" role="group" aria-label="預設配色"></div><div id="helperBox" style="margin:14px 0 4px"><h2 style="font-size:1rem">連結助手（選用）</h2><p class="hint" style="margin:4px 0 8px">貼上你的 Cloudflare Worker 網址後，可展開 Google 地圖與 Naver 的短網址並讀出店名。只存在這台裝置。</p><input type="url" id="helperUrl" placeholder="https://trip-helper.xxx.workers.dev" autocomplete="off" aria-label="連結助手網址" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#ccd);font:inherit;font-size:16px;background:var(--bg);color:var(--ink)"></div><div style="margin:14px 0 4px"><h2 style="font-size:1rem">大眾運輸</h2><label style="display:flex;align-items:center;gap:10px;margin-top:8px;font-size:.95rem;cursor:pointer"><input type="checkbox" id="noBus" style="width:18px;height:18px;flex:none"><span>查詢時不搭公車，只找地鐵、火車、輕軌</span></label><p class="hint" style="margin:6px 0 0">如果整段路只有公車到得了，還是會給公車路線，並在報告上註明。</p></div><div class="bk" id="syncBox" hidden><h2 style="display:flex;align-items:center;gap:8px">雲端同步<span id="syncBadge" class="syncbadge" hidden></span></h2><p id="syncInfo">登入後，行程會自動同步到你的其他裝置。</p><div class="row"><button type="button" id="syncIn">登入</button><button type="button" id="syncOut" hidden>登出</button><button type="button" id="acctDel" hidden title="永久刪除雲端上的所有行程、分享連結與登入帳號">刪除帳號</button><button type="button" id="shareStop" hidden title="停止後，已發出的連結會失效">停止分享</button></div></div><div class="bk" id="nvImgBox"><h2>Naver 圖片</h2><p>把有 Naver 連結、但圖片還不到兩張的景點，一次補抓回來。每個景點最多 <b>8</b> 張，抓回來的圖片都會縮小後存在這台裝置。</p><div class="row"><button type="button" id="nvImgGo">補抓圖片</button><button type="button" id="nvImgStop" hidden>停止</button></div><p id="nvImgMsg" role="status"></p></div><div class="bk"><h2>資料備份</h2><p>備份包含景點、行程、圖片和顏色設定，可以用來搬到新網址或新裝置。</p><div class="row"><button type="button" id="bkSave">備份</button><button type="button" id="bkLoad">還原</button></div><input type="file" id="bkFile" accept=".json,application/json" hidden><textarea id="bkText" hidden readonly rows="4" aria-label="備份內容"></textarea><p id="bkMsg" role="status"></p></div></div>
 
 </div></section></div>
 
@@ -1445,8 +1468,76 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       '<label class="lf"><span>電話</span><input type="text" inputmode="tel" autocomplete="tel" data-f="phone"'+at+' value="'+esc(sp.phone||"")+'" placeholder="例：051-123-4567" aria-label="電話"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
       (ctry()==="KR"?'<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>':'')+
-      '<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+''+
+      galHtml(sp)+'<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片（可一次選多張）"><input type="file" accept="image/*" multiple data-img="1"'+at+'><span>'+(spImgs(sp).length?'再加圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+''+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div></div>');
+  }
+  /* 景點圖片列：第一張是封面，點縮圖可放大、設封面或刪除 */
+  function galHtml(sp){
+    var a=spImgs(sp),nv=sp.naver||(ctry()==="KR"&&sp.ko);
+    if(!a.length&&!nv)return "";
+    var h='<div class="spgal">';
+    a.forEach(function(d,i){
+      h+='<button type="button" class="gi'+(i?'':' cov')+'" data-gimg="'+sp.id+':'+i+'" aria-label="第 '+(i+1)+' 張圖片"><img src="'+d+'" alt="">'+(i?'':'<i>封面</i>')+'</button>';
+    });
+    if(nv&&a.length<SPIMGMAX)h+='<button type="button" class="gi gnv" data-gnaver="'+sp.id+'" title="從 Naver 抓圖片"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10"/><path d="m3 15 5-4 4 3 3-3 6 5"/><circle cx="9" cy="8" r="1.4"/></svg><span>Naver</span></button>';
+    return h+'</div>'+(a.length?'<p class="galhint">'+a.length+' 張圖片・點縮圖可放大、換封面或刪除</p>':'');
+  }
+  /* 放大檢視 */
+  function galOpen(sid,i){
+    var sp=spot(sid);if(!sp)return;
+    var a=spImgs(sp);if(!a.length)return;
+    i=Math.max(0,Math.min(i|0,a.length-1));
+    var b=document.getElementById("galBox");
+    if(!b){
+      b=document.createElement("div");b.id="galBox";document.body.appendChild(b);
+      b.addEventListener("click",function(ev){
+        if(ev.target.classList.contains("bk")||ev.target.closest(".gx")){b.classList.remove("on");return}
+        var nav=ev.target.closest("[data-gnav]");if(nav){galOpen(b.dataset.sid,+nav.dataset.gnav);return}
+        var sp2=spot(b.dataset.sid),k=+b.dataset.i;if(!sp2)return;
+        if(ev.target.closest(".gcov")){
+          var l=spImgs(sp2);if(k>0){l.unshift(l.splice(k,1)[0]);setSpImgs(sp2,l);save();render();galOpen(sp2.id,0);say("已設為封面。")}
+          return;
+        }
+        if(ev.target.closest(".gdel")){
+          var l2=spImgs(sp2);l2.splice(k,1);setSpImgs(sp2,l2);save();render();
+          if(l2.length)galOpen(sp2.id,Math.min(k,l2.length-1));else b.classList.remove("on");
+          say("已刪除這張圖片。");return;
+        }
+      });
+      document.addEventListener("keydown",function(ev){if(ev.key==="Escape")b.classList.remove("on")});
+    }
+    b.dataset.sid=sid;b.dataset.i=i;
+    b.innerHTML='<div class="bk"></div><div class="gw">'+
+      '<button type="button" class="gx" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+
+      '<img src="'+a[i]+'" alt="">'+
+      '<div class="gnavs">'+(a.length>1?'<button type="button" data-gnav="'+((i-1+a.length)%a.length)+'" aria-label="上一張">‹</button><span>'+(i+1)+' / '+a.length+'</span><button type="button" data-gnav="'+((i+1)%a.length)+'" aria-label="下一張">›</button>':'<span>1 / 1</span>')+'</div>'+
+      '<div class="gacts">'+(i?'<button type="button" class="gcov">設為封面</button>':'<span class="gnow">目前的封面</span>')+'<button type="button" class="gdel">刪除這張</button></div></div>';
+    b.classList.add("on");
+  }
+  /* 從 Naver 抓多張圖片 */
+  function grabNaver(sp,btn,quiet,done){
+    var u=sp.naver||naverUrl(sp);
+    function fin(n,msg){if(btn)btn.disabled=false;if(!quiet&&msg)say(msg);if(done)done(n)}
+    if(!u||!/naver\./.test(u))return fin(0,"這個景點沒有 Naver 連結，請先在「Naver 連結」裡貼上。");
+    if(!helperBase())return fin(0,"要先設定連結助手才能抓圖片。");
+    var room=SPIMGMAX-spImgs(sp).length;
+    if(room<=0)return fin(0,"圖片已經有 "+SPIMGMAX+" 張，先刪掉幾張再抓。");
+    if(btn)btn.disabled=true;
+    if(!quiet)say("正在從 Naver 抓圖片…");
+    helperFetch("/photos?n="+Math.min(6,room)+"&u="+encodeURIComponent(u)).then(function(j){
+      var list=(j&&j.imgs)||[],i=0,n=0;
+      if(!list.length)return fin(0,"Naver 這一頁沒有抓到圖片。");
+      (function next(){
+        if(i>=list.length||spImgs(sp).length>=SPIMGMAX){
+          if(n){save();render()}
+          return fin(n,n?("已從 Naver 加入 "+n+" 張圖片。"):"抓到的圖片都讀不進來，請改用上傳。");
+        }
+        helperImg(list[i++]).then(function(bl){shrink(bl,function(d){if(d&&addSpImg(sp,d)==="ok")n++;next()})},function(){next()});
+      })();
+    },function(e){
+      var c=String((e&&e.message)||"");
+      fin(0,/404/.test(c)?"Naver 這一頁沒有抓到圖片。":/400/.test(c)?"這個連結不是 Naver 店家頁。":"抓圖片失敗，請稍後再試。");
+    });
   }
   function blk(sp,inst,day,inLib,forceOpen){
     var key=inst||sp.id,open=false;
@@ -2158,7 +2249,11 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
         var nu=nvf||inf.finalUrl;
         nm=nm||inf.name||cleanTitle(inf.title);
         if(nm){
-          var go=function(img){createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||"",img:img||"",lat:inf.lat,lng:inf.lng})};
+          var go=function(img){
+            var nsp=createSpot({name:nm,addr:ad||inf.addr||"",naver:nu,hint:inf.category||"",hours:inf.hours||"",img:img||"",lat:inf.lat,lng:inf.lng});
+            /* 背景把 Naver 上其餘的相片一起抓回來 */
+            if(nsp)setTimeout(function(){grabNaver(nsp,null,true,function(n){if(n)say("又從 Naver 補了 "+n+" 張圖片。")})},400);
+          };
           if(inf.image){helperImg(inf.image).then(function(bl){shrink(bl,function(d){go(d)})},function(){go("")})}else go("");
           return;
         }
@@ -2195,6 +2290,41 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(r.empty){if(pre.length){addFromLink(pre[0],pre[1]||"",v);return}say("連結裡找不到景點名稱。請改貼包含 /maps/place/ 的完整連結，或手動輸入。");return}
     createSpot({name:r.name,url:r.url,google:1});
   }
+  /* ===== 一個景點多張圖片：sp.img 是封面，sp.imgs 是其餘幾張 ===== */
+  var SPIMGMAX=8;
+  function cleanImgs(v,cover){
+    if(!Array.isArray(v))return undefined;
+    var out=[],seen={};if(cover)seen[cover]=1;
+    v.forEach(function(x){if(typeof x!=="string"||!IMGRE.test(x)||seen[x]||out.length>=SPIMGMAX-1)return;seen[x]=1;out.push(x)});
+    return out.length?out:undefined;
+  }
+  function spImgs(sp){
+    if(!sp)return [];
+    var a=[],seen={};
+    if(sp.img){a.push(sp.img);seen[sp.img]=1}
+    (sp.imgs||[]).forEach(function(v){if(v&&!seen[v]){seen[v]=1;a.push(v)}});
+    return a;
+  }
+  function setSpImgs(sp,arr){
+    arr=(arr||[]).filter(Boolean).slice(0,SPIMGMAX);
+    sp.img=arr[0]||"";
+    var r=arr.slice(1);
+    if(r.length)sp.imgs=r;else delete sp.imgs;
+    if(!sp.img&&sp.cover)delete sp.cover;
+  }
+  function addSpImg(sp,d){
+    var a=spImgs(sp);
+    if(a.indexOf(d)>=0)return "dup";
+    if(a.length>=SPIMGMAX)return "full";
+    a.push(d);setSpImgs(sp,a);return "ok";
+  }
+  function shrinkAll(files,cb){
+    var list=[].slice.call(files||[]),out=[],i=0;
+    (function next(){
+      if(i>=list.length){cb(out);return}
+      shrink(list[i++],function(d){if(d)out.push(d);next()});
+    })();
+  }
   function shrink(file,cb){
     var rd=new FileReader();
     rd.onload=function(){var im=new Image();im.onload=function(){var m=240,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.72))};im.src=rd.result};
@@ -2202,8 +2332,13 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   document.addEventListener("change",function(e){
     var t=e.target;if(!t.dataset||!t.dataset.img)return;
-    var sp=spot(t.dataset.sid),f=t.files&&t.files[0];if(!sp||!f)return;
-    shrink(f,function(d){sp.img=d;save();render()});
+    var sp=spot(t.dataset.sid),fs=t.files;if(!sp||!fs||!fs.length)return;
+    var room=SPIMGMAX-spImgs(sp).length;
+    shrinkAll([].slice.call(fs,0,Math.max(0,room)),function(ds){
+      var n=0;ds.forEach(function(d){if(addSpImg(sp,d)==="ok")n++});
+      t.value="";save();render();
+      say(n?("已加入 "+n+" 張圖片。"+(fs.length>n?"（上限 "+SPIMGMAX+" 張）":"")):"沒有加入新圖片（可能重複，或已達 "+SPIMGMAX+" 張上限）。");
+    });
   });
   /* 貼上剪貼簿裡的圖片（按鈕版；手機沒有 Ctrl+V 時用） */
   function readClipImg(cb){
@@ -2219,7 +2354,14 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   document.addEventListener("click",function(e){
     var t=e.target.closest("button");if(!t)return;
     if(t.id==="pasteImgAdd"){readClipImg(function(f){shrink(f,function(d){img=d;$("upl").innerHTML='<img src="'+d+'" alt=""> 已選圖片';say("圖片已貼上，按「加入景點庫」即可。")})});return}
-    if(t.dataset.pasteimg){var psp=spot(t.dataset.pasteimg);if(!psp)return;readClipImg(function(f){shrink(f,function(d){psp.img=d;save();render();say("已更新「"+psp.name+"」的圖片。")})})}
+    if(t.dataset.pasteimg){var psp=spot(t.dataset.pasteimg);if(!psp)return;readClipImg(function(f){shrink(f,function(d){
+      var r=addSpImg(psp,d);
+      if(r==="full"){say("圖片已經有 "+SPIMGMAX+" 張，先刪掉幾張再貼。");return}
+      if(r==="dup"){say("這張圖片已經在裡面了。");return}
+      save();render();say("已加入一張圖片到「"+psp.name+"」。");
+    })});return}
+    if(t.dataset.gimg){var g=t.dataset.gimg.split(":");galOpen(g[0],+g[1]);return}
+    if(t.dataset.gnaver){var gsp=spot(t.dataset.gnaver);if(gsp)grabNaver(gsp,t);return}
   });
   document.addEventListener("click",function(e){
     var t=e.target.closest("button");if(!t||!t.dataset.rmstop)return;
@@ -2302,7 +2444,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     d.spots.forEach(function(x){
       if(!x||typeof x.id!=="string"||!IDRE.test(x.id)||!str(x.name))return;
       ids[x.id]=1;
-      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
+      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
     });
     var days=d.days.map(function(day){
       return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){var o={uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)};
@@ -2330,6 +2472,32 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     }
     try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();bmsg("備份已下載。")}catch(e){showBk(json)}
   };
+  /* 批次：為舊景點補抓 Naver 圖片 */
+  var nvRun=false;
+  function nvImgMsg(t){var e=$("nvImgMsg");if(e)e.textContent=t}
+  (function(){
+    var go=$("nvImgGo"),stop=$("nvImgStop");if(!go)return;
+    go.onclick=function(){
+      if(nvRun)return;
+      if(!helperBase()){nvImgMsg("要先設定上面的連結助手網址才能抓圖片。");return}
+      var list=(s.spots||[]).filter(function(sp){return (sp.naver||(ctry()==="KR"&&sp.ko))&&spImgs(sp).length<2});
+      if(!list.length){nvImgMsg("沒有需要補抓的景點（有 Naver 連結、圖片少於兩張的都已經有了）。");return}
+      nvRun=true;go.disabled=true;stop.hidden=false;
+      var i=0,tot=0,hit=0;
+      (function next(){
+        if(!nvRun||i>=list.length){
+          nvRun=false;go.disabled=false;stop.hidden=true;
+          nvImgMsg("完成："+hit+" 個景點共補了 "+tot+" 張圖片。"+(i<list.length?"（已停止）":""));
+          if(tot)render();
+          return;
+        }
+        var sp=list[i++];
+        nvImgMsg("（"+i+"/"+list.length+"）"+(sp.name||"景點")+"…");
+        grabNaver(sp,null,true,function(n){if(n){tot+=n;hit++}setTimeout(next,350)});
+      })();
+    };
+    stop.onclick=function(){nvRun=false;nvImgMsg("停止中…")};
+  })();
   var bkPend=null;
   $("bkLoad").onclick=function(){
     if(this._a2&&bkPend){
@@ -5744,7 +5912,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   function lbClean(x){
     if(!x||typeof x!=="object"||!str(x.name).trim())return null;
-    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
+    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
   }
   function lbOpen(){
     if(!lbEl){lbEl=document.createElement("div");lbEl.id="lbSheet";document.body.appendChild(lbEl);lbBind()}

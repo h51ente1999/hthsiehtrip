@@ -1192,6 +1192,23 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
 @media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
+
+/* 景點的多張圖片 */
+.spgal{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.spgal::-webkit-scrollbar{display:none}
+.spgal .gi{position:relative;flex:none;width:66px;height:66px;padding:0;border:1px solid var(--line,#dde);border-radius:11px;overflow:hidden;background:var(--bg);cursor:pointer}
+.spgal .gi img{width:100%;height:100%;object-fit:cover;display:block}
+.spgal .gi.cov{border-color:var(--blue);box-shadow:0 0 0 2px color-mix(in srgb,var(--blue) 30%,transparent)}
+.spgal .gi i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.64rem;text-align:center;background:var(--blue);color:var(--on-blue,#fff);padding:1px 0}
+.galhint{margin:0 0 6px;font-size:.74rem;color:var(--muted,#6b7387)}
+#galBox{position:fixed;inset:0;z-index:320;display:none}
+#galBox.on{display:block}
+#galBox .bk{position:absolute;inset:0;background:rgba(14,18,26,.72)}
+#galBox .gw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));background:var(--surface);color:var(--ink);border-radius:20px;padding:14px;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+#galBox img{display:block;width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--bg)}
+#galBox .gx{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:inherit;display:grid;place-items:center;cursor:pointer;z-index:2}
+#galBox .gnavs{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px;font-size:.84rem;color:var(--muted,#6b7387)}
+#galBox .gnavs button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;font-size:1.3rem;line-height:1;cursor:pointer}
 </style>
 </head>
 <body class="viewer"><script>(function(){var E=[];function add(x){E.push(String(x).slice(0,140))}window.addEventListener("error",function(e){add(e.target&&e.target.src?"載入失敗 "+e.target.src.split("/").slice(-2).join("/"):(e.message||"error"))},true);window.addEventListener("unhandledrejection",function(e){add("promise: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason))});setTimeout(function(){var v=document.getElementById("viewer"),p=document.querySelector("#vLoad p");if(v&&p&&v.classList.contains("vload")){p.innerHTML="載入逾時<br><small style='display:block;margin-top:8px;opacity:.8;font-size:.75rem;letter-spacing:0;word-break:break-all'>cloud="+!!window.cloud+(E.length?" ／ "+E.join(" ／ "):"")+"</small>"}},8000)})()</script>
@@ -1413,6 +1430,53 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   if(window.claude&&claude.use){claude.use("downloads").then(function(d){downloads=d}).catch(function(){})}
 
   var libPlanned={};
+  /* ===== 一個景點多張圖片：sp.img 是封面，sp.imgs 是其餘幾張 ===== */
+  var SPIMGMAX=8;
+  function cleanImgs(v,cover){
+    if(!Array.isArray(v))return undefined;
+    var out=[],seen={};if(cover)seen[cover]=1;
+    v.forEach(function(x){if(typeof x!=="string"||!IMGRE.test(x)||seen[x]||out.length>=SPIMGMAX-1)return;seen[x]=1;out.push(x)});
+    return out.length?out:undefined;
+  }
+  function spImgs(sp){
+    if(!sp)return [];
+    var a=[],seen={};
+    if(sp.img){a.push(sp.img);seen[sp.img]=1}
+    (sp.imgs||[]).forEach(function(v){if(v&&!seen[v]){seen[v]=1;a.push(v)}});
+    return a;
+  }
+  function galHtml(sp){
+    var a=spImgs(sp);
+    if(a.length<2)return "";
+    return '<div class="spgal">'+a.map(function(d,i){
+      return '<button type="button" class="gi'+(i?'':' cov')+'" data-gimg="'+sp.id+':'+i+'" aria-label="第 '+(i+1)+' 張圖片"><img src="'+d+'" alt="">'+(i?'':'<i>封面</i>')+'</button>';
+    }).join("")+'</div><p class="galhint">'+a.length+' 張圖片・點縮圖可放大</p>';
+  }
+  function galOpen(sid,i){
+    var sp=spot(sid);if(!sp)return;
+    var a=spImgs(sp);if(!a.length)return;
+    i=Math.max(0,Math.min(i|0,a.length-1));
+    var b=document.getElementById("galBox");
+    if(!b){
+      b=document.createElement("div");b.id="galBox";document.body.appendChild(b);
+      b.addEventListener("click",function(ev){
+        if(ev.target.classList.contains("bk")||ev.target.closest(".gx")){b.classList.remove("on");return}
+        var nav=ev.target.closest("[data-gnav]");if(nav)galOpen(b.dataset.sid,+nav.dataset.gnav);
+      });
+      document.addEventListener("keydown",function(ev){if(ev.key==="Escape")b.classList.remove("on")});
+    }
+    b.dataset.sid=sid;b.dataset.i=i;
+    b.innerHTML='<div class="bk"></div><div class="gw">'+
+      '<button type="button" class="gx" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+
+      '<img src="'+a[i]+'" alt="">'+
+      '<div class="gnavs">'+(a.length>1?'<button type="button" data-gnav="'+((i-1+a.length)%a.length)+'" aria-label="上一張">‹</button><span>'+(i+1)+' / '+a.length+'</span><button type="button" data-gnav="'+((i+1)%a.length)+'" aria-label="下一張">›</button>':'<span>1 / 1</span>')+'</div></div>';
+    b.classList.add("on");
+  }
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("button[data-gimg]");
+    if(!t)return;
+    var g=t.dataset.gimg.split(":");galOpen(g[0],+g[1]);
+  });
   function editHtml(sp,inst,day,inLib){
     var at=' data-sid="'+sp.id+'"';
     return (
@@ -1423,7 +1487,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
       '<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>'+
-      '<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+
+      galHtml(sp)+'<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片"><input type="file" accept="image/*" data-img="1"'+at+'><span>'+(sp.img?'更換圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片" aria-label="貼上剪貼簿裡的圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div></div>');
   }
   function blk(sp,inst,day,inLib,forceOpen){
@@ -2233,7 +2297,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     d.spots.forEach(function(x){
       if(!x||typeof x.id!=="string"||!IDRE.test(x.id)||!str(x.name))return;
       ids[x.id]=1;
-      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
+      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
     });
     var days=d.days.map(function(day){
       return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){var o={uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)};
@@ -5394,7 +5458,7 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
   }
   function lbClean(x){
     if(!x||typeof x!=="object"||!str(x.name).trim())return null;
-    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
+    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
   }
   function lbOpen(){
     if(!lbEl){lbEl=document.createElement("div");lbEl.id="lbSheet";document.body.appendChild(lbEl);lbBind()}
