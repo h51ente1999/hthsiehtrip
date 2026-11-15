@@ -656,6 +656,8 @@ body:not(.viewer) #buyBtn{position:fixed;right:16px;bottom:298px;z-index:60;widt
 body.viewer #buyBtn{display:none!important}
 body:not(.viewer) #rtBtn{position:fixed;right:16px;bottom:242px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer;text-decoration:none}
 body.viewer #rtBtn{display:none!important}
+body:not(.viewer) #p2pBtn{position:fixed;right:16px;bottom:410px;z-index:60;width:46px;height:46px;border-radius:50%;padding:0;display:grid;place-items:center;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}
+body.viewer #p2pBtn{display:none!important}
 body:not(.viewer) #vDl.ok{display:grid}
 body:not(.viewer) #vDl{bottom:354px}
 body:not(.viewer) #vDlMenu{bottom:354px}
@@ -670,10 +672,10 @@ body:not(.viewer) #mapPanel.pop{display:block;position:fixed;left:50%;top:50%;tr
 body:not(.viewer) #mapPanel.pop .mapbox{height:min(62vh,520px)}
 body.viewer #mapPanel .mphd .sx{display:none}
 /* 浮動按鈕大小一致 */
-#toTop,#buyBtn,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
-#toTop svg,#buyBtn svg,#rtBtn svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
-#toTop,#buyBtn,#rtBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
-.mko span{display:block;width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 55%,var(--surface));border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35);opacity:.85}
+#toTop,#buyBtn,#rtBtn,#p2pBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
+#toTop svg,#buyBtn svg,#rtBtn svg,#p2pBtn svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vSug svg{width:20px;height:20px}
+#toTop,#buyBtn,#rtBtn,#p2pBtn,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vSug{right:18px!important}
+.mko span{display:block;width:12px;height:12px;border-radius:50%;background:var(--c,#a8a7a2);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}.mko.h span{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;line-height:0}.mko.cur span{width:20px;height:20px;box-shadow:0 0 0 3px color-mix(in srgb,var(--c,#7b8496) 35%,transparent),0 2px 6px rgba(0,0,0,.45)}.mko.cur.h span{width:24px;height:24px}.mklg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 2px 2px;font-size:.76rem;color:var(--muted,#6b7387)}.mklg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.mklg i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}.mklg i.h{border-radius:3px}
 /* 設定、景點視窗要蓋過右下角浮動按鈕 */
 .setback{z-index:70!important}.settings{z-index:71!important}
 </style>
@@ -942,8 +944,8 @@ html.lb-open body{overflow:hidden}
 /* 懸浮按鈕收合 */
 #fabTg{position:fixed;right:18px;bottom:74px;z-index:62;width:40px;height:40px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;line-height:0;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);box-shadow:none}
 #fabTg:active{transform:scale(.92)}#fabTg .i-up{display:none}body.fab-off #fabTg .i-dn{display:none}body.fab-off #fabTg .i-up{display:block}
-:root :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
-:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
+:root :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#p2pBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){translate:0 -56px;transition:opacity .2s,scale .2s,translate .2s}
+:root body.fab-off :is(#fxBtn,#splitBtn,#mapBtn,#rtBtn,#p2pBtn,#buyBtn,#exToggle,#vLib,#vSug,#vFx,#vMap,#vSplit,#vDl,#exMenu,#vDlMenu){opacity:0!important;pointer-events:none!important;scale:.5;translate:0 -20px}
 
 /* 分享頁：資料載入完成後，懸浮按鈕才一起出現 */
 :root.vmode body:not(.vready) :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg,#toTop,#exToggle,#mapBtn,#splitBtn,#fxBtn){display:none!important}
@@ -1179,6 +1181,33 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #trSheet .fo{font-size:.76rem;color:var(--muted,#6b7387);line-height:1.6;margin:12px 0 0}
 #trSheet .ac{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 #trSheet .ac a,#trSheet .ac button{flex:1;min-width:120px;text-align:center;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;border-radius:12px;padding:9px 12px;font:inherit;font-size:.9rem;cursor:pointer;text-decoration:none}
+#ppSheet{position:fixed;inset:0;z-index:97;display:none}#ppSheet.on{display:block}
+#ppSheet .bk{position:absolute;inset:0;background:rgba(18,22,32,.5)}
+#ppSheet .sh::-webkit-scrollbar{display:none}
+#ppSheet .sh{scrollbar-width:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:22px;padding:18px 18px 14px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+#ppSheet h3{margin:0 0 2px;font-size:1.1rem;padding-right:40px}
+#ppSheet .sub{font-size:.82rem;color:var(--muted,#6b7387);margin-bottom:14px}
+#ppSheet .x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:var(--bg);color:inherit;display:grid;place-items:center;cursor:pointer}
+#ppSheet .tot{display:flex;gap:14px;justify-content:center;padding:10px 0 14px;border-bottom:1px dashed var(--line,#dde);margin-bottom:14px}
+#ppSheet .tot div{text-align:center}#ppSheet .tot b{display:block;font-size:1.2rem}#ppSheet .tot small{font-size:.76rem;color:var(--muted,#6b7387)}
+#ppSheet .fo{font-size:.76rem;color:var(--muted,#6b7387);line-height:1.6;margin:12px 0 0}
+#ppSheet .ac{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+#ppSheet .ac a,#ppSheet .ac button{flex:1;min-width:120px;text-align:center;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;border-radius:12px;padding:9px 12px;font:inherit;font-size:.9rem;cursor:pointer;text-decoration:none}
+#ppSheet .pf{display:grid;grid-template-columns:1fr 40px;gap:8px 8px;align-items:center;margin:10px 0 4px}
+#ppSheet .pf .ss{display:flex;flex-direction:column;gap:8px;min-width:0}
+#ppSheet label.pl{display:block;font-size:.76rem;color:var(--muted,#6b7387);margin:0 0 2px 4px}
+#ppSheet select,#ppSheet input[type=time]{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:9px 12px;border-radius:12px;border:1px solid var(--line,#dde);background:var(--bg);color:var(--ink);min-width:0}
+#ppSheet .sw{width:40px;height:40px;border-radius:50%;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;display:grid;place-items:center;cursor:pointer;padding:0}
+#ppSheet .go2{display:flex;gap:8px;align-items:flex-end;margin:8px 0 2px}
+#ppSheet .go2>div{flex:0 0 130px}
+#ppSheet .go2 button{flex:1;border:0;border-radius:12px;padding:11px 12px;font:inherit;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);cursor:pointer}
+#ppSheet .go2 button:disabled{opacity:.55;cursor:default}
+#ppSheet .msg{font-size:.85rem;color:var(--muted,#6b7387);margin:10px 2px 0;min-height:1.2em}
+#ppSheet .mods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+#ppSheet .mods div{background:var(--bg);border-radius:14px;padding:10px 6px;text-align:center}
+#ppSheet .mods small{display:block;font-size:.74rem;color:var(--muted,#6b7387)}
+#ppSheet .mods b{display:block;font-size:1.02rem;margin:2px 0}
+#ppSheet h4{margin:16px 0 8px;font-size:.95rem}
 #ctSheet .ctlater{display:block;margin:12px auto 0;border:0;background:transparent;color:var(--muted,#6b7387);font:inherit;font-size:.9rem;padding:8px 14px;cursor:pointer}
 </style>
 </head>
@@ -1250,6 +1279,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
 <button type="button" id="buyBtn" aria-label="必買清單" title="必買清單"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 11.2a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
 <button type="button" id="rtBtn" aria-label="交通查詢紀錄" title="交通查詢紀錄"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18c0-4.5 0-6.5 3-6.5s6 0 6-4.5"/><circle cx="7" cy="19.5" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="5.5" r="2" fill="currentColor" stroke="none"/></svg></button>
+<button type="button" id="p2pBtn" aria-label="兩點交通查詢" title="兩點交通查詢"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4"/></svg></button>
 <div id="mapBk" hidden></div><button type="button" id="mapBtn" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
 <section class="panel" id="mapPanel"><div class="mphd"><h2>地圖</h2><button type="button" class="sx" id="mapPX" aria-label="關閉地圖"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="mapbar"><div class="mapchips" id="mapChips"></div><button type="button" class="mapfill" id="mapFill" hidden>補座標</button><button type="button" class="mapkind" title="切換點陣／向量底圖">底圖：向量</button></div><div class="mapst" id="mapSt"></div><div id="mapBox" class="mapbox"></div></section>
 </div>
@@ -1931,7 +1961,16 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     var t=e.target;if(e.key==="Enter"&&t.dataset&&t.dataset.drive!==undefined){e.preventDefault();t.blur()}
   });
   var zhSug={},aiOff=false;
-  function zhNeed(sp){return !!(sp&&sp.ko&&/[가-힣]/.test(sp.ko)&&(!sp.name||sp.name===sp.ko))}
+  function zhNeed(sp){return !!(sp&&sp.ko&&/[가-힣]/.test(sp.ko)&&!mapBanner(sp.ko)&&(!sp.name||sp.name===sp.ko))}
+  /* AI 有時會回「對不起，我無法翻譯」這類句子，不能當店名套用 */
+  function zhBad(v,ko){v=String(v||"").trim();
+    if(!v||v==="…")return true;
+    if(ko&&v===String(ko).trim())return true;
+    if(v.length>24)return true;
+    if(/[。！？；]|\.\.\./.test(v))return true;
+    if(/[가-힣]/.test(v))return true;
+    if(/對不起|抱歉|無法|没有|沒辦法|不是店名|語言模型|助手|sorry|i\s*(?:can.?t|cannot|am)/i.test(v))return true;
+    return false}
   function zhHtml(sp){
     if(!zhNeed(sp)||!helperBase())return "";
     var v=zhSug[sp.id];
@@ -1945,8 +1984,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(aiOff&&!manual)return;
     zhSug[sp.id]="…";zhPaint(sp.id);
     helperFetch("/translate?q="+encodeURIComponent(sp.ko)+"&hint="+encodeURIComponent([sp.cat,sp.area,sp.addr].filter(Boolean).join(" ").slice(0,120))).then(function(j){
-      zhSug[sp.id]=(j&&j.zh)||"";zhPaint(sp.id);
-      if(!zhSug[sp.id]&&manual)say("AI 沒有給出建議，請手動輸入中文店名。");
+      var z=(j&&j.zh)||"";if(zhBad(z,sp.ko))z="";
+      zhSug[sp.id]=z;zhPaint(sp.id);
+      if(!z&&manual)say("AI 沒有給出可用的建議，請手動輸入中文店名。");
     },function(e){
       delete zhSug[sp.id];zhPaint(sp.id);
       var m=String((e&&e.message)||"");
@@ -1956,7 +1996,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   document.addEventListener("click",function(e){
     var t=e.target.closest&&e.target.closest("button");if(!t)return;
-    if(t.dataset.zhapply){var sp=spot(t.dataset.zhapply),v=zhSug[t.dataset.zhapply];if(sp&&v&&typeof v==="string"&&v!=="…"){sp.name=v;delete zhSug[sp.id];save();render();say("已套用中文店名「"+v+"」。")}return}
+    if(t.dataset.zhapply){var sp=spot(t.dataset.zhapply),v=zhSug[t.dataset.zhapply];if(sp&&v&&typeof v==="string"&&!zhBad(v,sp.ko)){sp.name=v;delete zhSug[sp.id];save();render();say("已套用中文店名「"+v+"」。")}return}
     if(t.dataset.zhask){zhAsk(spot(t.dataset.zhask),true);return}
   });
   /* coordinates + driving time */
@@ -2087,8 +2127,10 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(o.google&&helperBase())autoPlace(sp.id);
     return sp;
   }
+  function mapBanner(x){return /^[\[\(（【]?\s*(?:네이버\s*지도|naver\s*map|카카오\s*맵|kakao\s*map|google\s*maps?|google\s*地圖|구글\s*지도|지도|map)\s*[\]\)）】]?$/i.test((x||"").trim())}
+  function preClean(a){return (a||[]).filter(function(x){return x&&!mapBanner(x)})}
   function cleanTitle(t){
-    t=(t||"").trim();if(/^(네이버 ?지도|naver ?map|google ?maps?|google 地圖)$/i.test(t))return "";
+    t=(t||"").trim();if(mapBanner(t))return "";if(/^(네이버 ?지도|naver ?map|google ?maps?|google 地圖)$/i.test(t))return "";
     return t.replace(/\s*[\|｜]\s*[^\|｜]*$/,"").replace(/\s+[-–—:：]\s+[^-–—:：]{1,30}$/,"").trim()||t;
   }
   function viaHelper(v,pre){
@@ -2121,7 +2163,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   function fromLink(){
     var raw=$("gm").value.trim();if(!raw)return;
-    var um=raw.match(/https?:\/\/\S+/),v=um?um[0]:raw,pre=um?raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean):[];
+    var um=raw.match(/https?:\/\/\S+/),v=um?um[0]:raw,pre=um?preClean(raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()})):[];
     var r=parseMaps(v);
     var nv0=okNaver(v);
     if(!r&&nv0){
@@ -4157,26 +4199,41 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt"),mono:true});
   /* single-spot map + spot modal */
   var PINIC=function(mono){var c=mono?th("--blue","#5a8dbd"):th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
+  /* 莫蘭迪色系：低彩度、帶灰 */
+  var CATCOL={"住宿":"#5d6878","景點":"#7895b2","體驗":"#9d8bb0","美食":"#c48b7c","點心":"#cdb27a","購物":"#86a68f"};
+  function catCol(c){return CATCOL[c]||"#a8a7a2"}
+  function isHotelSp(o){return !!o&&(o.cat==="住宿"||(s.hotelSpots||[]).some(function(x){return x.sid===o.id}))}
+  function spIcon(o,cur){
+    var h=isHotelSp(o),c=h?CATCOL["住宿"]:catCol(o.cat),z=cur?(h?24:20):(h?20:12),w=z+4;
+    return L.divIcon({className:"mko"+(h?" h":"")+(cur?" cur":""),html:'<span style="--c:'+c+';background:'+c+'">'+(h?'<svg viewBox="0 0 24 24" width="'+(cur?15:13)+'" height="'+(cur?15:13)+'" fill="#fff" aria-hidden="true"><path d="M12 3.2 2.8 11h2.7v9h5v-5.6h3V20h5v-9h2.7z"/></svg>':"")+'</span>',iconSize:[w,w],iconAnchor:[w/2,w/2],popupAnchor:[0,-w/2]});
+  }
   function SpotMap(box,st,mono){
-    var c={map:null,mk:null};
+    var c={map:null,mk:null,lg:null};
     c.show=function(sp){
       var has=okLL(sp.lat,sp.lng);
-      box.hidden=!has;
+      box.hidden=!has;if(c.lg)c.lg.hidden=!has;
       if(!has){if(c.map&&c.mk){c.map.removeLayer(c.mk);c.mk=null}return Promise.resolve(false)}
       return loadLeaflet().then(function(){
         if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map)}
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
-        c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC(mono)}).addTo(c.map);
-        /* 景點庫裡其他有座標的景點，用小圓點標出來（滑過或點一下顯示店名） */
+        c.mk=L.marker([sp.lat,sp.lng],{icon:spIcon(sp,true),zIndexOffset:500}).addTo(c.map);
+        /* 景點庫裡其他有座標的景點：依分類上色，住宿用「宿」方塊標出來 */
         if(!c.others)c.others=L.layerGroup().addTo(c.map);
         c.others.clearLayers();
+        var seen={},hot=false;
+        if(isHotelSp(sp))hot=true;else seen[sp.cat||""]=1;
         (s.spots||[]).forEach(function(o){
           if(!o||o.id===sp.id||!okLL(o.lat,o.lng))return;
-          var mk=L.marker([o.lat,o.lng],{icon:L.divIcon({className:"mko",html:"<span></span>",iconSize:[14,14],iconAnchor:[7,7]}),zIndexOffset:-500,keyboard:false}).addTo(c.others);
-          var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[o.cat,o.area].filter(Boolean).join(" · ");
-          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>景點庫'+(sub?" · "+esc(sub):"")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
+          var oh=isHotelSp(o);if(oh)hot=true;else seen[o.cat||""]=1;
+          var mk=L.marker([o.lat,o.lng],{icon:spIcon(o,false),zIndexOffset:oh?-100:-500,keyboard:false}).addTo(c.others);
+          var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[oh?"住宿":o.cat,o.area].filter(Boolean).join(" · ");
+          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>'+(sub?esc(sub):"景點庫")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
         });
+        if(!c.lg){c.lg=document.createElement("div");c.lg.className="mklg";box.insertAdjacentElement("afterend",c.lg)}
+        var ks=CATS.filter(function(k){return k!=="住宿"&&seen[k]}).concat(Object.keys(seen).filter(function(k){return k&&CATS.indexOf(k)<0}));
+        c.lg.innerHTML=(hot?'<span><svg viewBox="0 0 24 24" width="12" height="12" fill="'+CATCOL["住宿"]+'" aria-hidden="true"><path d="M12 3.2 2.8 11h2.7v9h5v-5.6h3V20h5v-9h2.7z"/></svg>住宿</span>':"")+ks.map(function(k){return '<span><i style="--c:'+catCol(k)+'"></i>'+esc(k)+'</span>'}).join("")+(seen[""]?'<span><i style="--c:'+catCol("")+'"></i>未分類</span>':"");
+        c.lg.hidden=false;
         c.map.setView([sp.lat,sp.lng],16);
         return true;
       },function(){st.textContent="地圖載入失敗，請檢查網路。";return false});
@@ -4655,7 +4712,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     raw=(raw||"").trim();
     var um=raw.match(/https?:\/\/\S+/);
     if(!um)return Promise.reject(new Error("請貼上包含 http 的地圖連結"));
-    var v=um[0],pre=raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean);
+    var v=um[0],pre=preClean(raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}));
     var r=parseMaps(v),nv0=okNaver(v);
     if(!r&&!nv0)return Promise.reject(new Error("這不是 Google 或 Naver 地圖連結"));
     function fin(o){
@@ -5181,6 +5238,73 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     var ba=document.getElementById("trAll");if(ba)ba.onclick=function(){a.classList.remove("on");openRt()};
     a.classList.add("on");
   }
+  /* ---- 兩點查詢：任選兩個景點，查距離與開車／步行／大眾運輸 ---- */
+  var pp={a:"",b:"",t:"10:00",busy:false};
+  function ppOpts(sel){
+    var by={},h='<option value="">請選擇景點</option>';
+    (s.spots||[]).forEach(function(o){if(!o||!o.name)return;var k=isHotelSp(o)?"住宿":(o.cat||"未分類");(by[k]=by[k]||[]).push(o)});
+    CATS.concat(Object.keys(by).filter(function(k){return CATS.indexOf(k)<0})).forEach(function(k){
+      if(!by[k])return;
+      h+='<optgroup label="'+esc(k)+'">'+by[k].map(function(o){return '<option value="'+esc(o.id)+'"'+(o.id===sel?" selected":"")+'>'+esc(o.name)+(o.area?"（"+esc(o.area)+"）":"")+'</option>'}).join("")+'</optgroup>';
+    });
+    return h;
+  }
+  function ppKm(a,b){var R=6371,r=Math.PI/180,x=Math.sin((b[0]-a[0])*r/2),y=Math.sin((b[1]-a[1])*r/2),q=x*x+Math.cos(a[0]*r)*Math.cos(b[0]*r)*y*y;return 2*R*Math.asin(Math.sqrt(q))}
+  function ppOpen(){
+    var a=document.getElementById("ppSheet");
+    if(!a){a=document.createElement("div");a.id="ppSheet";document.body.appendChild(a);
+      a.addEventListener("click",function(ev){if(ev.target.classList.contains("bk")||ev.target.closest(".x"))a.classList.remove("on")});
+      document.addEventListener("keydown",function(ev){if(ev.key==="Escape")a.classList.remove("on")});
+    }
+    if(!spot(pp.a))pp.a="";if(!spot(pp.b))pp.b="";
+    if(!pp.a){var h0=(s.hotelSpots||[])[0];if(h0&&spot(h0.sid))pp.a=h0.sid}
+    a.innerHTML='<div class="bk"></div><div class="sh"><button class="x" type="button" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+
+      '<h3>兩點交通查詢</h3><div class="sub">從景點庫選兩個地點，查距離和怎麼去。</div>'+
+      '<div class="pf"><div class="ss"><div><label class="pl" for="ppA">起點</label><select id="ppA">'+ppOpts(pp.a)+'</select></div><div><label class="pl" for="ppB">終點</label><select id="ppB">'+ppOpts(pp.b)+'</select></div></div>'+
+      '<button type="button" class="sw" id="ppSw" aria-label="起點終點對調" title="對調"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4v15M4 15l4 4 4-4M16 20V5M12 9l4-4 4 4"/></svg></button></div>'+
+      '<div class="go2"><div><label class="pl" for="ppT">出發時間</label><input type="time" id="ppT" value="'+esc(pp.t)+'"></div><button type="button" id="ppGo">查詢</button></div>'+
+      '<div class="msg" id="ppMsg" role="status"></div><div id="ppOut"></div></div>';
+    var $a=document.getElementById("ppA"),$b=document.getElementById("ppB");
+    $a.onchange=function(){pp.a=this.value};$b.onchange=function(){pp.b=this.value};
+    document.getElementById("ppT").onchange=function(){if(/^\d\d:\d\d$/.test(this.value))pp.t=this.value};
+    document.getElementById("ppSw").onclick=function(){var x=pp.a;pp.a=pp.b;pp.b=x;$a.value=pp.a;$b.value=pp.b};
+    document.getElementById("ppGo").onclick=ppRun;
+    a.classList.add("on");
+  }
+  function ppRun(){
+    var msg=document.getElementById("ppMsg"),out=document.getElementById("ppOut"),go=document.getElementById("ppGo");
+    var A=spot(pp.a),B=spot(pp.b);
+    if(!A||!B){msg.textContent="請先選好起點和終點。";return}
+    if(A.id===B.id){msg.textContent="起點和終點是同一個地方。";return}
+    if(!helperBase()){msg.textContent="還沒設定連結助手網址，無法查詢。";return}
+    if(pp.busy)return;pp.busy=true;go.disabled=true;out.innerHTML="";msg.textContent="查詢中…";
+    var done=function(){pp.busy=false;var g=document.getElementById("ppGo");if(g)g.disabled=false};
+    Promise.all([coordsOf(A),coordsOf(B)]).then(function(c){
+      if(!c[0]||!c[1]){msg.textContent="找不到「"+((!c[0]?A:B).name)+"」的位置，請補上地址，或用 Google／Naver 連結重新加入。";done();return}
+      var tm=pp.t.split(":"),dep=(+tm[0])*60+(+tm[1]);
+      var rt=function(walk){return helperFetch("/route?from="+c[0].join(",")+"&to="+c[1].join(",")+(walk?"&mode=foot":"")).then(function(j){return j&&j.sec>=0?j:null},function(){return null})};
+      return Promise.all([rt(false),rt(true),aiTransitDetail(c[0],c[1],dep)]).then(function(r){
+        if(spot(pp.a)!==A||spot(pp.b)!==B||!document.getElementById("ppOut"))return done();
+        var car=r[0],foot=r[1],tr=r[2],line=ppKm(c[0],c[1]);
+        var cell=function(t,j){return '<div><small>'+t+'</small><b>'+(j?mmss(j.sec):"—")+'</b><small>'+(j?(j.km||0)+" 公里":"查不到")+'</small></div>'};
+        var h='<div class="mods"><div><small>直線距離</small><b>'+(line>=1?(Math.round(line*10)/10)+" 公里":Math.round(line*1000)+" 公尺")+'</b><small>&nbsp;</small></div>'+cell("開車",car)+cell("步行",foot)+'</div>';
+        h+='<h4>大眾運輸</h4>';
+        var g="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin="+encodeURIComponent(c[0].join(","))+"&destination="+encodeURIComponent(c[1].join(","));
+        if(tr&&tr.sec>=0){
+          var ev={id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),tid:(IDX&&IDX.cur)||"",trip:(s&&s.title)||"",day:0,date:"",from:A.name||"",to:B.name||"",fc:c[0].join(","),tc:c[1].join(","),sec:tr.sec,km:tr.km,dep:tr.dep||pp.t,bus:!!tr.bus,lines:tr.lines,steps:tr.steps};
+          rtSave(ev);
+          h+=trHtml(ev)+'<p class="fo">'+(tr.bus?'這段路沒有不搭公車的走法，以下包含公車。<br>':'')+'以 '+esc(ev.dep)+' 出發查詢。時間是 Google 依明天同一時段的班表估算，實際班次與票價請以現場或 Google 地圖為準。這次查詢已存進交通查詢紀錄。</p>';
+        }else{
+          h+='<p class="fo" style="margin-top:0">'+(tr&&tr.err==="none"?"這段路找不到大眾運輸路線，可能太近或沒有班次。":tr&&tr.err==="limit"?"本月大眾運輸查詢已達上限。":tr&&tr.err==="slow"?"查詢太頻繁，請等一分鐘再試。":"大眾運輸查詢失敗"+(tr&&tr.st?"（"+tr.st+(tr.code?" "+tr.code:"")+"）":"")+"，請稍後再試。")+'</p>';
+        }
+        h+='<div class="ac"><a href="'+g+'" target="_blank" rel="noopener">在 Google 地圖開啟</a><button type="button" id="ppAll">查看全部紀錄</button></div>';
+        out.innerHTML=h;msg.textContent="";
+        var ba=document.getElementById("ppAll");if(ba)ba.onclick=function(){document.getElementById("ppSheet").classList.remove("on");openRt()};
+        done();
+      });
+    }).catch(function(){msg.textContent="查詢失敗，請檢查網路後再試。";done()});
+  }
+  (function(){var b=document.getElementById("p2pBtn");if(b)b.onclick=function(){if(viewerMode)return;ppOpen()}})();
   /* ---- 交通時間（真實查詢，失敗就用估算） ---- */
   function aiTransit(a,b,dep){
     var base=helperBase();if(!base)return Promise.resolve({err:"no-helper"});

@@ -667,7 +667,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
 #toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vBuy svg,#vSug svg{width:20px;height:20px}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{right:18px!important}
-.mko span{display:block;width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 55%,var(--surface));border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35);opacity:.85}
+.mko span{display:block;width:12px;height:12px;border-radius:50%;background:var(--c,#a8a7a2);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}.mko.h span{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;line-height:0}.mko.cur span{width:20px;height:20px;box-shadow:0 0 0 3px color-mix(in srgb,var(--c,#7b8496) 35%,transparent),0 2px 6px rgba(0,0,0,.45)}.mko.cur.h span{width:24px;height:24px}.mklg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 2px 2px;font-size:.76rem;color:var(--muted,#6b7387)}.mklg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.mklg i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}.mklg i.h{border-radius:3px}
 /* 設定、景點視窗要蓋過右下角浮動按鈕 */
 .setback{z-index:70!important}.settings{z-index:71!important}
 #trSheet{position:fixed;inset:0;z-index:310;display:none}#trSheet.on{display:block}
@@ -2058,8 +2058,10 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(o.google&&helperBase())autoPlace(sp.id);
     return sp;
   }
+  function mapBanner(x){return /^[\[\(（【]?\s*(?:네이버\s*지도|naver\s*map|카카오\s*맵|kakao\s*map|google\s*maps?|google\s*地圖|구글\s*지도|지도|map)\s*[\]\)）】]?$/i.test((x||"").trim())}
+  function preClean(a){return (a||[]).filter(function(x){return x&&!mapBanner(x)})}
   function cleanTitle(t){
-    t=(t||"").trim();if(/^(네이버 ?지도|naver ?map|google ?maps?|google 地圖)$/i.test(t))return "";
+    t=(t||"").trim();if(mapBanner(t))return "";if(/^(네이버 ?지도|naver ?map|google ?maps?|google 地圖)$/i.test(t))return "";
     return t.replace(/\s*[\|｜]\s*[^\|｜]*$/,"").replace(/\s+[-–—:：]\s+[^-–—:：]{1,30}$/,"").trim()||t;
   }
   function viaHelper(v,pre){
@@ -2092,7 +2094,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   function fromLink(){
     var raw=$("gm").value.trim();if(!raw)return;
-    var um=raw.match(/https?:\/\/\S+/),v=um?um[0]:raw,pre=um?raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean):[];
+    var um=raw.match(/https?:\/\/\S+/),v=um?um[0]:raw,pre=um?preClean(raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()})):[];
     var r=parseMaps(v);
     var nv0=okNaver(v);
     if(!r&&nv0){
@@ -4129,26 +4131,41 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   var mapVw=MapView({box:$("vMapBox"),chips:$("vMapChips"),st:$("vMapSt"),mono:true});
   /* single-spot map + spot modal */
   var PINIC=function(mono){var c=mono?th("--blue","#5a8dbd"):th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
+  /* 莫蘭迪色系：低彩度、帶灰 */
+  var CATCOL={"住宿":"#5d6878","景點":"#7895b2","體驗":"#9d8bb0","美食":"#c48b7c","點心":"#cdb27a","購物":"#86a68f"};
+  function catCol(c){return CATCOL[c]||"#a8a7a2"}
+  function isHotelSp(o){return !!o&&(o.cat==="住宿"||(s.hotelSpots||[]).some(function(x){return x.sid===o.id}))}
+  function spIcon(o,cur){
+    var h=isHotelSp(o),c=h?CATCOL["住宿"]:catCol(o.cat),z=cur?(h?24:20):(h?20:12),w=z+4;
+    return L.divIcon({className:"mko"+(h?" h":"")+(cur?" cur":""),html:'<span style="--c:'+c+';background:'+c+'">'+(h?'<svg viewBox="0 0 24 24" width="'+(cur?15:13)+'" height="'+(cur?15:13)+'" fill="#fff" aria-hidden="true"><path d="M12 3.2 2.8 11h2.7v9h5v-5.6h3V20h5v-9h2.7z"/></svg>':"")+'</span>',iconSize:[w,w],iconAnchor:[w/2,w/2],popupAnchor:[0,-w/2]});
+  }
   function SpotMap(box,st,mono){
-    var c={map:null,mk:null};
+    var c={map:null,mk:null,lg:null};
     c.show=function(sp){
       var has=okLL(sp.lat,sp.lng);
-      box.hidden=!has;
+      box.hidden=!has;if(c.lg)c.lg.hidden=!has;
       if(!has){if(c.map&&c.mk){c.map.removeLayer(c.mk);c.mk=null}return Promise.resolve(false)}
       return loadLeaflet().then(function(){
         if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map)}
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
-        c.mk=L.marker([sp.lat,sp.lng],{icon:PINIC(mono)}).addTo(c.map);
-        /* 景點庫裡其他有座標的景點，用小圓點標出來（滑過或點一下顯示店名） */
+        c.mk=L.marker([sp.lat,sp.lng],{icon:spIcon(sp,true),zIndexOffset:500}).addTo(c.map);
+        /* 景點庫裡其他有座標的景點：依分類上色，住宿用「宿」方塊標出來 */
         if(!c.others)c.others=L.layerGroup().addTo(c.map);
         c.others.clearLayers();
+        var seen={},hot=false;
+        if(isHotelSp(sp))hot=true;else seen[sp.cat||""]=1;
         (s.spots||[]).forEach(function(o){
           if(!o||o.id===sp.id||!okLL(o.lat,o.lng))return;
-          var mk=L.marker([o.lat,o.lng],{icon:L.divIcon({className:"mko",html:"<span></span>",iconSize:[14,14],iconAnchor:[7,7]}),zIndexOffset:-500,keyboard:false}).addTo(c.others);
-          var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[o.cat,o.area].filter(Boolean).join(" · ");
-          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>景點庫'+(sub?" · "+esc(sub):"")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
+          var oh=isHotelSp(o);if(oh)hot=true;else seen[o.cat||""]=1;
+          var mk=L.marker([o.lat,o.lng],{icon:spIcon(o,false),zIndexOffset:oh?-100:-500,keyboard:false}).addTo(c.others);
+          var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[oh?"住宿":o.cat,o.area].filter(Boolean).join(" · ");
+          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>'+(sub?esc(sub):"景點庫")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
         });
+        if(!c.lg){c.lg=document.createElement("div");c.lg.className="mklg";box.insertAdjacentElement("afterend",c.lg)}
+        var ks=CATS.filter(function(k){return k!=="住宿"&&seen[k]}).concat(Object.keys(seen).filter(function(k){return k&&CATS.indexOf(k)<0}));
+        c.lg.innerHTML=(hot?'<span><svg viewBox="0 0 24 24" width="12" height="12" fill="'+CATCOL["住宿"]+'" aria-hidden="true"><path d="M12 3.2 2.8 11h2.7v9h5v-5.6h3V20h5v-9h2.7z"/></svg>住宿</span>':"")+ks.map(function(k){return '<span><i style="--c:'+catCol(k)+'"></i>'+esc(k)+'</span>'}).join("")+(seen[""]?'<span><i style="--c:'+catCol("")+'"></i>未分類</span>':"");
+        c.lg.hidden=false;
         c.map.setView([sp.lat,sp.lng],16);
         return true;
       },function(){st.textContent="地圖載入失敗，請檢查網路。";return false});
@@ -4496,7 +4513,7 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
     raw=(raw||"").trim();
     var um=raw.match(/https?:\/\/\S+/);
     if(!um)return Promise.reject(new Error("請貼上包含 http 的地圖連結"));
-    var v=um[0],pre=raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}).filter(Boolean);
+    var v=um[0],pre=preClean(raw.slice(0,um.index).split(/\n/).map(function(x){return x.trim()}));
     var r=parseMaps(v),nv0=okNaver(v);
     if(!r&&!nv0)return Promise.reject(new Error("這不是 Google 或 Naver 地圖連結"));
     function fin(o){
