@@ -667,6 +667,7 @@ body.viewer #mapPanel .mphd .sx{display:none}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px;max-height:40px;padding:0!important;box-sizing:border-box;border-radius:50%;line-height:0}
 #toTop svg,#mapBtn svg,#splitBtn svg,#fxBtn svg,#vLib svg,#vDl svg,#vMap svg,#vFx svg,#vSplit svg,#vBuy svg,#vSug svg{width:20px;height:20px}
 #toTop,#mapBtn,#splitBtn,#fxBtn,#vLib,#vDl,#vMap,#vFx,#vSplit,#vBuy,#vSug{right:18px!important}
+.mko{display:grid;place-items:center}
 .mko span{display:block;width:12px;height:12px;border-radius:50%;background:var(--c,#a8a7a2);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}.mko.h span{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;line-height:0}.mko.cur span{width:20px;height:20px;box-shadow:0 0 0 3px color-mix(in srgb,var(--c,#7b8496) 35%,transparent),0 2px 6px rgba(0,0,0,.45)}.mko.cur.h span{width:24px;height:24px}.mklg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 2px 2px;font-size:.76rem;color:var(--muted,#6b7387)}.mklg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.mklg i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}.mklg i.h{border-radius:3px}
 /* 設定、景點視窗要蓋過右下角浮動按鈕 */
 .setback{z-index:70!important}.settings{z-index:71!important}
@@ -1186,6 +1187,11 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #viewer .vkids>span>img,#viewer .vkids>span>i{grid-row:span 2;width:40px;height:40px;align-self:center}
 #viewer .vkids>span .mlinks{grid-column:2;margin-left:0!important;justify-content:flex-start!important}
 
+
+/* 危險動作：按兩次才會執行（第一次按下後的樣子） */
+.armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
+@keyframes armpulse{50%{opacity:.72}}
+@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 </style>
 </head>
 <body class="viewer"><script>(function(){var E=[];function add(x){E.push(String(x).slice(0,140))}window.addEventListener("error",function(e){add(e.target&&e.target.src?"載入失敗 "+e.target.src.split("/").slice(-2).join("/"):(e.message||"error"))},true);window.addEventListener("unhandledrejection",function(e){add("promise: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason))});setTimeout(function(){var v=document.getElementById("viewer"),p=document.querySelector("#vLoad p");if(v&&p&&v.classList.contains("vload")){p.innerHTML="載入逾時<br><small style='display:block;margin-top:8px;opacity:.8;font-size:.75rem;letter-spacing:0;word-break:break-all'>cloud="+!!window.cloud+(E.length?" ／ "+E.join(" ／ "):"")+"</small>"}},8000)})()</script>
@@ -1211,6 +1217,14 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   var KEY="travel-spots-v1";
   var s={title:"",spots:[],days:[[],[]]};
   var __dm={};var $=function(i){return document.getElementById(i)||__dm[i]||(__dm[i]=document.createElement("div"))};
+  /* 危險動作一律「按兩次」：第一次把按鈕換成確認字樣，4 秒沒再按就自己復原 */
+  function arm2off(b){if(!b||!b._a2)return;b._a2=0;clearTimeout(b._a2t);b.classList.remove("armed");if(b._a2h!=null)b.innerHTML=b._a2h}
+  function arm2(btn,label,fn){
+    if(!btn){fn();return}
+    if(btn._a2){arm2off(btn);fn.call(btn);return}
+    btn._a2=1;btn._a2h=btn.innerHTML;btn.classList.add("armed");btn.textContent=label||"再按一次刪除";
+    btn._a2t=setTimeout(function(){arm2off(btn)},4000);
+  }
   var uid=function(){return Math.random().toString(36).slice(2,9)};
   var openKey=null,justDragged=false,downloads=null;
   var acctDeleting=false,applyingRemote=false,cloudUser=null,cloudApi=null,deviceId="";
@@ -2247,7 +2261,18 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     }
     try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();bmsg("備份已下載。")}catch(e){showBk(json)}
   };
-  $("bkLoad").onclick=function(){$("bkFile").click()};
+  var bkPend=null;
+  $("bkLoad").onclick=function(){
+    if(this._a2&&bkPend){
+      arm2(this,"",function(){});
+      var p=bkPend;bkPend=null;
+      s=p.ns;theme=cleanTheme(p.theme);openKey=null;
+      saveTheme();applyTheme();ensureTrip();save();render();renderTrip();
+      toggleSettings(false);say("已還原 "+p.ns.spots.length+" 個景點。");
+      return;
+    }
+    bkPend=null;$("bkFile").click();
+  };
   $("bkFile").onchange=function(){
     var inp=this,f=inp.files&&inp.files[0];if(!f)return;
     f.text().then(function(t){
@@ -2256,10 +2281,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       var d=o&&o.data?o.data:o;
       if(!d||!Array.isArray(d.spots)||!Array.isArray(d.days)){bmsg("備份檔的內容不完整，無法還原。");return}
       var ns=cleanData(d);
-      if(!confirm("備份內有 "+ns.spots.length+" 個景點、"+ns.days.length+" 天行程。還原會取代目前的所有內容，確定嗎？"))return;
-      s=ns;theme=cleanTheme(o.theme);openKey=null;
-      saveTheme();applyTheme();ensureTrip();save();render();renderTrip();
-      toggleSettings(false);say("已還原 "+ns.spots.length+" 個景點。");
+      bkPend={ns:ns,theme:o.theme};
+      bmsg("備份內有 "+ns.spots.length+" 個景點、"+ns.days.length+" 天行程。還原會取代目前的所有內容——再按一次「還原」才會執行。");
+      arm2($("bkLoad"),"再按一次確認還原",function(){});
     }).catch(function(){inp.value="";bmsg("讀取檔案失敗。")});
   };
   function ensureTrip(){
@@ -3892,11 +3916,13 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     updateShareUI();
     copyLink(shareLink(e.shareId),"已建立分享連結並複製。");
   };
-  $("shareStop").onclick=async function(){
+  $("shareStop").onclick=function(){
     var e=ent(IDX.cur);if(!e||!e.shareId||!cloudUser)return;
-    if(!confirm("停止分享後，已經發出去的連結會立刻失效。確定嗎？"))return;
+    showSyncInfo("停止分享後，已經發出去的連結會立刻失效。");
+    arm2(this,"再按一次停止分享",async function(){
     try{await cloudApi.unshare(e.shareId)}catch(err){showSyncInfo(syncErr(err));return}
     e.shareId="";e.shareFull=false;e.dirty=true;e.ver=(e.ver||0)+1;persistIdx();updateShareUI();pushTrip(IDX.cur);say("已停止分享。");
+    });
   };
 
   /* read-only viewer (?share=ID) */
@@ -4146,7 +4172,17 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       box.hidden=!has;if(c.lg)c.lg.hidden=!has;
       if(!has){if(c.map&&c.mk){c.map.removeLayer(c.mk);c.mk=null}return Promise.resolve(false)}
       return loadLeaflet().then(function(){
-        if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map)}
+        if(!c.map){c.map=L.map(box,{zoomControl:true}).setView([sp.lat,sp.lng],16);baseLayer(c.map);
+          /* 點景點後，把整個資訊框移到地圖正中央（Leaflet 預設的 autoPan 在這種小地圖裡會亂跑） */
+          c.map.on("popupopen",function(ev){
+            try{
+              var pop=ev.popup,ll=pop.getLatLng(),z=c.map.getZoom(),el=pop.getElement();
+              var ph=(el&&el.offsetHeight)||150,vh=c.map.getSize().y,pt=c.map.project(ll,z),dy=ph/2;
+              if(ph>vh-24)dy=ph-vh/2+12;   /* 比地圖還高時，先對齊上緣 */
+              c.map.setView(c.map.unproject(L.point(pt.x,pt.y-dy),z),z,{animate:false});
+            }catch(e){}
+          });
+        }
         c.map.invalidateSize();
         if(c.mk)c.map.removeLayer(c.mk);
         c.mk=L.marker([sp.lat,sp.lng],{icon:spIcon(sp,true),zIndexOffset:500}).addTo(c.map);
@@ -4160,7 +4196,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
           var oh=isHotelSp(o);if(oh)hot=true;else seen[o.cat||""]=1;
           var mk=L.marker([o.lat,o.lng],{icon:spIcon(o,false),zIndexOffset:oh?-100:-500,keyboard:false}).addTo(c.others);
           var nu=naverUrl(o),gu=/^https:\/\//.test(o.url||"")?o.url:"https://www.google.com/maps/search/?api=1&query="+o.lat+","+o.lng,sub=[oh?"住宿":o.cat,o.area].filter(Boolean).join(" · ");
-          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>'+(sub?esc(sub):"景點庫")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>');
+          mk.bindPopup('<div class="mpop">'+(o.img?'<img class="pi" src="'+o.img+'" alt="">':"")+'<b>'+esc(o.name)+'</b><br>'+(sub?esc(sub):"景點庫")+(o.addr?'<br>'+esc(o.addr):"")+'<br>'+(/^https?:\/\//.test(nu)?'<a href="'+esc(nu)+'" target="_blank" rel="noopener">Naver</a>':"")+'<a href="'+esc(gu)+'" target="_blank" rel="noopener">Google</a></div>',{autoPan:false,maxWidth:240});
         });
         if(!c.lg){c.lg=document.createElement("div");c.lg.className="mklg";box.insertAdjacentElement("afterend",c.lg)}
         var ks=CATS.filter(function(k){return k!=="住宿"&&seen[k]}).concat(Object.keys(seen).filter(function(k){return k&&CATS.indexOf(k)<0}));
