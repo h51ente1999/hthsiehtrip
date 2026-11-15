@@ -1536,7 +1536,15 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       })();
     },function(e){
       var c=String((e&&e.message)||"");
-      fin(0,/404/.test(c)?"Naver 這一頁沒有抓到圖片。":/400/.test(c)?"這個連結不是 Naver 店家頁。":"抓圖片失敗，請稍後再試。");
+      if(/400/.test(c))return fin(0,"這個連結不是 Naver 店家頁。");
+      if(!/404/.test(c))return fin(0,"抓圖片失敗（"+c+"），請稍後再試。");
+      /* 抓不到時再問一次診斷資料，把助手實際看到的狀況講出來 */
+      helperFetch("/photos?dbg=1&n=1&u="+encodeURIComponent(u)).then(function(j){
+        var t=(j&&j.tried)||[];
+        fin(0,"Naver 沒有抓到圖片。助手看到："+(t.length?t.map(function(x){
+          return (x.url||"").replace(/^https:\/\/m\.place\.naver\.com\/place\//,"").replace(/^https:\/\/m\.place\.naver\.com\//,"")+" → "+(x.err?("錯誤 "+x.err):("狀態 "+x.status+"／"+Math.round((x.len||0)/1024)+"KB／找到 "+x.raw+" 個網址，可用 "+x.kept+" 個"));
+        }).join("； "):"沒有回應")+"。把這行訊息給我，我再調整。");
+      },function(){fin(0,"Naver 這一頁沒有抓到圖片。")});
     });
   }
   function blk(sp,inst,day,inLib,forceOpen){
