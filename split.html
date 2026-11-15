@@ -164,6 +164,11 @@ footer a{color:var(--muted)}
 
 html.pre body{visibility:hidden}
 html.pre *{transition:none!important;animation:none!important}
+
+/* 危險動作：按兩次才會執行（第一次按下後的樣子） */
+.armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
+@keyframes armpulse{50%{opacity:.72}}
+@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -205,6 +210,14 @@ try{var q=new URLSearchParams(location.search);if(q.get("embed")==="1")document.
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
+/* 危險動作一律「按兩次」：第一次把按鈕換成確認字樣，4 秒沒再按就自己復原 */
+function arm2off(b){if(!b||!b._a2)return;b._a2=0;clearTimeout(b._a2t);b.classList.remove("armed");if(b._a2h!=null)b.innerHTML=b._a2h}
+function arm2(btn,label,fn){
+  if(!btn){fn();return}
+  if(btn._a2){arm2off(btn);fn.call(btn);return}
+  btn._a2=1;btn._a2h=btn.innerHTML;btn.classList.add("armed");btn.textContent=label||"再按一次刪除";
+  btn._a2t=setTimeout(function(){arm2off(btn)},4000);
+}
 var APP="travel-spots-v1";
 var CURS=[["KRW","韓元","₩"],["JPY","日圓","¥"],["USD","美元","$"],["EUR","歐元","€"],["THB","泰銖","฿"],["CNY","人民幣","¥"],["HKD","港幣","HK$"],["SGD","新加坡幣","S$"],["MYR","馬來幣","RM"],["VND","越南盾","₫"],["GBP","英鎊","£"],["AUD","澳幣","A$"],["PHP","披索","₱"],["IDR","印尼盾","Rp"]];
 var CUR={};CURS.forEach(function(c){CUR[c[0]]={c:c[0],n:c[1],s:c[2]}});
@@ -593,10 +606,11 @@ function shareModal(){
     $("shCopy").onclick=function(){copyText(link,"已複製連結")};
     if($("shPwv")){$("shPwv").value=C.meta.pw;$("shPwv").onfocus=function(){this.select()};$("shPwc").onclick=function(){copyText(C.meta.pw,"已複製密碼")}}
     document.querySelectorAll("[data-drop]").forEach(function(b){b.onclick=function(){
-      var k=this.dataset.drop,nm=(L.people[k]&&L.people[k].memberId)?mname(L,L.people[k].memberId):"（還沒選成員）";
-      if(!confirm("移除「"+nm+"」這個登入？\n他之前上傳的款項會變成「旅伴」，要重新用連結和密碼加入才能再編輯。"))return;
-      this.disabled=true;
-      API.dropPerson(L.id,k).then(function(){toast("已移除")},function(e){toast("移除失敗："+((e&&e.code)||"error"))});
+      var k=this.dataset.drop,btn=this;
+      arm2(btn,"再按一次移除",function(){
+        btn.disabled=true;
+        API.dropPerson(L.id,k).then(function(){toast("已移除")},function(e){toast("移除失敗："+((e&&e.code)||"error"))});
+      });
     }});
     document.querySelectorAll("[data-reset]").forEach(function(b){b.onclick=function(){var k=this.dataset.reset;API.updatePerson(L.id,k,{memberId:""}).then(function(){toast("已重設，對方可以重新選身分")},function(){toast("重設失敗：請確認 Firestore 規則已更新")})}});
     drawPins();

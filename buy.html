@@ -155,6 +155,11 @@ body.tbar-closed #tripBar{display:none}
 .lsp{width:16px;height:16px;flex:none;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin2 .8s linear infinite}
 @keyframes spin2{to{transform:rotate(360deg)}}
 .notice{text-align:center;padding:26px 10px;color:var(--muted);line-height:1.8}
+
+/* 危險動作：按兩次才會執行（第一次按下後的樣子） */
+.armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
+@keyframes armpulse{50%{opacity:.72}}
+@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -184,6 +189,14 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
 var APP="travel-spots-v1",HELPER="https://hthsiehtrip.h51ente1999.workers.dev";
 var MAXIMG=4,IMGMAX=1100,BUDGET=820000;
 function $(id){return document.getElementById(id)}
+/* 危險動作一律「按兩次」：第一次把按鈕換成確認字樣，4 秒沒再按就自己復原 */
+function arm2off(b){if(!b||!b._a2)return;b._a2=0;clearTimeout(b._a2t);b.classList.remove("armed");if(b._a2h!=null)b.innerHTML=b._a2h}
+function arm2(btn,label,fn){
+  if(!btn){fn();return}
+  if(btn._a2){arm2off(btn);fn.call(btn);return}
+  btn._a2=1;btn._a2h=btn.innerHTML;btn.classList.add("armed");btn.textContent=label||"再按一次刪除";
+  btn._a2t=setTimeout(function(){arm2off(btn)},4000);
+}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},2200)}
 function nf(n){return Number(Math.round(n)).toLocaleString("en-US")}
@@ -339,7 +352,10 @@ async function toZh(t,hint){
   var r=await fetch(HELPER+"/zh?q="+encodeURIComponent(String(t).slice(0,120))+(hint?"&hint="+encodeURIComponent(String(hint).slice(0,60)):""));
   var j=await r.json();
   if(!r.ok||!j.zh)throw new Error((j&&j.error)||"fail");
-  return j.zh;
+  var z=String(j.zh).trim();
+  /* AI 偶爾會回「對不起，我無法翻譯」這類句子，不能當商品名 */
+  if(!z||z.length>120||/對不起|抱歉|我無法|沒辦法翻譯|語言模型|^sorry|i\s*(?:can.?t|cannot)/i.test(z))throw new Error("refused");
+  return z;
 }
 
 function pubLink(){
@@ -566,9 +582,10 @@ function edit(id){
     try{await API.saveBuy(META.sid,o);c.hidden=true;toast(nw?"已新增":"已儲存")}
     catch(e){this.disabled=false;$("eMsg").textContent="存不進去："+((e&&e.code)||"error")+(String((e&&e.message)||"").indexOf("longer than")>=0?"（照片太大）":"")}
   };
-  if(!nw)$("eDel").onclick=async function(){
-    if(!confirm("確定刪除「"+(x.title||"這一項")+"」？"))return;
-    try{await API.delBuy(META.sid,x.id);c.hidden=true;toast("已刪除")}catch(e){toast("刪不掉："+((e&&e.code)||"error"))}
+  if(!nw)$("eDel").onclick=function(){
+    arm2(this,"再按一次刪除",async function(){
+      try{await API.delBuy(META.sid,x.id);c.hidden=true;toast("已刪除")}catch(e){toast("刪不掉："+((e&&e.code)||"error"))}
+    });
   };
 }
 function drawThumbs(){

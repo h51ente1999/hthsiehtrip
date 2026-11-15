@@ -210,6 +210,11 @@ footer a{color:var(--muted)}
 .mx{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;padding:0;background:var(--soft);color:var(--ink);display:grid;place-items:center;transition:transform .2s cubic-bezier(.3,.8,.3,1)}
 .mx:active{transform:scale(.92)}
 body.mlock{overflow:hidden}
+
+/* 危險動作：按兩次才會執行（第一次按下後的樣子） */
+.armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
+@keyframes armpulse{50%{opacity:.72}}
+@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -248,6 +253,14 @@ if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0
 "use strict";
 var KEY="bills-v1";
 function $(id){return document.getElementById(id)}
+/* 危險動作一律「按兩次」：第一次把按鈕換成確認字樣，4 秒沒再按就自己復原 */
+function arm2off(b){if(!b||!b._a2)return;b._a2=0;clearTimeout(b._a2t);b.classList.remove("armed");if(b._a2h!=null)b.innerHTML=b._a2h}
+function arm2(btn,label,fn){
+  if(!btn){fn();return}
+  if(btn._a2){arm2off(btn);fn.call(btn);return}
+  btn._a2=1;btn._a2h=btn.innerHTML;btn.classList.add("armed");btn.textContent=label||"再按一次刪除";
+  btn._a2t=setTimeout(function(){arm2off(btn)},4000);
+}
 function pad(n){return n<10?"0"+n:""+n}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function nf(n){return Number(n).toLocaleString("en-US")}
@@ -401,8 +414,8 @@ function editBill(id){
     var o={id:b.id||"b"+Date.now().toString(36),name:n,kind:$("eK").value,day:d,shift:$("eS").checked,lead:+$("eL").value,from:f,to:t,note:$("eNo").value.trim()};
     if(nw)D.bills.push(o);else D.bills[D.bills.indexOf(b)]=o;save();c.hidden=true;draw();toast(nw?"已新增":"已儲存");
   };
-  if(!nw)$("eDel").onclick=function(){if(!confirm("確定刪除「"+b.name+"」？。"))return;
-    D.bills=D.bills.filter(function(x){return x!==b});save();c.hidden=true;draw();toast("已刪除")};
+  if(!nw)$("eDel").onclick=function(){arm2(this,"再按一次刪除",function(){
+    D.bills=D.bills.filter(function(x){return x!==b});save();c.hidden=true;draw();toast("已刪除")})};
 }
 
 /* ---------- 備份 ---------- */
@@ -411,7 +424,7 @@ var billsSettings=function(){
   c.innerHTML='<h2>備份與還原</h2><p class="small muted" style="margin:0">資料只存在這個瀏覽器，不會上傳。換手機或清除瀏覽資料前，請先「匯出備份」。</p><div class="acts"><button class="btn pri" id="sExp" type="button">匯出備份</button><label class="btn" style="cursor:pointer">匯入備份<input type="file" id="sImp" accept="application/json,.json" hidden></label><button class="btn danger" id="sClr" type="button">全部清空</button></div><div class="small" id="sMsg" style="margin-top:8px;color:var(--warn)"></div>';
   $("sExp").onclick=function(){var bl=new Blob([JSON.stringify(D,null,1)],{type:"application/json"}),u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download="bills-"+ds(new Date())+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
   $("sImp").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var x=JSON.parse(r.result);if(!x||!Array.isArray(x.bills))throw 0;D=clean(x);save();draw();c.hidden=true;toast("已匯入備份")}catch(e){$("sMsg").textContent="這不是有效的備份檔。"}};r.readAsText(f)};
-  $("sClr").onclick=function(){if(!confirm("確定清空所有費用？"))return;D={bills:[]};save();draw();c.hidden=true;toast("已清空")};
+  $("sClr").onclick=function(){arm2(this,"再按一次清空全部",function(){D={bills:[]};save();draw();c.hidden=true;toast("已清空")})};
 };
 
 D=load();draw();
@@ -592,8 +605,9 @@ function editLoan(id){
     save();c.hidden=true;if(nw)SEL=o.id;draw();toast(nw?"已新增":"已儲存");
   };
   if(!nw)$("r_sDel").onclick=function(){
-    if(!confirm("確定刪除「"+(l.name||"未命名貸款")+"」？所有勾選都會一起刪除。"))return;
-    D.loans=D.loans.filter(function(x){return x.id!==l.id});SEL="";save();c.hidden=true;draw();toast("已刪除");
+    arm2(this,"再按一次刪除這筆貸款",function(){
+      D.loans=D.loans.filter(function(x){return x.id!==l.id});SEL="";save();c.hidden=true;draw();toast("已刪除");
+    });
   };
 }
 
@@ -615,8 +629,9 @@ window.repaySettings=function(){
     r.readAsText(f);
   };
   $("r_sRst").onclick=function(){
-    if(!confirm("確定清空所有貸款？金額、期數和所有勾選都會刪除。"))return;
-    D={loans:[]};SEL="";save();draw();$("r_setCard").hidden=true;toast("已清空");
+    arm2(this,"再按一次清空全部",function(){
+      D={loans:[]};SEL="";save();draw();$("r_setCard").hidden=true;toast("已清空");
+    });
   };
   if(window.syncBoxInject)syncBoxInject();
 };
