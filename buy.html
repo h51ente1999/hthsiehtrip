@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%233fa4e0'/%3E%3Cstop%20offset='1'%20stop-color='%238a6fb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url(%23g)'/%3E%3Cpath%20d='M20%2024h24l-2.5%2025a4%204%200%200%201-4%203.6H26.5a4%204%200%200%201-4-3.6zM25%2024v-4a7%207%200%200%201%2014%200v4'%20fill='none'%20stroke='%23fff'%20stroke-width='4.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-buy.png">
 <meta name="apple-mobile-web-app-capable" content="no">
-<meta name="apple-mobile-web-app-title" content="必買清單">
+<meta name="apple-mobile-web-app-title" content="購物清單">
 <script>try{if(new URLSearchParams(location.search).get("embed")==="1")document.documentElement.setAttribute("data-embed","1")}catch(e){}
 document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
@@ -267,13 +267,13 @@ async function makeLedger(){
     if(!api0||!api0.getShareSplit){MAKING=false;ERR="連不上雲端服務。";setBadge("連不上雲端");drawList();return}
     var sp=null;try{sp=await api0.getShareSplit(VIEW)}catch(e){}
     MAKING=false;
-    if(!sp||!sp.sid){ERR="這個行程還沒有共用的必買清單。請行程的擁有者先打開一次必買清單，之後你就看得到了。";setBadge("");drawList();return}
+    if(!sp||!sp.sid){ERR="這個行程還沒有共用的購物清單。請行程的擁有者先打開一次購物清單，之後你就看得到了。";setBadge("");drawList();return}
     META={id:sp.sid,cloud:true,sid:sp.sid,salt:sp.salt||"",name:"共用清單",tripId:"s:"+VIEW,ts:Date.now()};
     METAS.push(META);ERR="";connect();return;
   }
   var tr=TRIPS.filter(function(x){return x.id===TRIP})[0];if(!tr)return;
   var lo=localFor(TRIP);
-  if(lo){ERR="「"+lo.name+"」這本分帳還沒開啟共同編輯。請先到分帳頁按「共同編輯」把它搬上雲端，必買清單才能和旅伴共用。";setBadge("未同步");drawList();return}
+  if(lo){ERR="「"+lo.name+"」這本分帳還沒開啟共同編輯。請先到分帳頁按「共同編輯」把它搬上雲端，購物清單才能和旅伴共用。";setBadge("未同步");drawList();return}
   MAKING=true;setBadge("連線中…");drawList();
   var api=await getApi();
   if(!api){MAKING=false;ERR="連不上雲端服務。";setBadge("連不上雲端");drawList();return}
@@ -336,7 +336,7 @@ async function connect(){
   if(my!==RUN)return;
   UNSUB.push(api.listenLedger(META.sid,function(d){if(my!==RUN)return;LED=d;pubLink();if(!d){ERR="這個帳本已不存在。";setBadge("連不上雲端")}else{ERR="";setBadge("已同步")}draw()},function(){if(my!==RUN)return;ERR="沒有權限讀這個帳本，請先在分帳頁加入。";setBadge("連不上雲端");draw()}));
   UNSUB.push(api.listenPeople(META.sid,function(m){if(my!==RUN)return;PEOPLE=m;draw()},function(){}));
-  UNSUB.push(api.listenBuys(META.sid,function(a){if(my!==RUN)return;ITEMS=a.map(function(x){return clean(x,x.id)}).sort(function(p,q){return (p.got?1:0)-(q.got?1:0)||q.ts-p.ts});ERR="";setBadge("已同步");draw()},function(e){if(my!==RUN)return;ERR=(e&&e.code==="permission-denied")?(META&&META.salt?"NEEDJOIN":"沒有權限，請確認 Firebase 規則已加上必買清單那一段。"):"同步失敗。";setBadge("同步失敗");draw()}));
+  UNSUB.push(api.listenBuys(META.sid,function(a){if(my!==RUN)return;ITEMS=a.map(function(x){return clean(x,x.id)}).sort(function(p,q){return (p.got?1:0)-(q.got?1:0)||q.ts-p.ts});ERR="";setBadge("已同步");draw()},function(e){if(my!==RUN)return;ERR=(e&&e.code==="permission-denied")?(META&&META.salt?"NEEDJOIN":"沒有權限，請確認 Firebase 規則已加上購物清單那一段。"):"同步失敗。";setBadge("同步失敗");draw()}));
 }
 
 /* ---------- 翻成繁體 ---------- */
@@ -399,7 +399,7 @@ function drawBar(){
 }
 function drawList(){
   var c=$("listCard");
-  if(!VIEW&&!TRIPS.length){c.innerHTML='<div class="notice">還沒有行程。<br>先到 Trip 建立行程，再回來記必買。</div>';return}
+  if(!VIEW&&!TRIPS.length){c.innerHTML='<div class="notice">還沒有行程。<br>先到 Trip 建立行程，再回來記購物清單。</div>';return}
   if(!META){
     if(MAKING){c.innerHTML='<div class="ld" style="justify-content:center;padding:22px"><i class="lsp"></i>正在幫這個行程開共用清單…</div>';return}
     if(ERR){
@@ -416,7 +416,7 @@ function drawList(){
     return;
   }
   if(ERR==="NEEDJOIN"){
-    c.innerHTML='<div class="notice">這個行程的必買清單是和旅伴共用的。<br>輸入擁有者給你的密碼就能加入。</div><div style="text-align:center"><button class="btn pri" id="jOpen" type="button">加入共用清單</button></div>';
+    c.innerHTML='<div class="notice">這個行程的購物清單是和旅伴共用的。<br>輸入擁有者給你的密碼就能加入。</div><div style="text-align:center"><button class="btn pri" id="jOpen" type="button">加入共用清單</button></div>';
     $("jOpen").onclick=function(){joinModal.declined=false;joinModal()};
     if(!joinModal.declined&&$("joinCard").hidden)joinModal();
     return;
@@ -431,7 +431,7 @@ function drawList(){
   }
   var mine=ITEMS.filter(function(x){return FILTER==="all"||(FILTER==="todo"?!x.got:x.got)});
   var left=ITEMS.filter(function(x){return !x.got}).length,got=ITEMS.length-left;
-  var h='<div class="lh"><h2>必買清單</h2><span style="display:flex;align-items:center;gap:8px"><span class="small muted">'+(meName()?esc(meName()):"")+'</span><button class="ib2" id="btnAdd" type="button" title="新增" aria-label="新增"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></span></div>';
+  var h='<div class="lh"><h2>購物清單</h2><span style="display:flex;align-items:center;gap:8px"><span class="small muted">'+(meName()?esc(meName()):"")+'</span><button class="ib2" id="btnAdd" type="button" title="新增" aria-label="新增"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></span></div>';
   h+='<div class="sumbar"><div><b>'+left+'</b><small>還沒買</small></div><div><b>'+got+'</b><small>已買到</small></div><div><b>'+ITEMS.length+'</b><small>全部</small></div></div>';
   h+='<div class="segs" role="group">'+[["all","全部"],["todo","還沒買"],["got","已買到"]].map(function(a){return '<button type="button" data-f="'+a[0]+'" aria-pressed="'+(FILTER===a[0])+'">'+a[1]+'</button>'}).join("")+'</div>';
   if(!mine.length)h+='<div class="notice">'+(ITEMS.length?"這個分類沒有東西":"還沒有東西，按上面的「＋」加第一樣")+'</div>';
@@ -537,7 +537,7 @@ function edit(id){
   IMGS=x.imgs.slice();ORIG=x.orig||"";
   var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
   var opts=Object.keys(CUR).map(function(k){return '<option value="'+k+'"'+(x.ccy===k?" selected":"")+'>'+k+'</option>'}).join("");
-  c.innerHTML='<h2>'+(nw?"新增必買":"編輯")+'</h2>'+
+  c.innerHTML='<h2>'+(nw?"新增商品":"編輯")+'</h2>'+
    '<label class="f"><span>商品網址（貼上後按抓取，會自動填名稱、價格和照片）</span><input type="text" id="eU" inputmode="url" placeholder="https://…" value="'+esc(x.url)+'"></label>'+
    '<div class="acts" style="margin-top:8px"><button class="btn" id="eFetch" type="button">從網址抓取</button></div><div id="eFs"></div>'+
    '<label class="f"><span>名稱</span><input type="text" id="eT" maxlength="80" value="'+esc(x.title)+'"></label>'+
@@ -650,7 +650,7 @@ $("btnSet").onclick=function(){
   c.hidden=false;$("editCard").hidden=true;
   var ms=members();
   c.innerHTML='<h2>關於這份清單</h2>'+
-   '<p class="small muted" style="margin:0">必買清單存在雲端，和這個行程的分帳帳本綁在一起，帳本裡的旅伴都看得到、都能編輯，每一項會記下是誰加的。</p>'+
+   '<p class="small muted" style="margin:0">購物清單存在雲端，和這個行程的分帳帳本綁在一起，帳本裡的旅伴都看得到、都能編輯，每一項會記下是誰加的。</p>'+
    (LED?'<p class="small muted" style="margin:10px 0 0">帳本：'+esc(LED.name||"共同帳本")+'<br>成員：'+esc(ms.map(function(m){return m.name}).join("、")||"—")+'<br>你是：'+esc(meName()||"（還沒在分帳頁選自己是誰）")+'</p>':'')+
    '<div class="acts"><button class="btn" id="sExp" type="button">匯出清單</button></div>'+
    '<p class="small muted" style="margin:10px 0 0">匯出的檔案含照片，可能較大。</p>';

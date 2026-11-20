@@ -48,10 +48,10 @@ main{position:relative}
 .tripbar .ib.on{background:var(--ink);color:var(--surface,#fff);border-color:var(--ink)}.tripbar .ib{display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:8px 10px;font-size:1.05rem;line-height:1}.exbtn:hover{background:var(--bg)!important}.hl{display:flex;align-items:center;gap:8px;white-space:nowrap;flex:none}.exwrap{position:relative;display:inline-flex}
 .hnight{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 2px 2px;font-size:.82rem;color:var(--muted)}.hnight select{padding:3px 22px 3px 8px;font-size:.82rem;border-radius:999px;max-width:92px}.hnight b{font-weight:600;color:var(--ink)}.exbtn{border:0!important;background:none!important;box-shadow:none!important;padding:4px 6px;color:var(--ink);line-height:0;display:inline-flex;align-items:center;border-radius:8px}
 .exmenu{position:absolute;left:0;top:calc(100% + 6px);z-index:30;display:flex;gap:4px;align-items:center;background:var(--surface,#fff);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 6px 20px rgba(0,0,0,.2)}
-.exmenu[hidden]{display:none}#exToggle.exbtn{position:fixed!important;right:18px!important;bottom:242px;z-index:60;width:40px!important;height:40px!important;min-width:40px;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center;line-height:0;background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;box-shadow:0 6px 16px rgba(0,0,0,.25)!important;cursor:pointer}
+.exmenu[hidden]{display:none}#exToggle.exbtn{position:fixed!important;right:18px!important;bottom:354px;z-index:60;width:40px!important;height:40px!important;min-width:40px;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center;line-height:0;background:linear-gradient(135deg,var(--blue),var(--dayg2))!important;color:var(--on-blue,#fff)!important;box-shadow:0 6px 16px rgba(0,0,0,.25)!important;cursor:pointer}
 #exToggle.exbtn svg{width:20px;height:20px}#exToggle.exbtn:hover{filter:brightness(1.07);background:linear-gradient(135deg,var(--blue),var(--dayg2))!important}#exToggle.exbtn:active{transform:scale(.92)}
 body.viewer #exToggle{display:none!important}
-#exMenu{position:fixed;left:auto;top:auto;right:68px;bottom:242px;z-index:61;max-width:calc(100vw - 90px);flex-wrap:wrap}
+#exMenu{position:fixed;left:auto;top:auto;right:68px;bottom:354px;z-index:61;max-width:calc(100vw - 90px);flex-wrap:wrap}
 #vDl{position:fixed;right:18px;bottom:354px;z-index:60;border:0;display:none;place-items:center;color:var(--on-blue,#fff);box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer}body.viewer #vDl.ok{display:grid}#vDl:active{transform:scale(.92)}#vDlMenu{position:fixed;left:auto;top:auto;right:68px;bottom:354px;z-index:61}
 .exi{background:none;border:0;padding:2px;border-radius:8px;cursor:pointer;line-height:0}.exi img{width:32px;height:32px;display:block}
 .exi svg{display:block;color:var(--ink)}
@@ -1238,6 +1238,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 #galBox .gacts button,#galBox .gacts .gnow{flex:1;text-align:center;border:1px solid var(--line,#dde);background:var(--bg);color:inherit;border-radius:12px;padding:9px 10px;font:inherit;font-size:.9rem;cursor:pointer}
 #galBox .gacts .gnow{color:var(--muted,#6b7387);cursor:default}
 #galBox .gacts .gdel{color:var(--warn,#c0503f);border-color:color-mix(in srgb,var(--warn,#c0503f) 45%,transparent)}
+
+.vrsty{font-size:.78rem;color:var(--muted,#6b7387);margin-top:2px}
+.vrt small{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1306,7 +1309,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 <div class="bottom">
 <section class="panel" id="flights"><h2>班機資訊</h2><div class="legs" id="legs"></div></section>
 <section class="panel" id="hotels"><h2>飯店資訊</h2><div id="hlist" class="drop dz" data-day="h"></div></section>
-<button type="button" id="buyBtn" aria-label="必買清單" title="必買清單"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 11.2a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
+<button type="button" id="buyBtn" aria-label="購物清單" title="購物清單"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 11.2a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
 <button type="button" id="rtBtn" aria-label="交通查詢紀錄" title="交通查詢紀錄"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18c0-4.5 0-6.5 3-6.5s6 0 6-4.5"/><circle cx="7" cy="19.5" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="5.5" r="2" fill="currentColor" stroke="none"/></svg></button>
 <button type="button" id="p2pBtn" aria-label="兩點交通查詢" title="兩點交通查詢"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4"/></svg></button>
 <div id="mapBk" hidden></div><button type="button" id="mapBtn" aria-label="地圖" title="地圖"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
@@ -1384,6 +1387,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     return out;
   }
   function rangeStr(r,sep){return r.arr==null?"":m2t(r.arr)+(r.leave!=null?(sep||" – ")+m2t(r.leave):"")}
+  /* 90 -> 「1 小時 30 分」 */
+  function durTxt(m){m=Math.round(numv(m)||0);if(!m)return "";var h=Math.floor(m/60),k=m%60;
+    return (h?h+" 小時"+(k?" ":""):"")+(k?k+" 分":"")}
   function kidNames(it){return (it.kids||[]).map(function(k){var sp=spot(k.sid);return sp?sp.name:""}).filter(Boolean)}
   function kidList(it){return (it.kids||[]).map(function(k){return spot(k.sid)}).filter(Boolean)}
   function noteLine(it,r,noKids,noDrive){
@@ -1811,7 +1817,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   function openBuy(){
     if(!buyOv){
       buyOv=document.createElement("div");buyOv.id="buyOv";buyOv.hidden=true;
-      buyOv.innerHTML='<div class="bk"></div><iframe title="必買清單" allow=""></iframe>';
+      buyOv.innerHTML='<div class="bk"></div><iframe title="購物清單" allow=""></iframe>';
       document.body.appendChild(buyOv);
       buyOv.querySelector("iframe").addEventListener("load",function(){ovLoaded(buyOv,"b")});
       buyOv.querySelector(".bk").addEventListener("click",closeBuy);
@@ -1849,7 +1855,6 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     trOpen({from:(p0&&p0.name)||"",to:(p1&&p1.name)||"",fc:(p0&&okLL(p0.lat,p0.lng))?p0.lat+","+p0.lng:"",tc:(p1&&okLL(p1.lat,p1.lng))?p1.lat+","+p1.lng:"",sec:it2.rt.sec,km:it2.rt.km,dep:it2.rt.dep,bus:!!it2.rt.bus,steps:it2.rt.steps,trip:(s&&s.title)||"",day:0});
   },true);
   (function(){var r=$("rtBtn");if(r)r.onclick=function(){if(viewerMode)return;openRt()}})();
-  (function(){var d=$("vDl");if(d&&!viewerMode)d.classList.add("ok")})();
   (function(){var b=$("splitBtn");if(b)b.onclick=function(){if(viewerMode||!IDX)return;openSplit("trip="+encodeURIComponent(IDX.cur)+"&autoshare=1")};
     var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}})();
   var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
@@ -4203,7 +4208,8 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(!sp)return "";
     var rg=r?rangeStr(r,"–"):(it&&it.time?it.time:""),food=isFoodCat(sp.cat),kn=(it&&it.kids)?kidNames(it):[];
     var tags=(sp.cat?'<span class="vtag'+(food?' food':'')+'">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
-    return '<div class="vr'+(food?' food':'')+(sp.img?' hasimg':'')+'"><div class="vrt'+(it&&it.fixed?' vfix':'')+'">'+(tl||esc(rg.split("–")[0]))+'</div><div class="vrl"><i></i></div><div class="vrm"><div class="vrh" role="button" tabindex="0" aria-expanded="false">'+(sp.img?'<img class="vrp" src="'+sp.img+'" alt="">':'')+'<div class="vrx">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="vrn">'+esc(sp.name)+'</div>'+(kn.length?'<div class="vrk">包含　'+kn.map(esc).join("、")+'</div>':'')+'</div>'+(sub?'<span class="vrs">'+esc(sub)+'</span>':'')+'<span class="vrc" aria-hidden="true"></span></div><div class="vdet"><div class="vdi">'+vitem(sp,it,r)+'</div></div></div></div>';
+    var ed=(r&&r.leave!=null)?m2t(r.leave):"",st=(r&&r.stay)?durTxt(r.stay):"";
+    return '<div class="vr'+(food?' food':'')+(sp.img?' hasimg':'')+'"><div class="vrt'+(it&&it.fixed?' vfix':'')+'">'+(tl||esc(rg.split("–")[0]))+(!tl&&ed?'<small>–'+esc(ed)+'</small>':'')+'</div><div class="vrl"><i></i></div><div class="vrm"><div class="vrh" role="button" tabindex="0" aria-expanded="false">'+(sp.img?'<img class="vrp" src="'+sp.img+'" alt="">':'')+'<div class="vrx">'+(tags?'<div class="vtags">'+tags+'</div>':'')+'<div class="vrn">'+esc(sp.name)+'</div>'+(st?'<div class="vrsty">停留 '+esc(st)+'</div>':'')+(kn.length?'<div class="vrk">包含　'+kn.map(esc).join("、")+'</div>':'')+'</div>'+(sub?'<span class="vrs">'+esc(sub)+'</span>':'')+'<span class="vrc" aria-hidden="true"></span></div><div class="vdet"><div class="vdi">'+vitem(sp,it,r)+'</div></div></div></div>';
   }
   var vCollapsed={};
   /* map (Leaflet + OpenStreetMap) */
