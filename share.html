@@ -130,7 +130,7 @@ p.hint.top{opacity:.75}
 .tripbar .sharebox input{flex:1 1 220px;min-width:0}
 .tripbar .sharebox .hint{flex-basis:100%;margin:0}
 body.viewer main{display:none}
-#viewer{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+#viewer{max-width:760px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) 16px 48px}
 #viewer h1,#viewer h2{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 16px}
 #viewer h2.vday{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}.vchev{width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:-4px 4px 0 0;transition:transform .15s}.vday.collapsed .vchev{transform:rotate(-45deg);margin:0 6px 0 0}#viewer .vlist.collapsed,#viewer p.hint.collapsed{display:none}
 #viewer h1{margin:0 0 10px}#viewer h2{margin:22px 0 8px;font-size:1.1rem}
@@ -1231,7 +1231,7 @@ body.viewer.vready{--navh:calc(66px + env(safe-area-inset-bottom))}
 body.viewer.vready .vwrap{padding-bottom:calc(var(--navh) + 12px)}
 body.viewer.vready .sitefoot{padding-bottom:calc(var(--navh) + 8px)}
 :root.vmode body.viewer.vready :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMenu){translate:0 calc(-56px - var(--navh))}
-body.viewer.vready :is(#splitOv,#buyOv){bottom:var(--navh);padding-bottom:8px}
+body.viewer.vready :is(#splitOv,#buyOv){top:env(safe-area-inset-top);bottom:var(--navh);padding-bottom:8px}
 body.viewer.vready :is(#splitOv,#buyOv) iframe{height:100%;max-height:100%}
 /* 這三顆改由底部分頁列取代 */
 body.viewer #vSplit,body.viewer #vBuy{display:none!important}
@@ -1835,6 +1835,7 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
       VTAB="trip";vNavMark();return;
     }
     if(!viewerShare)return;
+    vNavH();
     if(VTAB==="split")closeSplit();else if(VTAB==="buy")closeBuy();
     VTAB=k;vNavMark();
     if(k==="split")openSplit("view="+encodeURIComponent(viewerShare));
@@ -1848,6 +1849,7 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
     if(h>20)document.body.style.setProperty("--navh",h+"px");
   }
   window.addEventListener("resize",vNavH);
+  if(window.ResizeObserver)try{new ResizeObserver(vNavH).observe($("vNav3"))}catch(e){}
   function vFabLay(){
     if(!viewerMode)return;
     var b=130;
