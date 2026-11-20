@@ -1230,7 +1230,7 @@ body.viewer.vready #vNav3{display:grid;grid-auto-flow:column;grid-auto-columns:1
 body.viewer.vready{--navh:62px}
 body.viewer.vready .vwrap{padding-bottom:calc(var(--navh) + 12px)}
 body.viewer.vready .sitefoot{padding-bottom:calc(var(--navh) + 8px)}
-:root.vmode body.viewer.vready :is(#toTop,#vDl,#vLib,#vFx,#vSug,#fabTg,#vDlMenu){translate:0 calc(-56px - var(--navh))}
+:root.vmode body.viewer.vready :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMenu){translate:0 calc(-56px - var(--navh))}
 body.viewer.vready :is(#splitOv,#buyOv){bottom:var(--navh)}
 /* 這三顆改由底部分頁列取代 */
 body.viewer #vSplit,body.viewer #vBuy{display:none!important}
@@ -1819,7 +1819,7 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
   (function(){var b=$("splitBtn");if(b)b.onclick=function(){if(viewerMode||!IDX)return;openSplit("trip="+encodeURIComponent(IDX.cur)+"&autoshare=1")};
     var vd=$("vDl");if(vd&&viewerShare)vd.classList.add("ok");var v=$("vSplit");if(v&&viewerShare){v.classList.add("ok");v.onclick=function(){openSplit("view="+encodeURIComponent(viewerShare))}}
     var vb=$("vBuy");if(vb&&viewerShare){vb.classList.add("ok");vb.onclick=function(){openBuy("view="+encodeURIComponent(viewerShare))}}
-    vNavInit();})();
+    vNavInit();vFabLay();})();
   /* ===== 底部分頁列：行程 / 分帳 / 購物清單 ===== */
   var VTAB="trip";
   /* 從彈出頁自己的關閉鈕回來時，分頁列也要跟著回到「行程」 */
@@ -1838,6 +1838,18 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
     VTAB=k;vNavMark();
     if(k==="split")openSplit("view="+encodeURIComponent(viewerShare));
     else openBuy("view="+encodeURIComponent(viewerShare));
+  }
+  /* 浮動鈕自動往下對齊：隱藏的不佔位置，避免中間出現空洞 */
+  function vFabLay(){
+    if(!viewerMode)return;
+    var b=130;
+    ["vLib","vSug","vFx","vMap","vDl"].forEach(function(id){
+      var e=$(id);if(!e||!e.style)return;
+      if(getComputedStyle(e).display==="none"){e.style.bottom="";return}
+      e.style.bottom=b+"px";
+      if(id==="vDl"){var m=$("vDlMenu");if(m&&m.style)m.style.bottom=b+"px"}
+      b+=56;
+    });
   }
   function vNavInit(){
     var n=$("vNav3");if(!n||!viewerMode)return;
@@ -4621,6 +4633,7 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
     h+='</div>';
     $("vBody").innerHTML=h;
     $("vMap").classList.toggle("ok",mapData(-1).pts.length>0);
+    setTimeout(vFabLay,0);
     $("vLib").classList.toggle("ok",s.spots.length>0);$("vSug").classList.toggle("ok",!!sugApi());
     drawVMeta();vApplyDay();
   }
