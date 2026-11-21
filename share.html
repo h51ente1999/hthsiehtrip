@@ -1231,8 +1231,14 @@ body.viewer.vready{--navh:calc(66px + env(safe-area-inset-bottom))}
 body.viewer.vready .vwrap{padding-bottom:calc(var(--navh) + 12px)}
 body.viewer.vready .sitefoot{padding-bottom:calc(var(--navh) + 8px)}
 :root.vmode body.viewer.vready :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMenu){translate:0 calc(-56px - var(--navh))}
-body.viewer.vready :is(#splitOv,#buyOv){top:env(safe-area-inset-top);bottom:var(--navh);padding-bottom:8px}
-body.viewer.vready :is(#splitOv,#buyOv) iframe{height:100%;max-height:100%}
+/* 這兩個是分頁，不是彈出視窗：整塊鋪滿分頁列上方的區域 */
+/* 從最上緣鋪滿，狀態列那條用底色墊著，不要讓行程頁透出來 */
+body.viewer.vready :is(#splitOv,#buyOv){top:0;bottom:var(--navh);padding:env(safe-area-inset-top) 0 0;background:var(--page)}
+body.viewer.vready :is(#splitOv,#buyOv) .bk{display:none}
+body.viewer.vready :is(#splitOv,#buyOv) iframe{width:100%;height:100%;max-height:100%;border-radius:0;box-shadow:none;transform:none}
+body.viewer.vready :is(#splitOv,#buyOv){opacity:0;transition:opacity .16s ease}
+body.viewer.vready :is(#splitOv,#buyOv).on{opacity:1}
+body.viewer.vready :is(#splitOv,#buyOv).on iframe{transform:none}
 /* 這三顆改由底部分頁列取代 */
 body.viewer #vSplit,body.viewer #vBuy{display:none!important}
 </style>
@@ -1838,8 +1844,8 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
     vNavH();
     if(VTAB==="split")closeSplit();else if(VTAB==="buy")closeBuy();
     VTAB=k;vNavMark();
-    if(k==="split")openSplit("view="+encodeURIComponent(viewerShare));
-    else openBuy("view="+encodeURIComponent(viewerShare));
+    if(k==="split")openSplit("nav=1&view="+encodeURIComponent(viewerShare));
+    else openBuy("nav=1&view="+encodeURIComponent(viewerShare));
   }
   /* 浮動鈕自動往下對齊：隱藏的不佔位置，避免中間出現空洞 */
   /* 分頁列的實際高度（各機型的底部安全區不同），寫回 --navh */

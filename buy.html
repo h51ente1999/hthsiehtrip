@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icon-buy.png">
 <meta name="apple-mobile-web-app-capable" content="no">
 <meta name="apple-mobile-web-app-title" content="購物清單">
-<script>try{if(new URLSearchParams(location.search).get("embed")==="1")document.documentElement.setAttribute("data-embed","1")}catch(e){}
+<script>try{var q0=new URLSearchParams(location.search);if(q0.get("embed")==="1")document.documentElement.setAttribute("data-embed","1");if(q0.get("nav")==="1")document.documentElement.setAttribute("data-nav","1")}catch(e){}
 document.documentElement.className="pre";setTimeout(function(){document.documentElement.className=""},2500)</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
@@ -160,6 +160,16 @@ body.tbar-closed #tripBar{display:none}
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
 @media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
+
+.err{color:var(--warn);font-size:.9rem;min-height:1.3em;margin-top:6px}
+.acts .btn{flex:1}
+
+/* 欄位標籤：和分帳頁一致 */
+label.f>span,label.f span,.lbl{font-size:.82rem!important;font-weight:600;line-height:1.3}
+label.f>*:not(span){margin-top:4px}
+/* 加入視窗不需要右上角的 ✕，用下面的「取消」就好 */
+#joinCard .mx{display:none}
+#joinCard>h2:first-of-type{padding-right:0}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
 try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
@@ -469,10 +479,10 @@ async function toggleGot(id){
 /* ---------- 加入與身分（彈出視窗，和分帳頁一致） ---------- */
 function joinModal(){
   var c=$("joinCard");c.hidden=false;$("editCard").hidden=true;$("setCard").hidden=true;
-  c.innerHTML='<h2>加入共用清單</h2><p class="small muted" style="margin:0">請輸入擁有者給你的密碼。這組密碼和分帳是同一組。</p>'+
+  c.innerHTML='<h2>加入共同帳本</h2><p class="small muted" style="margin:0">請輸入擁有者給你的密碼。分帳和購物清單共用同一組密碼，加入一次兩邊都能用。</p>'+
     '<label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label>'+
-    '<div class="acts"><button class="btn pri" id="jGo" type="button">加入</button><button class="btn" id="jNo" type="button">取消</button></div>'+
-    '<div class="small" id="jMsg" style="margin-top:8px;color:var(--warn)"></div>';
+    '<div class="err" id="jMsg" role="alert"></div>'+
+    '<div class="acts"><button class="btn" id="jNo" type="button">取消</button><button class="btn pri" id="jGo" type="button">加入</button></div>';
   c.dataset.kind="join";
   $("jNo").onclick=function(){joinModal.declined=true;c.hidden=true};
   var go=async function(){
@@ -664,7 +674,9 @@ $("btnSet").onclick=function(){
 /* ---------- 啟動 ---------- */
 (async function(){
   if(document.documentElement.getAttribute("data-embed")==="1"){
-    document.body.classList.add("embed");$("back").hidden=true;$("btnClose").hidden=false;
+    document.body.classList.add("embed");$("back").hidden=true;
+    /* 上層已經有底部分頁列，就不要再放一顆關閉鈕 */
+    if(document.documentElement.getAttribute("data-nav")!=="1")$("btnClose").hidden=false;
     $("btnClose").onclick=function(){try{parent.postMessage({buyClose:1},"*")}catch(e){}};
   }
   document.body.classList.add("tbar-closed");

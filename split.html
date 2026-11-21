@@ -175,7 +175,7 @@ try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.pars
 var st=document.documentElement.style;Object.keys(th).forEach(function(k){if(k!=="--hit")st.setProperty(k,th[k])});
 if(th["--blue2"])st.setProperty("--dayg2",th["--blue2"]);
 if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;st.setProperty("--on-blue",l>0.55?"#0D2626":"#fff")}
-try{var q=new URLSearchParams(location.search);if(q.get("embed")==="1")document.documentElement.setAttribute("data-embed","1")}catch(e){}})();</script>
+try{var q=new URLSearchParams(location.search);if(q.get("embed")==="1")document.documentElement.setAttribute("data-embed","1");if(q.get("nav")==="1")document.documentElement.setAttribute("data-nav","1")}catch(e){}})();</script>
 </head>
 <body class="lbar-closed">
 <div class="wrap">
@@ -197,7 +197,7 @@ try{var q=new URLSearchParams(location.search);if(q.get("embed")==="1")document.
     <div class="card" id="formCard"></div>
     <div class="card" id="listCard"></div>
   </div>
-  <div class="empty" id="noLedger" hidden>還沒有帳本。請從旅遊網的行程進入分帳，每個行程會有自己的一本帳。</div>
+  <div class="empty" id="noLedger" hidden></div>
 </div>
 
 <footer>Copyright © 2026 hthsieh. All rights reserved.</footer>
@@ -362,7 +362,7 @@ function drawLedgerSel(){
   LEDGERS.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0)}).forEach(function(L){var o=document.createElement("option");o.value=L.id;o.textContent=L.name+(L.cloud?"（共同）":(L.tripId?"":"（未連結）"));sel.appendChild(o)});
   sel.value=S.id;
   $("ledgerSel").parentNode.parentNode.hidden=false;
-  $("noLedger").hidden=!!LEDGERS.length;
+  $("noLedger").hidden=!!LEDGERS.length;if(!LEDGERS.length)drawNoLedger();
   if(!LEDGERS.length)document.body.classList.remove("lbar-closed");
   $("ledgerView").hidden=!cur();
   drawCloudMsg();
@@ -689,7 +689,7 @@ function joinLinkModal(tag){
   });
 }
 function joinModal(sid,salt,tag){
-  modal('<h2>加入共同帳本</h2><p class="muted small" style="margin:0">請輸入擁有者給你的密碼。</p><label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label><div class="err" id="jErr" role="alert"></div><div class="row"><button class="btn" type="button" id="jNo">取消</button><button class="btn pri" type="button" id="jGo">加入</button></div>',function(){
+  modal('<h2>加入共同帳本</h2><p class="muted small" style="margin:0">請輸入擁有者給你的密碼。分帳和購物清單共用同一組密碼，加入一次兩邊都能用。</p><label class="f"><span>密碼</span><input type="password" id="jPw" autocomplete="off" autocapitalize="off" spellcheck="false"></label><div class="err" id="jErr" role="alert"></div><div class="row"><button class="btn" type="button" id="jNo">取消</button><button class="btn pri" type="button" id="jGo">加入</button></div>',function(){
     $("jNo").onclick=closeModal;
     function go(){
       var pw=$("jPw").value;if(!pw){$("jErr").textContent="請輸入密碼。";return}
@@ -701,7 +701,7 @@ function joinModal(sid,salt,tag){
         var meta={id:sid,cloud:true,sid:sid,salt:salt,name:"共同帳本",tripId:tag||"",ts:Date.now()};
         if(!LEDGERS.some(function(x){return x.id===sid}))LEDGERS.push(meta);else if(tag){bindTrip(LEDGERS.filter(function(x){return x.id===sid})[0],tag)}
         dbPut(meta);closeModal();openLedger(sid);
-      })().catch(function(e){b.disabled=false;b.textContent="加入";$("jErr").textContent=e&&e.code==="denied"?"密碼錯誤，或這個帳本已經被刪除。":(e&&e.code==="offline"?"連不上雲端服務。":"加入失敗（"+(e&&e.code||"網路")+"）。")});
+      })().catch(function(e){b.disabled=false;b.textContent="加入";$("jErr").textContent=e&&e.code==="denied"?"密碼不對，或這個帳本已經被刪除。":(e&&e.code==="offline"?"連不上雲端服務。":"加入失敗（"+(e&&e.code||"網路")+"）。")});
     }
     $("jGo").onclick=go;$("jPw").onkeydown=function(e){if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}};
     $("jPw").focus();
@@ -1499,7 +1499,9 @@ async function hubModal(){
 $("btnMenu").onclick=hubModal;
 /* 內嵌在旅遊網的視窗裡：關閉鈕通知上層 */
 if(document.documentElement.getAttribute("data-embed")==="1"){
-  document.body.classList.add("embed");$("back").hidden=true;$("btnClose").hidden=false;
+  document.body.classList.add("embed");$("back").hidden=true;
+    /* 上層已經有底部分頁列，就不要再放一顆關閉鈕 */
+    if(document.documentElement.getAttribute("data-nav")!=="1")$("btnClose").hidden=false;
   $("btnClose").onclick=function(){try{parent.postMessage({splitClose:1},/^https?:$/.test(location.protocol)?location.origin:"*")}catch(e){}};
 }
 function cleanMeta(x){
@@ -1542,6 +1544,22 @@ function dropStale(meta,msg){
   if(TRIPCTX&&!LEDGERS.some(function(L){return sameTrip(L,TRIPCTX.trip)}))tripFlow(TRIPCTX.trip,TRIPCTX.view);
 }
 
+/* 空狀態的三種說法：自己來的、從分享連結來但還沒加入、擁有者根本沒開分帳 */
+var NOLED={mode:"own"};
+function drawNoLedger(){
+  var e=$("noLedger");if(!e)return;
+  if(NOLED.mode==="join"){
+    e.innerHTML='<p style="margin:0 0 4px;font-weight:700;color:var(--ink)">這趟行程的共同帳本</p>'+
+      '<p style="margin:0 0 14px">輸入擁有者給你的密碼就能一起記帳。分帳和購物清單共用同一組密碼。</p>'+
+      '<button class="btn pri" type="button" id="noJoin" style="flex:none;padding:10px 22px">輸入密碼加入</button>';
+    $("noJoin").onclick=function(){joinModal(NOLED.sid,NOLED.salt,NOLED.trip)};
+  }else if(NOLED.mode==="none"){
+    e.innerHTML='<p style="margin:0 0 4px;font-weight:700;color:var(--ink)">這趟行程還沒開啟分帳</p>'+
+      '<p style="margin:0">請行程的擁有者先在旅遊網打開一次分帳，這裡就會出現。</p>';
+  }else{
+    e.textContent="還沒有帳本。請從旅遊網的行程進入分帳，每個行程會有自己的一本帳。";
+  }
+}
 function tripFlow(trip,view){
   var tids=readTrips().map(function(x){return x.id});
   FREE_LEDGERS=LEDGERS.filter(function(L){return !L.tripId||(!/^s:/.test(L.tripId)&&tids.length&&tids.indexOf(L.tripId)<0)});
@@ -1552,8 +1570,10 @@ function tripFlow(trip,view){
     try{if(api&&api.getShareSplit)sp=await api.getShareSplit(view)}catch(e){}
     if(sp&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.sid)&&/^[A-Za-z0-9_-]{8,64}$/.test(sp.salt)){
       var have=LEDGERS.filter(function(x){return x.id===sp.sid})[0];
-      if(have){bindTrip(have,trip);openLedger(have.id)}else joinModal(sp.sid,sp.salt,trip);
-    }else joinLinkModal(trip);
+      if(have){bindTrip(have,trip);openLedger(have.id)}
+      else{NOLED={mode:"join",sid:sp.sid,salt:sp.salt,trip:trip};drawNoLedger();joinModal(sp.sid,sp.salt,trip)}
+    }else if(view){NOLED={mode:"none"};drawNoLedger()}
+    else joinLinkModal(trip);
   })()}
   else if(readTrips().some(function(t){return t.id===trip})){tryOwnLink(trip).then(function(ok){if(ok||LEDGERS.some(function(L){return sameTrip(L,trip)}))return;if(FREE_LEDGERS.length)linkExistingModal(trip,FREE_LEDGERS);else autoLedger(trip)})}
   else toast("找不到這個行程，請手動建立帳本。");
