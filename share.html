@@ -1254,6 +1254,7 @@ body.viewer #vSplit,body.viewer #vBuy{display:none!important}
 #vMi.open #vMiTg .cv{transform:rotate(180deg)}
 #vMi.open #vMiTg{padding-bottom:8px}
 #vMiBody{padding:0 10px 10px}
+#vMiChips{margin:0 0 8px}
 #vMiBox{height:230px;border-radius:12px;overflow:hidden;background:var(--bg)}
 
 /* ===== 加到主畫面（獨立視窗）：彈出面板要讓開狀態列和底部分頁列 ===== */
@@ -1264,20 +1265,18 @@ body.viewer.vready #galBox .gw{max-height:calc(100% - 20px);overflow:auto}
 body.viewer.vready .fxs .fxb{max-height:calc(100% - 20px)}
 
 /* ===== 分享頁：下載放在頁面最下方，兩顆各自獨立 ===== */
-#vDlRow{display:none;gap:10px;margin:22px 0 4px}
+#vDlRow{display:none;flex-direction:column;align-items:center;gap:1px;margin:3px 0 0}
 body.viewer.vready #vDlRow.ok{display:flex}
-#vDlRow button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);
-  border-radius:14px;padding:13px 10px;font:inherit;font-size:.92rem;cursor:pointer}
-#vDlRow button svg{opacity:.7}
-#vDlRow button:active{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+#vDlRow button{border:0;background:none;padding:2px 6px;font:inherit;font-size:.78rem;line-height:1.7;
+  color:var(--muted);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;cursor:pointer}
+#vDlRow button:hover{color:var(--ink)}
 /* 右側那顆下載浮動鈕改由上面兩顆取代 */
 body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 </style>
 </head>
 <body class="viewer"><script>(function(){var E=[];function add(x){E.push(String(x).slice(0,140))}window.addEventListener("error",function(e){add(e.target&&e.target.src?"載入失敗 "+e.target.src.split("/").slice(-2).join("/"):(e.message||"error"))},true);window.addEventListener("unhandledrejection",function(e){add("promise: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason))});setTimeout(function(){var v=document.getElementById("viewer"),p=document.querySelector("#vLoad p");if(v&&p&&v.classList.contains("vload")){p.innerHTML="載入逾時<br><small style='display:block;margin-top:8px;opacity:.8;font-size:.75rem;letter-spacing:0;word-break:break-all'>cloud="+!!window.cloud+(E.length?" ／ "+E.join(" ／ "):"")+"</small>"}},8000)})()</script>
 <div id="txov" hidden role="dialog" aria-modal="true" aria-label="給司機看"><div class="ovin"><button type="button" id="txx" aria-label="關閉">✕</button><div class="pre" id="txpre"></div><div class="kr" id="txkr"></div><div class="sub" id="txsub" hidden></div><a class="tel" id="txtel" hidden></a><div class="info"><button type="button" id="txmore" aria-expanded="false"><span>拼音與翻譯</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="txfold"><div class="txin"><div class="rm" id="txrm"></div><div class="cn" id="txcn"></div><div class="en" id="txen"></div></div></div></div></div></div>
-<section id="viewer" class="vload"><div id="vLoad" aria-live="polite"><div class="vstage" aria-hidden="true"><i class="vc1"></i><i class="vc2"></i><i class="vc3"></i><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="vpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#vpg)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span></div><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div><div id="vClock" hidden></div></div><div id="vPre"></div><div id="vMi" hidden><button type="button" id="vMiTg" aria-expanded="false" aria-controls="vMiBody"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 7v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/></svg><b>地圖</b><span id="vMiSt"></span><svg class="cv" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span class="sp"></span></button><div id="vMiBody" hidden><div id="vMiBox" class="mapbox"></div><p class="hint" id="vMiErr" hidden style="margin:8px 4px 0"></p><span id="vMiSt2" hidden></span><span id="vMiChips" hidden></span></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div id="vBody"></div><div id="vDlRow"><button type="button" id="vPdf2"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>下載 PDF</button><button type="button" id="vPpt2"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>匯出 PPT</button></div></div></section>
+<section id="viewer" class="vload"><div id="vLoad" aria-live="polite"><div class="vstage" aria-hidden="true"><i class="vc1"></i><i class="vc2"></i><i class="vc3"></i><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="vpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#vpg)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span></div><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div><div id="vClock" hidden></div></div><div id="vPre"></div><div id="vMi" hidden><button type="button" id="vMiTg" aria-expanded="false" aria-controls="vMiBody"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 7v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/></svg><b>地圖</b><span id="vMiSt"></span><svg class="cv" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span class="sp"></span></button><div id="vMiBody" hidden><div class="mapchips" id="vMiChips" hidden></div><div id="vMiBox" class="mapbox"></div><p class="hint" id="vMiErr" hidden style="margin:8px 4px 0"></p><span id="vMiSt2" hidden></span></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div id="vBody"></div></div></section>
 <button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="匯率計算機"><div class="fxh"><b id="fxTitle">匯率</b><span style="flex:1"></span><button type="button" id="fxX" class="sx" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="fxsel"><select id="fxCur" aria-label="幣別"></select><button type="button" id="fxDef" title="之後新增的行程預設使用這個幣別">設預設</button></div><p class="hint" id="fxInfo"></p><div class="fxd"><button type="button" class="fxrow on" id="fxRK" data-fxrow="k" aria-pressed="true"><span class="fxu" id="fxUK">韓元 ₩</span><span class="fxe" id="fxEK"></span><b class="fxv" id="fxVK">0</b></button><button type="button" class="fxrow" id="fxRT" data-fxrow="t" aria-pressed="false"><span class="fxu">台幣 NT$</span><span class="fxe" id="fxET"></span><b class="fxv" id="fxVT">0</b></button></div><div class="fxk"><button type="button" class="fk fo" data-fk="c">AC</button><button type="button" class="fk fo" data-fk="bs" aria-label="刪除" title="刪除" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M9.5 7.5v9l7-4.5z"/></svg></button><button type="button" class="fk fo" data-fk="pct">%</button><button type="button" class="fk op" data-fk="/">÷</button><button type="button" class="fk" data-fk="7">7</button><button type="button" class="fk" data-fk="8">8</button><button type="button" class="fk" data-fk="9">9</button><button type="button" class="fk op" data-fk="*">×</button><button type="button" class="fk" data-fk="4">4</button><button type="button" class="fk" data-fk="5">5</button><button type="button" class="fk" data-fk="6">6</button><button type="button" class="fk op" data-fk="-">−</button><button type="button" class="fk" data-fk="1">1</button><button type="button" class="fk" data-fk="2">2</button><button type="button" class="fk" data-fk="3">3</button><button type="button" class="fk op" data-fk="+">+</button><button type="button" class="fk" data-fk="0">0</button><button type="button" class="fk" data-fk="00">00</button><button type="button" class="fk" data-fk=".">.</button><button type="button" class="fk op" data-fk="=">=</button></div></div></div>
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
@@ -1291,7 +1290,7 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <nav id="vNav3" hidden aria-label="分頁"><button type="button" data-vtab="trip" class="on"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h11"/></svg><span>行程</span></button><button type="button" data-vtab="split"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.4 5 1.5 5 3.4-2.2 3-5 3-5-1.1-5-3"/></svg><span>分帳</span></button><button type="button" data-vtab="buy"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.2h14l-1 11.5a1.7 1.7 0 0 1-1.7 1.5H7.7A1.7 1.7 0 0 1 6 19.7z"/><path d="M9 8.2V6.9a3 3 0 0 1 6 0v1.3"/></svg><span>購物清單</span></button></nav><main><span id="msg" hidden></span></main>
-<footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.</footer>
+<footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.<span id="vDlRow"><button type="button" id="vPdf2">下載 PDF</button><button type="button" id="vPpt2">匯出 PPT</button></span></footer>
 
 <script>
 (function(){
@@ -1894,7 +1893,11 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     if(h>20)document.body.style.setProperty("--navh",h+"px");
   }
   window.addEventListener("resize",vNavH);
-  if(window.ResizeObserver)try{new ResizeObserver(vNavH).observe($("vNav3"))}catch(e){}
+  window.addEventListener("orientationchange",vNavH);
+  window.addEventListener("load",vNavH);
+  if(window.visualViewport)try{window.visualViewport.addEventListener("resize",vNavH)}catch(e){}
+  /* 安全區高度是 padding，content-box 不會變，所以要看 border-box */
+  if(window.ResizeObserver)try{new ResizeObserver(vNavH).observe($("vNav3"),{box:"border-box"})}catch(e){try{new ResizeObserver(vNavH).observe($("vNav3"))}catch(e2){}}
   function vFabLay(){
     if(!viewerMode)return;
     var b=130;
@@ -4349,12 +4352,22 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
   var mapVi=MapView({box:$("vMiBox"),chips:$("vMiChips"),st:$("vMiSt2"),mono:true}),vMiReady=false;
   var VMIKEY="share-map-open";
   function vMiOpen(){return $("vMi").classList.contains("open")}
-  function vMiDay(){return (document.querySelector("#vBody .vdays.vone")&&s.days.length>1)?vDayCur:-1}
+  var vMiD=-1;                                   /* 桌機並排時，地圖自己選的日期 */
+  function vMiMulti(){return !document.querySelector("#vBody .vdays.vone")&&s.days.length>1}
+  function vMiDay(){
+    if(document.querySelector("#vBody .vdays.vone")&&s.days.length>1)return vDayCur;   /* 手機：跟著上方日期列 */
+    return s.days.length>1?vMiD:-1;                                                    /* 桌機：跟著地圖自己的日期鈕 */
+  }
+  function vMiLabel(){
+    var d=vMiDay(),n=mapData(d).pts.length;
+    return (vMiMulti()&&d>=0?"第 "+(d+1)+" 天 · ":"")+(n?(n+" 個地點"):"沒有標記地點");
+  }
   function vMiDraw(){
     if(!vMiOpen())return;
     var go=function(){
       if(!mapVi.map)return;
       var e=$("vMiErr");if(e)e.hidden=true;
+      var ch=$("vMiChips");if(ch)ch.hidden=!vMiMulti();
       mapVi.day=vMiDay();mapVi.map.invalidateSize();mapVi.draw();
     };
     if(vMiReady)return go();
@@ -4369,9 +4382,11 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     var box=$("vMi"),n=mapData(vMiDay()).pts.length;
     box.hidden=!mapData(-1).pts.length;
     if(box.hidden)return;
-    var st=$("vMiSt");if(st)st.textContent=n?(n+" 個地點"):"這天沒有標記地點";
+    var st=$("vMiSt");if(st)st.textContent=vMiLabel();
+    vMiWas=vMiMulti();
     vMiDraw();
   }
+  var vMiWas=null;
   function vMiToggle(on){
     var box=$("vMi"),b=$("vMiTg");
     box.classList.toggle("open",on);
@@ -4381,6 +4396,11 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     if(on)requestAnimationFrame(vMiDraw);
   }
   if($("vMiTg"))$("vMiTg").onclick=function(){vMiToggle(!vMiOpen())};
+  if($("vMiChips"))$("vMiChips").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-d]");if(!b)return;
+    vMiD=Number(b.dataset.d);
+    var st=$("vMiSt");if(st)st.textContent=vMiLabel();
+  });
   /* single-spot map + spot modal */
   var PINIC=function(mono){var c=mono?th("--blue","#5a8dbd"):th("--tag-food","#c8805f");return L.divIcon({className:"mkp",html:'<span class="m np" style="--c:'+c+';--oc:'+onCol(c)+';width:18px;height:18px"></span>',iconSize:[18,18],iconAnchor:[9,9]})};
   /* 莫蘭迪色系：低彩度、帶灰 */
@@ -4738,7 +4758,7 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
   function vApplyDay(){
     var dv=document.querySelector("#vBody .vdays");if(!dv)return;
     var cols=dv.querySelectorAll(".vdaycol");
-    if(!vNarrow()||cols.length<2){dv.classList.remove("vone");return}
+    if(!vNarrow()||cols.length<2){dv.classList.remove("vone");vMiSync();return}
     if(vDayCur>=cols.length)vDayCur=0;
     dv.classList.add("vone");
     [].forEach.call(cols,function(c,i){c.classList.toggle("vcur",i===vDayCur);if(i===vDayCur){var h=c.querySelector(".vday");if(h){h.classList.remove("collapsed");h.setAttribute("aria-expanded","true");vCollapsed[i]=false;var n=h.nextElementSibling;if(n)n.classList.remove("collapsed")}}});
