@@ -96,7 +96,6 @@ label.f>*:not(span){margin-top:4px}
 footer{text-align:center;color:var(--muted);font-size:.78rem;padding:10px 16px 22px;line-height:1.9}
 footer a{color:var(--muted)}
 .sbox{padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed var(--line)}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* 彈出視窗 */
 .mbk{position:fixed;inset:0;z-index:40;background:rgba(10,20,30,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .22s}
@@ -159,7 +158,6 @@ body.tbar-closed #tripBar{display:none}
 /* 危險動作：按兩次才會執行（第一次按下後的樣子） */
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
-@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 
 .err{color:var(--warn);font-size:.9rem;min-height:1.3em;margin-top:6px}
 .acts .btn{flex:1}

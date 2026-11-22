@@ -160,7 +160,6 @@ footer a{color:var(--muted)}
 #cloudMsg .sc3{width:58px;height:15px;top:124px;left:100%;animation-duration:5.6s;animation-delay:2s;opacity:.4}
 #cloudMsg .sc3::before{width:26px;height:26px;top:-13px;left:10px}
 @keyframes spdrift{to{transform:translateX(calc(-100vw - 140px))}}
-@media (prefers-reduced-motion:reduce){#cloudMsg .spl,#cloudMsg .sc{animation:none}}
 
 html.pre body{visibility:hidden}
 html.pre *{transition:none!important;animation:none!important}
@@ -168,7 +167,6 @@ html.pre *{transition:none!important;animation:none!important}
 /* 危險動作：按兩次才會執行（第一次按下後的樣子） */
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
-@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 /* 和 trip／分享頁同一套外觀 */
 :root{--pop:cubic-bezier(.34,1.56,.64,1)}
 body::before{content:"";position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1;pointer-events:none;

@@ -986,7 +986,6 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 
 #viewer .vpl svg{position:absolute;top:0;left:0;transform:rotate(90deg);animation:vfly 3s ease-in-out infinite}
 @keyframes vfly{0%{left:-6px;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 12px);opacity:0}}
-@media (prefers-reduced-motion:reduce){#viewer .vpl svg{animation:none;left:calc(50% - 9px)}}
 #viewer .vft2 sup{font-size:.65rem;color:var(--tag-food);margin-left:2px}
 #viewer .vsic .mlinks{display:flex;gap:6px;align-items:center}
 #viewer .vsic .mi img{width:22px;height:22px}
@@ -1082,7 +1081,6 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 .vdet .vitem .vtags,.vdet .vitem .n,.vdet .vside .vtime{display:none!important}
 .vdet .vitem .ko{margin-top:0}
 .vl2 .vgo2{margin:-4px 0 -4px calc(var(--tc) + 30px)!important}
-@media (prefers-reduced-motion:reduce){.vdet,.vrc{transition:none}}
 
 .vrp{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none}
 .vl2 .vgo2{margin:-2px 0 -2px 14px!important;width:var(--tc);justify-content:flex-end;padding-right:0;font-size:.72rem;gap:3px}
@@ -1214,7 +1212,6 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 /* 危險動作：按兩次才會執行（第一次按下後的樣子） */
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
-@media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
 
 /* 景點的多張圖片 */
 .spgal{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
