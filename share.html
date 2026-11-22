@@ -1393,13 +1393,8 @@ body.viewer.vready .tdnx:active{transform:translateY(1px)}
   color:var(--muted);font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
 .tdseg button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);border-color:transparent}
 .tdseg .cc{display:flex;align-items:center;gap:6px;margin-left:auto}
-/* 填了金額才長出來的那幾排：高度跟著一起長，不會硬跳 */
-.tdmore{display:grid;grid-template-rows:1fr}
-.tdmore>.in{overflow:hidden;min-height:0}
-.tdmore.isnew{animation:tdgrow .34s cubic-bezier(.22,1,.36,1)}
-.tdmore.isnew>.in{animation:tdfade .34s cubic-bezier(.22,1,.36,1)}
-@keyframes tdgrow{from{grid-template-rows:0fr}to{grid-template-rows:1fr}}
-@keyframes tdfade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+/* 填了金額才長出來的那幾排：高度由 JS 量好再用 transition 推，各家瀏覽器都吃得下 */
+.tdmore>.in{overflow:hidden}
 .tdmore.isnew .tdwho,.tdmore.isnew .tdfold,.tdmore.isnew .tdhint{animation:tdup .4s both cubic-bezier(.22,1,.36,1)}
 .tdmore.isnew .tdwho{animation-delay:.04s}
 .tdmore.isnew .tdfold{animation-delay:.11s}
@@ -1462,10 +1457,11 @@ body.viewer.vready #galBox .gw{max-height:calc(100% - 20px);overflow:auto}
 body.viewer.vready .fxs .fxb{max-height:calc(100% - 20px)}
 
 /* ===== 分享頁：下載放在頁面最下方，兩顆各自獨立 ===== */
-#vDlRow{display:none;flex-direction:column;align-items:center;gap:1px;margin:3px 0 0}
+#vDlRow{display:none;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 6px;margin:3px 0 0}
 body.viewer.vready #vDlRow.ok{display:flex}
-#vDlRow button{border:0;background:none;padding:2px 6px;font:inherit;font-size:.78rem;line-height:1.7;
+#vDlRow button{border:0;background:none;padding:2px 4px;font:inherit;font-size:.78rem;line-height:1.7;
   color:var(--muted);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;cursor:pointer}
+#vDlRow button+button{border-left:1px solid color-mix(in srgb,var(--page-ink) 35%,transparent);padding-left:10px;margin-left:4px}
 #vDlRow button:hover{color:var(--ink)}
 /* 右側那顆下載浮動鈕改由上面兩顆取代 */
 body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
@@ -1487,7 +1483,7 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
 <nav id="vNav3" hidden aria-label="分頁"><i id="vNavInd" aria-hidden="true"></i><button type="button" data-vtab="today" class="on"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span>今天</span></button><button type="button" data-vtab="trip"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h11"/></svg><span>行程</span></button><button type="button" data-vtab="split"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.4 5 1.5 5 3.4-2.2 3-5 3-5-1.1-5-3"/></svg><span>分帳</span></button><button type="button" data-vtab="buy"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.2h14l-1 11.5a1.7 1.7 0 0 1-1.7 1.5H7.7A1.7 1.7 0 0 1 6 19.7z"/><path d="M9 8.2V6.9a3 3 0 0 1 6 0v1.3"/></svg><span>購物清單</span></button></nav><main><span id="msg" hidden></span></main>
-<footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.<span id="vDlRow"><button type="button" id="vPdf2">下載 PDF</button><button type="button" id="vPpt2">匯出 PPT</button></span></footer>
+<footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.<span id="vDlRow"><button type="button" id="vPdf2">下載 PDF</button><button type="button" id="vImg2">下載圖片</button><button type="button" id="vPpt2">匯出 PPT</button></span></footer>
 
 <script>
 (function(){
@@ -2128,11 +2124,12 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
   }
   /* 浮動鈕自動往下對齊：隱藏的不佔位置，避免中間出現空洞 */
   /* 分頁列的實際高度（各機型的底部安全區不同），寫回 --navh */
-  /* 頁尾的兩顆下載鈕：沿用原本的處理，只是換個位置 */
+  /* 頁尾的三個下載連結：沿用原本的處理，只是換個位置 */
   (function(){
-    var a=$("vPdf2"),b=$("vPpt2");
-    if(a)a.onclick=function(){var t=$("vPdf");if(t)t.click()};
-    if(b)b.onclick=function(){var t=$("vPpt");if(t)t.click()};
+    [["vPdf2","vPdf"],["vPpt2","vPpt"],["vImg2","exImg"]].forEach(function(x){
+      var a=$(x[0]);if(!a)return;
+      a.onclick=function(){$(x[1]).click()};     /* exImg 沒有實體元素，$() 會給它一個影子節點，處理函式掛在上面 */
+    });
   })();
   /* ===== 「今天」分頁 ===== */
   var tdSel=null,tdDayI=null,tdAuto=false,TDSP="",TDKID=null;
@@ -2477,7 +2474,17 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
       else tdMsg("tdSMsg",tdErrTxt(r.err),true);
     });
   }
+  function tdGrow(el){
+    var h=el.scrollHeight;if(!h)return;
+    el.style.maxHeight="0px";el.style.opacity="0";el.style.transform="translateY(-6px)";
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      el.style.transition="max-height .36s cubic-bezier(.22,1,.36,1),opacity .3s ease,transform .36s cubic-bezier(.22,1,.36,1)";
+      el.style.maxHeight=h+"px";el.style.opacity="1";el.style.transform="none";
+    })});
+    setTimeout(function(){el.style.transition="";el.style.maxHeight="";el.style.opacity="";el.style.transform=""},480);
+  }
   function tdWire(sp){
+    [].forEach.call(document.querySelectorAll("#vTd .tdmore.isnew>.in"),tdGrow);
     var sg=document.getElementById("tdSGo");
     if(sg)sg.onclick=function(){tdSave(sp)};
     var pay=document.getElementById("tdSPay");
