@@ -1289,7 +1289,7 @@ body.viewer.vready.t-today :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMen
 .tdnm{margin:12px 0 0;font-size:1.45rem;font-weight:800;line-height:1.3}
 .tdtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .tdtm{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:.88rem;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
-.tdcd{margin-top:14px;border-radius:18px;background:color-mix(in srgb,var(--blue) 24%,transparent);padding:14px}
+.tdcd{margin-top:14px;border-radius:18px;background:color-mix(in srgb,var(--ink) 6%,transparent);padding:14px}
 .tdcd .r{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
 .tdcd .lb{font-size:.78rem;color:var(--muted);font-weight:700}
 .tdcd .rt,.tdcd .rt b{color:var(--ink)}
@@ -1297,22 +1297,22 @@ body.viewer.vready.t-today :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMen
 .tdcd .big small{font-size:.9rem;margin:0 2px 0 3px;font-weight:700}
 .tdcd .rt{text-align:right;font-size:.76rem;color:var(--muted);font-weight:600;line-height:1.7}
 .tdcd .rt b{color:var(--ink);font-variant-numeric:tabular-nums}
-.tdcd .bar{margin-top:11px;height:8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 9%,transparent);overflow:hidden}
+.tdcd .bar{margin-top:11px;height:8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 13%,transparent);overflow:hidden}
 .tdcd .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(135deg,var(--blue),var(--dayg2))}
 /* 備註：中性灰，不加圖示也不加標題 */
 .tdmemo{margin-top:12px;padding:11px 14px;border-radius:14px;color:var(--ink);font-size:.88rem;line-height:1.7;
-  background:color-mix(in srgb,var(--ink) 5%,transparent)}
+  background:color-mix(in srgb,var(--blue) 13%,transparent)}
 /* 提醒：琥珀色，有鈴鐺和提醒時機 */
 .tdrem{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .tdrem .r{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:14px;color:var(--ink);
-  font-size:.88rem;line-height:1.6;background:color-mix(in srgb,var(--warn,#c9801a) 15%,transparent)}
-.tdrem svg{flex:0 0 auto;margin-top:2px;color:var(--warn,#c9801a)}
+  font-size:.88rem;line-height:1.6;background:color-mix(in srgb,var(--dayg2) 24%,transparent)}
+.tdrem svg{flex:0 0 auto;margin-top:2px;color:color-mix(in srgb,var(--dayg2) 85%,var(--ink))}
 .tdrem b{flex:1;min-width:0;font-weight:600}
 .tdrem i{flex:0 0 auto;font-style:normal;font-size:.68rem;font-weight:700;white-space:nowrap;margin-top:3px;
-  color:color-mix(in srgb,var(--warn,#c9801a) 70%,var(--ink))}
+  color:color-mix(in srgb,var(--dayg2) 62%,var(--ink))}
 .vwtag{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
 .vwtag i{font-style:normal;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:7px;
-  background:color-mix(in srgb,var(--warn,#c9801a) 16%,transparent);color:var(--ink)}
+  background:color-mix(in srgb,var(--blue) 28%,transparent);color:color-mix(in srgb,var(--blue) 30%,var(--ink))}
 /* 「今天」的卡片：跟分享頁其他卡片一樣輕 */
 body.viewer.vready :is(.tdtop,.tdc1,.tdsec,.tdnx,.tdend){
   border-radius:20px!important;border:0!important;
@@ -1331,13 +1331,19 @@ body.viewer.vready .tdnx:active{transform:translateY(1px)}
 .tdksub span{color:var(--muted);font-size:.78rem;width:100%}
 .tdwtag{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .tdwtag i{font-style:normal;font-size:.76rem;font-weight:700;padding:4px 10px;border-radius:9px;
-  background:color-mix(in srgb,var(--warn,#c9801a) 16%,transparent);color:var(--ink)}
+  background:color-mix(in srgb,var(--blue) 28%,transparent);color:color-mix(in srgb,var(--blue) 30%,var(--ink))}
 .tdtix{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .tdtix button{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 15px;border-radius:14px;
   border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;font-weight:700;cursor:pointer}
 #tdTixBox{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:16px}
 #tdTixBox.on{display:flex}
 #tdTixBox img{max-width:100%;max-height:100%;border-radius:10px}
+.tdpn{display:flex;gap:7px;margin-left:auto;flex:0 0 auto}
+.tdpn button{width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;
+  border:1px solid var(--line,#dde);border-radius:50%;background:var(--surface);color:var(--ink)}
+.tdpn button:disabled{opacity:.3;cursor:default}
+.tdpn button:active:not(:disabled){background:color-mix(in srgb,var(--ink) 8%,transparent);transform:scale(.94)}
+.tdpn svg{width:17px;height:17px}
 .tdact{display:flex;gap:9px;margin-top:15px;min-width:0}
 .tdact button,.tdact a{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:48px;border-radius:16px;
   border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem;font-weight:700;
@@ -1420,7 +1426,7 @@ body.viewer.vready .tdnx:active{transform:translateY(1px)}
 .tdwho button.on{background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);border-color:transparent;font-weight:700}
 .tdhint{margin:8px 2px 0;font-size:.72rem;color:var(--muted);line-height:1.6}
 .tdmsg{margin:9px 2px 0;font-size:.8rem;color:var(--muted)}
-.tdmsg.bad{color:var(--warn,#c9801a)}
+.tdmsg.bad{color:var(--warn,#c0503f)}     /* 錯誤訊息用紅的，不是橘的 */
 .tdend{margin:14px 0 0;font-size:.9rem;color:var(--muted);text-align:center;line-height:1.7;background:var(--surface);border-radius:18px;padding:14px}
 /* 分頁列佔掉的高度：內容、浮動鈕、彈出頁都要讓開 */
 body.viewer.vready{--navh:calc(66px + env(safe-area-inset-bottom))}
@@ -2228,7 +2234,10 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     else if(isToday){stTxt=(sel<cur?"已經過了":"待會的行程");stQ=true}
     else {stTxt=(dstr?dstr+"的行程":"這天的行程");stQ=true}
     h+='<div class="tdc1"><div class="tdrow"><div class="tdst'+(stQ?' q':'')+'"><i></i>'+esc(stTxt)+'</div>'
-      +((isToday&&sel!==cur)?'<button type="button" class="tdback" data-tdgo="'+cur+'">回到現在</button>':'')+'</div>';
+      +((isToday&&sel!==cur)?'<button type="button" class="tdback" data-tdgo="'+cur+'">回到現在</button>':'')
+      +'<div class="tdpn"><button type="button" data-tdgo="'+(sel-1)+'" aria-label="上一站"'+(sel<=0?' disabled':'')+'>'+tdIco("left")+'</button>'
+      +'<button type="button" data-tdgo="'+(sel+1)+'" aria-label="下一站"'+(sel>=vl.length-1?' disabled':'')+'>'+tdIco("right")+'</button></div>'
+      +'</div>';
     var tags=(sp.cat?'<span class="vtag">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
     if(tags)h+='<div class="tdtg">'+tags+'</div>';
     h+='<h3 class="tdnm">'+esc(sp.name)+'</h3>';
@@ -2283,9 +2292,7 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 
     /* 上一站／導航／下一站 */
     h+='<div class="tdact">'
-      +'<button type="button" class="sq" data-tdgo="'+(sel-1)+'" aria-label="上一站"'+(sel<=0?' disabled':'')+'>'+tdIco("left")+'</button>'
       +'<a class="go" href="'+esc(tdLink(nsp))+'" target="_blank" rel="noopener"><span class="tx">'+tdIco("nav")+'導航前往</span></a>'
-      +'<button type="button" class="sq" data-tdgo="'+(sel+1)+'" aria-label="下一站"'+(sel>=vl.length-1?' disabled':'')+'>'+tdIco("right")+'</button>'
       +'</div></div>';
 
     /* 下一站預告 */
