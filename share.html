@@ -1226,6 +1226,74 @@ body.viewer.vready #vNav3{display:grid;grid-auto-flow:column;grid-auto-columns:1
 #vNav3 button.on svg{opacity:1}
 #vNav3 button[hidden]{display:none}
 #vNav3 button:active{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+/* ===== 「今天」分頁 ===== */
+#vTd{display:none;max-width:560px;margin:0 auto;padding:4px 2px 0}
+body.viewer.vready.t-today #vTd{display:block}
+body.viewer.vready.t-today :is(.vhead,#vPre,#vMi,#vTabs,#vInfo,#vBody,#vDlRow){display:none!important}
+body.viewer.vready.t-today :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMenu){display:none!important}
+.tdtop{background:var(--surface);color:var(--ink);border-radius:22px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 24px rgba(20,30,60,.06)}
+.tdh{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.tdh .tdt{font-size:.8rem;color:var(--muted);font-weight:600}
+#viewer #vTd .tdh h2{margin:3px 0 0;font-size:1.5rem;background:none;padding:0;border-radius:0;color:var(--ink)}
+#viewer #vTd h3{background:none;padding:0;border-radius:0}
+.tdh .tdd{font-size:.82rem;color:var(--muted);font-weight:600;margin-top:2px}
+.tdh .tdc{text-align:right;font-size:.74rem;color:var(--muted);font-weight:600;line-height:1.5;white-space:nowrap}
+.tdh .tdc b{display:block;font-size:1.3rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.tddays{display:flex;gap:6px;overflow:auto;padding:0 4px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tddays::-webkit-scrollbar{display:none}
+.tddays button{flex:0 0 auto;height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line,#dde);
+  background:var(--surface);color:var(--ink);font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}
+.tddays button.on{background:var(--accent-text);color:#fff;border-color:transparent}
+.tdpg{display:flex;align-items:center;gap:10px;margin-top:12px}
+.tdpg .bar{flex:1;height:6px;border-radius:999px;background:color-mix(in srgb,var(--ink) 11%,transparent);overflow:hidden}
+.tdpg .bar i{display:block;height:100%;border-radius:999px;background:var(--accent-text)}
+.tdpg span{font-size:.78rem;color:var(--muted);font-weight:700;white-space:nowrap}
+.tdc1{background:var(--surface);color:var(--ink);border-radius:26px;padding:18px;box-shadow:0 10px 30px rgba(20,30,60,.07)}
+.tdrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tdst{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;color:var(--accent-text);
+  background:color-mix(in srgb,var(--blue) 32%,transparent);border-radius:999px;padding:5px 12px}
+.tdst i{width:8px;height:8px;border-radius:50%;background:currentColor;animation:tdp 1.8s ease-in-out infinite}
+@keyframes tdp{0%,100%{opacity:1}50%{opacity:.25}}
+.tdst.q{color:var(--muted);background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.tdst.q i{animation:none;opacity:.5}
+.tdback{border:0;background:none;color:var(--accent-text);font:inherit;font-size:.78rem;font-weight:700;
+  text-decoration:underline;text-underline-offset:3px;padding:6px 4px;cursor:pointer}
+.tdnm{margin:12px 0 0;font-size:1.45rem;font-weight:800;line-height:1.3}
+.tdtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.tdtm{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:.88rem;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.tdcd{margin-top:14px;border-radius:18px;background:color-mix(in srgb,var(--blue) 24%,transparent);padding:14px}
+.tdcd .r{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.tdcd .lb{font-size:.78rem;color:var(--muted);font-weight:700}
+.tdcd .rt,.tdcd .rt b{color:var(--ink)}
+.tdcd .big{font-size:2.1rem;font-weight:800;line-height:1.1;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.tdcd .big small{font-size:.9rem;margin:0 2px 0 3px;font-weight:700}
+.tdcd .rt{text-align:right;font-size:.76rem;color:var(--muted);font-weight:600;line-height:1.7}
+.tdcd .rt b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tdcd .bar{margin-top:11px;height:8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 9%,transparent);overflow:hidden}
+.tdcd .bar i{display:block;height:100%;border-radius:999px;background:var(--accent-text)}
+.tdnote{margin-top:12px;border-radius:16px;background:color-mix(in srgb,var(--warn,#c9801a) 13%,transparent);
+  padding:12px 14px;display:flex;gap:9px;font-size:.88rem;line-height:1.65}
+.tdnote{color:var(--ink)}
+.tdnote svg{flex:0 0 auto;margin-top:3px}
+.tdact{display:flex;gap:9px;margin-top:15px}
+.tdact button,.tdact a{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:48px;border-radius:16px;
+  border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem;font-weight:700;
+  cursor:pointer;text-decoration:none}
+.tdact .sq{width:54px;flex:0 0 auto}
+.tdact .go{flex:1;border:0;color:#fff;background:var(--accent-text)}
+.tdact button:disabled{opacity:.33;cursor:default}
+.tdnx{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:14px 16px;border-radius:22px;border:0;
+  background:var(--surface);box-shadow:0 8px 24px rgba(20,30,60,.06);font:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+.tdnx .tm{font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:800;color:var(--accent-text);min-width:46px}
+.tdnx .nm{flex:1;min-width:0}
+.tdnx .nm b{display:block;font-size:1rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tdnx .nm small{color:var(--muted);font-weight:600}
+.tdnx .lbl{display:block;font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:2px}
+.tdjump{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tdjump button{display:flex;align-items:center;justify-content:center;gap:8px;height:52px;border-radius:18px;
+  border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
+.tdjump button:active{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.tdend{margin:14px 0 0;font-size:.9rem;color:var(--muted);text-align:center;line-height:1.7;background:var(--surface);border-radius:18px;padding:14px}
 /* 分頁列佔掉的高度：內容、浮動鈕、彈出頁都要讓開 */
 body.viewer.vready{--navh:calc(66px + env(safe-area-inset-bottom))}
 body.viewer.vready .vwrap{padding-bottom:calc(var(--navh) + 12px)}
@@ -1276,7 +1344,7 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 </head>
 <body class="viewer"><script>(function(){var E=[];function add(x){E.push(String(x).slice(0,140))}window.addEventListener("error",function(e){add(e.target&&e.target.src?"載入失敗 "+e.target.src.split("/").slice(-2).join("/"):(e.message||"error"))},true);window.addEventListener("unhandledrejection",function(e){add("promise: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason))});setTimeout(function(){var v=document.getElementById("viewer"),p=document.querySelector("#vLoad p");if(v&&p&&v.classList.contains("vload")){p.innerHTML="載入逾時<br><small style='display:block;margin-top:8px;opacity:.8;font-size:.75rem;letter-spacing:0;word-break:break-all'>cloud="+!!window.cloud+(E.length?" ／ "+E.join(" ／ "):"")+"</small>"}},8000)})()</script>
 <div id="txov" hidden role="dialog" aria-modal="true" aria-label="給司機看"><div class="ovin"><button type="button" id="txx" aria-label="關閉">✕</button><div class="pre" id="txpre"></div><div class="kr" id="txkr"></div><div class="sub" id="txsub" hidden></div><a class="tel" id="txtel" hidden></a><div class="info"><button type="button" id="txmore" aria-expanded="false"><span>拼音與翻譯</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="txfold"><div class="txin"><div class="rm" id="txrm"></div><div class="cn" id="txcn"></div><div class="en" id="txen"></div></div></div></div></div></div>
-<section id="viewer" class="vload"><div id="vLoad" aria-live="polite"><div class="vstage" aria-hidden="true"><i class="vc1"></i><i class="vc2"></i><i class="vc3"></i><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="vpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#vpg)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span></div><p>載入行程中</p></div><div class="vwrap"><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div><div id="vClock" hidden></div></div><div id="vPre"></div><div id="vMi" hidden><button type="button" id="vMiTg" aria-expanded="false" aria-controls="vMiBody"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 7v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/></svg><b>地圖</b><span id="vMiSt"></span><svg class="cv" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span class="sp"></span></button><div id="vMiBody" hidden><div class="mapchips" id="vMiChips" hidden></div><div id="vMiBox" class="mapbox"></div><p class="hint" id="vMiErr" hidden style="margin:8px 4px 0"></p><span id="vMiSt2" hidden></span></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div id="vBody"></div></div></section>
+<section id="viewer" class="vload"><div id="vLoad" aria-live="polite"><div class="vstage" aria-hidden="true"><i class="vc1"></i><i class="vc2"></i><i class="vc3"></i><span class="vpl"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><defs><linearGradient id="vpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--dayg2)"/></linearGradient></defs><path fill="url(#vpg)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></span></div><p>載入行程中</p></div><div class="vwrap"><section id="vTd" aria-label="今天"></section><div class="vhead"><div class="vhl"><h1 id="vTitle"></h1><div id="vMeta"></div></div><div id="vCd" hidden></div><div id="vClock" hidden></div></div><div id="vPre"></div><div id="vMi" hidden><button type="button" id="vMiTg" aria-expanded="false" aria-controls="vMiBody"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 7v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/></svg><b>地圖</b><span id="vMiSt"></span><svg class="cv" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span class="sp"></span></button><div id="vMiBody" hidden><div class="mapchips" id="vMiChips" hidden></div><div id="vMiBox" class="mapbox"></div><p class="hint" id="vMiErr" hidden style="margin:8px 4px 0"></p><span id="vMiSt2" hidden></span></div></div><div id="vTabs" hidden></div><p id="vInfo" class="hint"></p><div id="vBody"></div></div></section>
 <button type="button" id="vSug" aria-label="推薦景點" title="推薦景點"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="fxs" id="fxSheet" hidden><div class="fxb" role="dialog" aria-modal="true" aria-label="匯率計算機"><div class="fxh"><b id="fxTitle">匯率</b><span style="flex:1"></span><button type="button" id="fxX" class="sx" aria-label="關閉"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="fxsel"><select id="fxCur" aria-label="幣別"></select><button type="button" id="fxDef" title="之後新增的行程預設使用這個幣別">設預設</button></div><p class="hint" id="fxInfo"></p><div class="fxd"><button type="button" class="fxrow on" id="fxRK" data-fxrow="k" aria-pressed="true"><span class="fxu" id="fxUK">韓元 ₩</span><span class="fxe" id="fxEK"></span><b class="fxv" id="fxVK">0</b></button><button type="button" class="fxrow" id="fxRT" data-fxrow="t" aria-pressed="false"><span class="fxu">台幣 NT$</span><span class="fxe" id="fxET"></span><b class="fxv" id="fxVT">0</b></button></div><div class="fxk"><button type="button" class="fk fo" data-fk="c">AC</button><button type="button" class="fk fo" data-fk="bs" aria-label="刪除" title="刪除" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M9.5 7.5v9l7-4.5z"/></svg></button><button type="button" class="fk fo" data-fk="pct">%</button><button type="button" class="fk op" data-fk="/">÷</button><button type="button" class="fk" data-fk="7">7</button><button type="button" class="fk" data-fk="8">8</button><button type="button" class="fk" data-fk="9">9</button><button type="button" class="fk op" data-fk="*">×</button><button type="button" class="fk" data-fk="4">4</button><button type="button" class="fk" data-fk="5">5</button><button type="button" class="fk" data-fk="6">6</button><button type="button" class="fk op" data-fk="-">−</button><button type="button" class="fk" data-fk="1">1</button><button type="button" class="fk" data-fk="2">2</button><button type="button" class="fk" data-fk="3">3</button><button type="button" class="fk op" data-fk="+">+</button><button type="button" class="fk" data-fk="0">0</button><button type="button" class="fk" data-fk="00">00</button><button type="button" class="fk" data-fk=".">.</button><button type="button" class="fk op" data-fk="=">=</button></div></div></div>
 <div id="vSugSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="推薦景點"><div class="hd"><h3>推薦景點</h3><button type="button" class="x" id="vSugX" aria-label="關閉">✕</button></div><p class="hint">貼上 Google 或 Naver 地圖連結，系統會自動讀出景點資料。送出後由行程主人決定是否加入。</p><div class="ls"><button type="button" class="pastebtn" id="vSugPaste"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>點擊貼上分享連結</button><textarea id="vSugIn" rows="2" hidden placeholder="請在這裡長按貼上連結" aria-label="地圖連結"></textarea><div class="st" id="vSugSt" role="status"></div><div class="pv" id="vSugPv" hidden><div class="tg" id="vSugTg"></div><label for="vSugN1">中文店名（可留空）</label><input type="text" id="vSugN1" maxlength="80"><label for="vSugK1">韓文店名</label><input type="text" id="vSugK1" maxlength="80" lang="ko"><label for="vSugA1">地址</label><input type="text" id="vSugA1" maxlength="160"><label for="vSugH1">營業時間</label><input type="text" id="vSugH1" maxlength="40" placeholder="例如 10:00-18:00"><label for="vSugNt">推薦理由（選填）</label><input type="text" id="vSugNt" maxlength="200"><label for="vSugFr">你的暱稱（選填）</label><input type="text" id="vSugFr" maxlength="20"><div style="margin-top:8px"><button type="button" class="btn" id="vSugSend">送出建議</button></div></div></div></div></div>
@@ -1289,7 +1357,7 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
 <button type="button" id="vDl" aria-haspopup="true" aria-expanded="false" aria-label="下載" title="下載"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg></button><span class="exmenu" id="vDlMenu" hidden role="group" aria-label="下載"><button type="button" class="exi" id="vPdf" title="下載 PDF" aria-label="下載 PDF"><img src="data:image/png;base64,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" alt=""></button><button type="button" class="exi" id="vPpt" title="匯出 PPT" aria-label="匯出 PPT"><img src="data:image/png;base64,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" alt=""></button></span>
 <button type="button" id="vLib" aria-label="景點庫" title="景點庫"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg></button>
 <div id="vLibSheet"><div class="bk"></div><div class="sh" role="dialog" aria-modal="true" aria-label="景點庫"><div class="hd"><h3>景點庫</h3><button type="button" class="sg2" id="vLibSg">＋ 推薦景點</button><button type="button" class="x" id="vLibX" aria-label="關閉">✕</button></div><input type="search" id="vLibQ" placeholder="搜尋景點" autocomplete="off"><div class="pf" id="vLibC"></div><div class="pf" id="vLibA"></div><div class="ls" id="vLibL"></div></div></div>
-<nav id="vNav3" hidden aria-label="分頁"><button type="button" data-vtab="trip" class="on"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h11"/></svg><span>行程</span></button><button type="button" data-vtab="split"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.4 5 1.5 5 3.4-2.2 3-5 3-5-1.1-5-3"/></svg><span>分帳</span></button><button type="button" data-vtab="buy"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.2h14l-1 11.5a1.7 1.7 0 0 1-1.7 1.5H7.7A1.7 1.7 0 0 1 6 19.7z"/><path d="M9 8.2V6.9a3 3 0 0 1 6 0v1.3"/></svg><span>購物清單</span></button></nav><main><span id="msg" hidden></span></main>
+<nav id="vNav3" hidden aria-label="分頁"><button type="button" data-vtab="today" class="on"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span>今天</span></button><button type="button" data-vtab="trip"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h11"/></svg><span>行程</span></button><button type="button" data-vtab="split"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.4 5 1.5 5 3.4-2.2 3-5 3-5-1.1-5-3"/></svg><span>分帳</span></button><button type="button" data-vtab="buy"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.2h14l-1 11.5a1.7 1.7 0 0 1-1.7 1.5H7.7A1.7 1.7 0 0 1 6 19.7z"/><path d="M9 8.2V6.9a3 3 0 0 1 6 0v1.3"/></svg><span>購物清單</span></button></nav><main><span id="msg" hidden></span></main>
 <footer class="sitefoot">Copyright © 2026 hthsieh. All rights reserved.<span id="vDlRow"><button type="button" id="vPdf2">下載 PDF</button><button type="button" id="vPpt2">匯出 PPT</button></span></footer>
 
 <script>
@@ -1860,22 +1928,25 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     var vb=$("vBuy");if(vb&&viewerShare){vb.classList.add("ok");vb.onclick=function(){openBuy("view="+encodeURIComponent(viewerShare))}}
     vNavInit();vNavH();vFabLay();})();
   /* ===== 底部分頁列：行程 / 分帳 / 購物清單 ===== */
-  var VTAB="trip";
+  var VTAB=VTAB||"trip";
   /* 從彈出頁自己的關閉鈕回來時，分頁列也要跟著回到「行程」 */
-  function vNavBack(k){if(VTAB===k){VTAB="trip";vNavMark()}}
+  var VBASE="trip";
+  function vNavBack(k){if(VTAB===k){VTAB=VBASE;vNavMark();tdApply()}}
   function vNavMark(){
     [].forEach.call(document.querySelectorAll("#vNav3 button[data-vtab]"),function(b){b.classList.toggle("on",b.dataset.vtab===VTAB)});
   }
   function vNavGo(k){
     if(k===VTAB)return;
-    if(k==="trip"){
+    if(k==="trip"||k==="today"){
       if(VTAB==="split")closeSplit();else if(VTAB==="buy")closeBuy();
-      VTAB="trip";vNavMark();return;
+      VTAB=k;VBASE=k;vNavMark();tdApply();
+      try{document.scrollingElement.scrollTop=0}catch(e){}
+      return;
     }
     if(!viewerShare)return;
     vNavH();
     if(VTAB==="split")closeSplit();else if(VTAB==="buy")closeBuy();
-    VTAB=k;vNavMark();
+    VTAB=k;vNavMark();tdApply();
     if(k==="split")openSplit("nav=1&view="+encodeURIComponent(viewerShare));
     else openBuy("nav=1&view="+encodeURIComponent(viewerShare));
   }
@@ -1887,6 +1958,169 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     if(a)a.onclick=function(){var t=$("vPdf");if(t)t.click()};
     if(b)b.onclick=function(){var t=$("vPpt");if(t)t.click()};
   })();
+  /* ===== 「今天」分頁 ===== */
+  var tdSel=null,tdDayI=null,tdAuto=false;
+  function tdReady(){return !!(s&&s.days&&s.days.length)}
+  function tdNowParts(){
+    var z=tzGuess(),p=z?tzParts(z,new Date()):null;
+    if(p)return {y:+p.year,m:+p.month,d:+p.day,min:(+p.hour)*60+(+p.minute)};
+    var n=new Date();return {y:n.getFullYear(),m:n.getMonth()+1,d:n.getDate(),min:n.getHours()*60+n.getMinutes()};
+  }
+  function tdTodayIdx(){
+    if(!tdReady())return -1;
+    var n=tdNowParts();
+    for(var i=0;i<s.days.length;i++){var dt=dayDate(i);
+      if(dt&&dt.getFullYear()===n.y&&dt.getMonth()+1===n.m&&dt.getDate()===n.d)return i}
+    return -1;
+  }
+  function tdDay(){
+    if(tdDayI!=null&&tdDayI>=0&&tdDayI<s.days.length)return tdDayI;
+    var i=tdTodayIdx();if(i>=0)return i;
+    var d0=dayDate(0),n=tdNowParts();
+    if(d0&&new Date(n.y,n.m-1,n.d)<d0)return 0;
+    return Math.max(0,s.days.length-1);
+  }
+  function tdIco(k){
+    var p={clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+      nav:'<path d="M12 2 4.5 20.5 12 17l7.5 3.5z"/>',
+      left:'<path d="m15 6-6 6 6 6"/>',right:'<path d="m9 6 6 6-6 6"/>',
+      money:'<path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.4 5 1.5 5 3.4-2.2 3-5 3-5-1.1-5-3"/>',
+      bag:'<path d="M5 8.2h14l-1 11.5a1.7 1.7 0 0 1-1.7 1.5H7.7A1.7 1.7 0 0 1 6 19.7z"/><path d="M9 8.2V6.9a3 3 0 0 1 6 0v1.3"/>',
+      list:'<path d="M4 6h16M4 12h16M4 18h11"/>'};
+    return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(p[k]||"")+'</svg>';
+  }
+  function tdLink(sp){
+    if(!sp)return "";
+    if(typeof naverUrl==="function"){var nu=naverUrl(sp);if(nu)return nu}
+    if(okLL(sp.lat,sp.lng))return "https://www.google.com/maps/search/?api=1&query="+sp.lat+","+sp.lng;
+    return mapUrl(sp);
+  }
+  function tdDraw(){
+    var el=$("vTd");if(!el||!viewerMode)return;
+    if(!tdReady()){el.innerHTML='<p class="hint" style="padding:20px 6px">這份行程還沒有任何一天。</p>';return}
+    var day=tdDay(),vl=validItems(s.days[day]),cr=calcDay(vl),np=tdNowParts(),now=np.min,isToday=tdTodayIdx()===day;
+    /* 現在走到哪一站 */
+    var cur=-1,mode="none",i,r;
+    if(isToday&&vl.length){
+      for(i=0;i<vl.length;i++){
+        r=cr[i];if(r.arr==null)continue;
+        var lv=(r.leave!=null?r.leave:r.arr+60);
+        if(now<r.arr){cur=i;mode=(i===0?"before":"move");break}
+        if(now<lv){cur=i;mode="in";break}
+      }
+      if(cur<0){cur=vl.length-1;mode="done"}
+    }else if(vl.length){cur=0;mode=isToday?"none":"other"}
+    var sel=(tdSel!=null&&tdSel>=0&&tdSel<vl.length)?tdSel:cur,live=(sel===cur&&isToday);
+    var dt=dayDate(day),dstr=dt?("0"+(dt.getMonth()+1)).slice(-2)+"/"+("0"+dt.getDate()).slice(-2)+"（週"+WDN[dt.getDay()]+"）":"";
+    var d1=dayDate(0),d2=dayDate(s.days.length-1);
+    function md(d){return d?("0"+(d.getMonth()+1)).slice(-2)+"/"+("0"+d.getDate()).slice(-2):""}
+    var h="";
+
+    /* 標題列 */
+    h+='<div class="tdtop"><div class="tdh"><div><div class="tdt">'+esc(s.title||"旅遊行程")+(d1?' · '+md(d1)+(d2&&d2!==d1?' – '+md(d2):''):'')+'</div>'
+      +'<h2>第 '+(day+1)+' 天'+(isToday?'':'')+'</h2>'
+      +(dstr?'<div class="tdd">'+dstr+(isToday?'　·　今天':'')+'</div>':'')+'</div>'
+      +'<div class="tdc"><b>'+m2t(now)+'</b>'+(isToday?'當地時間':'現在')+'</div></div>'
+      +(vl.length?'<div class="tdpg"><div class="bar"><i style="width:'+Math.round((((tdSel!=null&&tdSel>=0&&tdSel<vl.length)?tdSel:cur)+1)/vl.length*100)+'%"></i></div><span>第 '+(((tdSel!=null&&tdSel>=0&&tdSel<vl.length)?tdSel:cur)+1)+' / '+vl.length+' 站</span></div>':'')
+      +'</div>';
+
+    /* 日期鈕 */
+    if(s.days.length>1){
+      h+='<div class="tddays">'+s.days.map(function(d,k){
+        var dd=dayDate(k),t=tdTodayIdx()===k;
+        return '<button type="button" data-tdday="'+k+'"'+(k===day?' class="on"':'')+'>'+(t?'今天':'第 '+(k+1)+' 天')+(dd&&!t?'<span style="opacity:.75"> '+md(dd)+'</span>':'')+'</button>';
+      }).join("")+'</div>';
+    }
+
+    if(!vl.length){
+      h+='<div class="tdc1"><div class="tdst q"><i></i>這天還沒有安排行程</div><p class="tdend">到「行程」分頁看看其他天，或請行程主人再加幾站。</p></div>';
+      el.innerHTML=h+tdJump();return;
+    }
+
+    /* 主卡 */
+    var it=vl[sel],sp=spot(it.sid),rr=cr[sel];
+    var stTxt,stQ=false;
+    if(live&&mode==="in")stTxt="現在在這裡";
+    else if(live&&mode==="move")stTxt="前往下一站";
+    else if(live&&mode==="before")stTxt="今天還沒開始";
+    else if(live&&mode==="done"){stTxt="今天的行程結束了";stQ=true}
+    else if(isToday){stTxt=(sel<cur?"已經過了":"待會的行程");stQ=true}
+    else {stTxt=(dstr?dstr+"的行程":"這天的行程");stQ=true}
+    h+='<div class="tdc1"><div class="tdrow"><div class="tdst'+(stQ?' q':'')+'"><i></i>'+esc(stTxt)+'</div>'
+      +((isToday&&sel!==cur)?'<button type="button" class="tdback" data-tdgo="'+cur+'">回到現在</button>':'')+'</div>';
+    var tags=(sp.cat?'<span class="vtag">'+esc(sp.cat)+'</span>':'')+(sp.area?'<span class="vtag area">'+esc(sp.area)+'</span>':'');
+    if(tags)h+='<div class="tdtg">'+tags+'</div>';
+    h+='<h3 class="tdnm">'+esc(sp.name)+'</h3>';
+    var rg=rangeStr(rr,"–"),sty=rr.stay?durTxt(rr.stay):"";
+    if(rg||sty)h+='<div class="tdtm">'+tdIco("clock")+'<span>'+esc(rg||"")+'</span>'+(sty?'<span>· 停留 '+esc(sty)+'</span>':'')+'</div>';
+
+    /* 倒數 */
+    if(live&&(mode==="in"||mode==="move"||mode==="before")){
+      var lab,rem,tot,sub;
+      if(mode==="in"){
+        var lv2=(rr.leave!=null?rr.leave:rr.arr+60);
+        lab="還可以待";rem=lv2-now;tot=rr.stay||(lv2-rr.arr)||1;
+        sub='現在 <b>'+m2t(now)+'</b><br>預計 <b>'+m2t(lv2)+'</b> 出發';
+      }else{
+        lab=(mode==="before"?"距離出發":"距離抵達");rem=rr.arr-now;
+        var pv=(sel>0?cr[sel-1].leave:null);tot=(pv!=null?rr.arr-pv:Math.max(rem,1));
+        sub='現在 <b>'+m2t(now)+'</b><br>預計 <b>'+m2t(rr.arr)+'</b> 抵達';
+      }
+      rem=Math.max(0,rem);
+      var dn=tot>0?Math.max(0,Math.min(100,Math.round((1-rem/tot)*100))):0;
+      h+='<div class="tdcd"><div class="r"><div><div class="lb">'+lab+'</div>'
+        +'<div class="big">'+(rem>=60?Math.floor(rem/60)+'<small>小時</small>'+(rem%60?(rem%60)+'<small>分</small>':''):rem+'<small>分鐘</small>')+'</div></div>'
+        +'<div class="rt">'+sub+'</div></div><div class="bar"><i style="width:'+dn+'%"></i></div></div>';
+    }
+
+    /* 注意事項 */
+    if(sp.note){
+      h+='<div class="tdnote"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--warn,#c9801a)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span>'+esc(sp.note).replace(/\n/g,"<br>")+'</span></div>';
+    }
+
+    /* 上一站／導航／下一站 */
+    h+='<div class="tdact">'
+      +'<button type="button" class="sq" data-tdgo="'+(sel-1)+'" aria-label="上一站"'+(sel<=0?' disabled':'')+'>'+tdIco("left")+'</button>'
+      +'<a class="go" href="'+esc(tdLink(sp))+'" target="_blank" rel="noopener">'+tdIco("nav")+'導航前往</a>'
+      +'<button type="button" class="sq" data-tdgo="'+(sel+1)+'" aria-label="下一站"'+(sel>=vl.length-1?' disabled':'')+'>'+tdIco("right")+'</button>'
+      +'</div></div>';
+
+    /* 下一站預告 */
+    if(sel<vl.length-1){
+      var nit=vl[sel+1],nsp=spot(nit.sid),nr=cr[sel+1];
+      h+='<button type="button" class="tdnx" data-tdgo="'+(sel+1)+'">'
+        +'<span class="tm">'+esc(nr.arr!=null?m2t(nr.arr):"—")+'</span>'
+        +'<span class="nm"><span class="lbl">下一站</span><b>'+esc(nsp.name)+'</b>'
+        +(nr.drive?'<small>路程約 '+nr.drive+' 分</small>':'')+'</span>'
+        +tdIco("right")+'</button>';
+    }else{
+      h+='<p class="tdend">這是這一天的最後一站，辛苦了！</p>';
+    }
+
+    el.innerHTML=h+tdJump();
+  }
+  function tdJump(){
+    return (viewerShare?'<div class="tdjump">'
+      +'<button type="button" data-tdtab="split">'+tdIco("money")+'分帳</button>'
+      +'<button type="button" data-tdtab="buy">'+tdIco("bag")+'購物清單</button>'
+      +'</div>':'')
+      +'<div class="tdjump" style="grid-template-columns:1fr"><button type="button" data-tdtab="trip">'+tdIco("list")+'看完整行程</button></div>';
+  }
+  function tdApply(){
+    document.body.classList.toggle("t-today",VTAB==="today");
+    if(VTAB==="today")tdDraw();
+  }
+  (function(){
+    var el=$("vTd");if(!el)return;
+    el.addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b)return;
+      if(b.dataset.tdgo!=null){tdSel=Number(b.dataset.tdgo);tdDraw();return}
+      if(b.dataset.tdday!=null){tdDayI=Number(b.dataset.tdday);tdSel=null;tdDraw();return}
+      if(b.dataset.tdtab){vNavGo(b.dataset.tdtab);return}
+    });
+  })();
+  setInterval(function(){if(viewerMode&&VTAB==="today"&&!document.hidden)tdDraw()},60000);
   function vNavH(){
     var n=$("vNav3");if(!n||n.hidden||!n.getBoundingClientRect)return;
     var h=Math.round(n.getBoundingClientRect().height);
@@ -1912,12 +2146,13 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
   function vNavInit(){
     var n=$("vNav3");if(!n||!viewerMode)return;
     if(!VTAB)VTAB="trip";   /* 這個函式比 var VTAB 早執行，要自己補上預設值 */
+    VBASE=(VTAB==="today"?"today":"trip");
     n.hidden=false;
     [].forEach.call(n.querySelectorAll("button[data-vtab]"),function(b){
-      if(b.dataset.vtab!=="trip"&&!viewerShare)b.hidden=true;
+      if(b.dataset.vtab!=="trip"&&b.dataset.vtab!=="today"&&!viewerShare)b.hidden=true;
       b.onclick=function(){vNavGo(this.dataset.vtab)};
     });
-    vNavMark();
+    vNavMark();tdApply();
   }
   var NKRE=/一定|必須|必需|必要|務必|切記|一律|不可|不得|禁止|嚴禁|預約/;
   var NTRE=/(?:\d{1,2}\s*[:：]\s*\d{2}|\d{1,2}\s*(?:點|时|時)(?:半|\d{1,2}分?)?)\s*(?:前\s*)?到(?!\s*(?:\d|上午|下午|晚上|中午|早上|凌晨|隔天))/;
@@ -4748,6 +4983,8 @@ function romWords(s){return String(s).split(/\s+/).filter(Boolean).map(function(
       var want=false;try{want=localStorage.getItem(VMIKEY)==="1"}catch(e){}
       if(want&&!vMiOpen())vMiToggle(true);
       vMiSync();vNavH();vFabLay();
+      if(!tdAuto){tdAuto=true;if(VTAB==="trip"&&tdTodayIdx()>=0){VTAB="today";VBASE="today";vNavMark()}}
+      tdApply();
     },0);
 
     $("vLib").classList.toggle("ok",s.spots.length>0);$("vSug").classList.toggle("ok",!!sugApi());
