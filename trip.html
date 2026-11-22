@@ -1225,6 +1225,38 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
 .spgal .gi i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.64rem;text-align:center;background:var(--blue);color:var(--on-blue,#fff);padding:1px 0}
 .spgal .gnv{display:grid;place-items:center;gap:1px;color:var(--blue);border-style:dashed}
 .spgal .gnv span{font-size:.64rem}
+/* 注意事項：標籤、提醒、票券 */
+.sptags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.sptags i{font-style:normal;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:7px;
+  background:color-mix(in srgb,var(--tag-food,#e8b08c) 38%,var(--bg));color:var(--ink)}
+.sprem{margin-top:4px;display:flex;flex-direction:column;gap:3px}
+.sprem span{display:flex;align-items:baseline;gap:6px;font-size:.8rem;line-height:1.45;color:var(--ink)}
+.sprem span::before{content:"";flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:var(--tag-food,#e8b08c);transform:translateY(-2px)}
+.sprem b{font-size:.68rem;font-weight:700;color:var(--muted,#6b7387);white-space:nowrap}
+.sptix{margin-top:4px;font-size:.74rem;color:var(--muted,#6b7387)}
+.remw{display:flex;flex-direction:column;gap:6px}
+.remi{display:flex;align-items:center;gap:7px;background:var(--bg);border-radius:10px;padding:6px 6px 6px 10px}
+.remi .rt{flex:1;min-width:0;font-size:.88rem;overflow-wrap:anywhere}
+.remi .rw{flex:0 0 auto;min-height:30px;padding:0 10px;border-radius:999px;border:0;background:color-mix(in srgb,var(--blue) 18%,var(--bg));
+  color:var(--ink);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer}
+.remi .rx{flex:0 0 auto;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--muted,#6b7387);
+  font-size:1.1rem;line-height:1;cursor:pointer}
+.remadd{display:flex;gap:6px}
+.remadd input{flex:1;min-width:0;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);font:inherit;font-size:.88rem;padding:0 10px}
+.remadd button{flex:0 0 auto;height:38px;padding:0 14px;border-radius:10px;border:0;background:var(--blue);color:var(--on-blue,#fff);
+  font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+.remadd button:disabled{opacity:.4;cursor:default}
+.tixw{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+.tixb{position:relative;display:inline-flex}
+.tixb .tix{width:64px;height:64px;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);cursor:zoom-in}
+.tixb .tix img{width:100%;height:100%;object-fit:cover;display:block}
+.tixb .tixx{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border:0;border-radius:50%;background:var(--ink);
+  color:var(--surface);font-size:.85rem;line-height:1;cursor:pointer}
+.tixup{display:inline-flex}
+#tixBox{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:16px}
+#tixBox.on{display:flex}
+#tixBox img{max-width:100%;max-height:100%;border-radius:10px}
 .galhint{margin:0 0 6px;font-size:.74rem;color:var(--muted,#6b7387)}
 #galBox{position:fixed;inset:0;z-index:320;display:none}
 #galBox.on{display:block}
@@ -1430,7 +1462,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     var go=idx>0?'<div class="go"><label>路程<input type="number" min="0" step="5" inputmode="numeric" data-drive="'+it.uid+'"'+(driveEdit===it.uid?'':' readonly tabindex="-1" style="width:calc('+Math.max(2,String(numv(it.drive)==null?"":numv(it.drive)).length)+'ch + 6px)"')+' value="'+(numv(it.drive)==null?"":numv(it.drive))+'" aria-label="路程分鐘">分</label>'+(helperBase()?'<button type="button" class="estbtn'+(it.mode==="drive"?' on':'')+'" data-estdrive="'+it.uid+'" aria-pressed="'+(it.mode==="drive")+'" title="估算開車時間" aria-label="估算開車時間"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></button><button type="button" class="estbtn'+(it.mode==="walk"?' on':'')+'" data-estwalk="'+it.uid+'" aria-pressed="'+(it.mode==="walk")+'" title="估算步行時間" aria-label="估算步行時間"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2.5-6-2-3 2-4 3 2.5 3 .5M11.5 15l3 2 1 4M8 11l-2 3"/></svg></button><button type="button" class="estbtn'+(it.mode==="transit"?' on':'')+'" data-esttransit="'+it.uid+'" aria-pressed="'+(it.mode==="transit")+'" title="查詢大眾運輸時間" aria-label="查詢大眾運輸時間"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17l-2 4M16 17l2 4"/></svg></button><button type="button" class="estbtn'+(it.mode==="manual"?' on':'')+'" data-editdrive="'+it.uid+'" aria-pressed="'+(it.mode==="manual")+'" title="手動修改路程" aria-label="手動修改路程"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>':'')+'</div>':'';
     var ks=it.kids||[];
     var kz=!ks.length?"":'<div class="kids kz has" data-kidsof="'+it.uid+'"><div class="lab">包含（'+ks.length+'）</div>'+ks.map(function(k){var ksp=spot(k.sid);return ksp?'<div class="kid">'+blk(ksp,k.uid,"k",false)+'<button type="button" class="kx" data-rmkid="'+k.uid+'" data-parent="'+it.uid+'" aria-label="移出內含" title="移出內含">✕</button></div>':""}).join("")+'</div>';
-    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+(sp.note?'<div class="snote">'+fxNote(sp.note)+'</div>':'')+'</div>';
+    return go+'<div class="slot'+(it.fixed?' fixed':'')+(late?' islate':'')+'">'+tl+blk(sp,it.uid,di,false)+kz+(sp.note?'<div class="snote">'+fxNote(sp.note)+'</div>':'')+spExtraHtml(sp)+'</div>';
   }
   function cdText(d){
     var m=d&&d.flights&&d.flights.out&&/^(\d{4})-(\d{2})-(\d{2})/.exec(d.flights.out.dep||"");
@@ -1473,6 +1505,9 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
       '<label class="lf"><span>營業時間</span><input type="text" data-f="hours"'+at+' value="'+esc(sp.hours)+'" aria-label="營業時間"></label>'+
       '<label class="lf"><span>電話</span><input type="text" inputmode="tel" autocomplete="tel" data-f="phone"'+at+' value="'+esc(sp.phone||"")+'" placeholder="例：051-123-4567" aria-label="電話"></label>'+
       '<label class="lf"><span>備註</span><textarea class="f" data-f="note"'+at+' rows="3" aria-label="備註">'+esc(sp.note)+'</textarea></label>'+
+      '<div class="lf"><span>注意事項</span><div class="chips" role="group" aria-label="注意事項">'+tagChips(sp)+'</div></div>'+
+      '<div class="lf"><span>提醒（會顯示在分享頁的「今天」）</span>'+remHtml(sp)+'</div>'+
+      '<div class="lf"><span>票券與訂位</span>'+tixHtml(sp)+'</div>'+
       (ctry()==="KR"?'<details class="nvd"><summary>Naver 連結'+(sp.naver?'<i class="nvs">已設定</i>':'')+'</summary><label class="lf"><input type="text" data-f="naver"'+at+' value="'+esc(sp.naver||"")+'" placeholder="貼上 Naver 地圖連結" aria-label="Naver 地圖連結"></label></details>':'')+
       galHtml(sp)+'<div class="editacts"><div class="ea1"><label class="coverck" title="'+(sp.img||sp.cover?'設為 PPT 封面圖片':'需先有圖片才能設為封面')+'"><input type="checkbox" data-cover="'+sp.id+'"'+(sp.cover?' checked':'')+(sp.img||sp.cover?'':' disabled')+'><span>設為封面</span></label>'+'<label class="upload" title="可選擇檔案，或直接貼上圖片（可一次選多張）"><input type="file" accept="image/*" multiple data-img="1"'+at+'><span>'+(spImgs(sp).length?'再加圖片':'上傳圖片')+'</span></label><button type="button" class="pimg" data-pasteimg="'+sp.id+'" title="貼上剪貼簿裡的圖片（可連續貼多張）" aria-label="貼上圖片"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button></div><div class="ea2">'+iconHtml(sp)+''+
       (day==="h"?'<button type="button" data-rmh="'+inst+'">移出飯店資訊</button>':'')+(inst&&day!=="h"&&day!=="k"&&!inLib?'<button type="button" data-rmstop="'+inst+'">移出行程</button>':'')+(day==="k"?'<button type="button" data-rmkid="'+inst+'">移出內含</button>':'')+(inLib?'<button data-del="'+sp.id+'">刪除景點</button>':'')+'</div></div>');
@@ -2319,6 +2354,84 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     var out=[],i=0;
     (function next(){if(i>=list.length){cb(out);return}aHash(list[i++],function(h){if(h)out.push(h);next()})})();
   }
+
+  /* ===== 景點的注意事項：快速標籤、提醒、票券 ===== */
+  var SPTAGS=["只收現金","帶護照","需預約","排隊久","禁止拍照","需脫鞋","公休日注意","要先取號"];
+  var REMW=["抵達時提醒","離開前 30 分","當天早上"];
+  var SPREMMAX=6,SPTIXMAX=2;
+  function spTags(sp){return Array.isArray(sp.tags)?sp.tags:[]}
+  function spRem(sp){return Array.isArray(sp.rem)?sp.rem:[]}
+  function spTix(sp){return Array.isArray(sp.tix)?sp.tix:[]}
+  function cleanTags(v){
+    var out=[],seen={};
+    (Array.isArray(v)?v:[]).forEach(function(x){
+      if(typeof x!=="string")return;var t=x.trim().slice(0,14);
+      if(!t||seen[t]||out.length>=10)return;seen[t]=1;out.push(t);
+    });
+    return out.length?out:undefined;
+  }
+  function cleanRem(v){
+    var out=[];
+    (Array.isArray(v)?v:[]).forEach(function(x){
+      if(!x||typeof x!=="object")return;
+      var t=typeof x.t==="string"?x.t.trim().slice(0,90):"";if(!t||out.length>=SPREMMAX)return;
+      var w=Math.round(Number(x.w)||0);if(!(w>=0&&w<REMW.length))w=0;
+      out.push({t:t,w:w});
+    });
+    return out.length?out:undefined;
+  }
+  function cleanTix(v){
+    var out=[];
+    (Array.isArray(v)?v:[]).forEach(function(x){
+      if(typeof x!=="string"||!IMGRE.test(x)||out.length>=SPTIXMAX)return;out.push(x);
+    });
+    return out.length?out:undefined;
+  }
+  function tagChips(sp){
+    var on=spTags(sp),list=SPTAGS.slice();
+    on.forEach(function(t){if(list.indexOf(t)<0)list.push(t)});
+    return list.map(function(t){
+      return '<button type="button" class="chip'+(on.indexOf(t)>=0?' on':'')+'" data-sptag="'+esc(t)+'" data-sid="'+sp.id+'">'+esc(t)+'</button>';
+    }).join("");
+  }
+  function remHtml(sp){
+    var a=spRem(sp),h='<div class="remw" id="remw-'+sp.id+'">';
+    a.forEach(function(r,i){
+      h+='<div class="remi"><span class="rt">'+esc(r.t)+'</span>'
+        +'<button type="button" class="rw" data-remcyc="'+sp.id+':'+i+'" title="換提醒時機">'+esc(REMW[r.w]||REMW[0])+'</button>'
+        +'<button type="button" class="rx" data-remdel="'+sp.id+':'+i+'" aria-label="刪除這則提醒">\u00d7</button></div>';
+    });
+    h+='<div class="remadd"><input type="text" id="remin-'+sp.id+'" maxlength="90" placeholder="例：生魚片在 2 樓現點現切" aria-label="新增提醒">'
+      +'<button type="button" data-remadd="'+sp.id+'"'+(a.length>=SPREMMAX?' disabled title="最多 '+SPREMMAX+' 則"':'')+'>加入</button></div>';
+    return h+'</div>';
+  }
+  function tixHtml(sp){
+    var a=spTix(sp),h='<div class="tixw">';
+    a.forEach(function(d,i){
+      h+='<span class="tixb"><button type="button" class="tix" data-tixopen="'+sp.id+':'+i+'" aria-label="看票券"><img src="'+d+'" alt=""></button>'
+        +'<button type="button" class="tixx" data-tixdel="'+sp.id+':'+i+'" aria-label="刪除這張票券">\u00d7</button></span>';
+    });
+    if(a.length<SPTIXMAX)h+='<label class="upload tixup" title="訂位截圖、票券 QR Code"><input type="file" accept="image/*" data-tix="1" data-sid="'+sp.id+'"><span>上傳票券</span></label>';
+    return h+'</div><p class="galhint">票券會存得比一般圖片清楚（約 1000px），只放真的要在現場出示的。</p>';
+  }
+  function spExtraHtml(sp){
+    var t=spTags(sp),r=spRem(sp),h="";
+    if(t.length)h+='<div class="sptags">'+t.map(function(x){return '<i>'+esc(x)+'</i>'}).join("")+'</div>';
+    if(r.length)h+='<div class="sprem">'+r.map(function(x){return '<span>'+esc(x.t)+'<b>'+esc(REMW[x.w]||REMW[0])+'</b></span>'}).join("")+'</div>';
+    if(spTix(sp).length)h+='<div class="sptix">'+spTix(sp).length+' 張票券</div>';
+    return h;
+  }
+  function shrinkTix(file,cb){
+    var rd=new FileReader();
+    rd.onload=function(){var im=new Image();im.onload=function(){
+      var m=1000,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");
+      c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+      c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+      cb(c.toDataURL("image/jpeg",0.7));
+    };im.onerror=function(){cb("")};im.src=rd.result};
+    rd.onerror=function(){cb("")};
+    rd.readAsDataURL(file);
+  }
   function shrinkAll(files,cb){
     var list=[].slice.call(files||[]),out=[],i=0;
     (function next(){
@@ -2332,7 +2445,18 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     rd.readAsDataURL(file);
   }
   document.addEventListener("change",function(e){
-    var t=e.target;if(!t.dataset||!t.dataset.img)return;
+    var t=e.target;
+    if(t.dataset&&t.dataset.tix){
+      var spx=spot(t.dataset.sid),f0=t.files&&t.files[0];t.value="";
+      if(!spx||!f0)return;
+      if(spTix(spx).length>=SPTIXMAX){say("一個景點最多 "+SPTIXMAX+" 張票券。");return}
+      shrinkTix(f0,function(d){
+        if(!d){say("讀不到這張圖。");return}
+        var ar=spTix(spx).slice();ar.push(d);spx.tix=ar;save();render();say("已加入票券");
+      });
+      return;
+    }
+    if(!t.dataset||!t.dataset.img)return;
     var sp=spot(t.dataset.sid),fs=t.files;if(!sp||!fs||!fs.length)return;
     var list=[].slice.call(fs);t.value="";
     addImgFiles(sp,list,"已加入");
@@ -2463,7 +2587,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     d.spots.forEach(function(x){
       if(!x||typeof x.id!=="string"||!IDRE.test(x.id)||!str(x.name))return;
       ids[x.id]=1;
-      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
+      spots.push({id:x.id,cat:str(x.cat),name:str(x.name),ko:str(x.ko),hours:str(x.hours),area:str(x.area),addr:str(x.addr),note:str(x.note),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,tags:cleanTags(x.tags),rem:cleanRem(x.rem),tix:cleanTix(x.tix),gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined,cover:x.cover===true||x.cover===1?true:undefined});
     });
     var days=d.days.map(function(day){
       return (Array.isArray(day)?day:[]).filter(function(it){return it&&ids[it.sid]&&typeof it.uid==="string"&&IDRE.test(it.uid)}).map(function(it){var o={uid:it.uid,sid:it.sid,time:str(it.time),note:str(it.note)};
@@ -3841,7 +3965,50 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
     if(t.dataset.newarea!==undefined){var ai=$("ar");ai.value=ai.value.trim()===t.dataset.newarea?"":t.dataset.newarea;drawAreaChips();return}
     if(t.dataset.setarea!==undefined){var sp2=spot(t.dataset.sid);if(sp2){sp2.area=sp2.area===t.dataset.setarea?"":t.dataset.setarea;save();render()}return}
     if(t.dataset.setcat!==undefined){var sp=spot(t.dataset.sid);if(sp){sp.cat=sp.cat===t.dataset.setcat?"":t.dataset.setcat;save();render()}}
+    if(t.dataset.sptag!==undefined){
+      var sp3=spot(t.dataset.sid);if(!sp3)return;
+      var tg=spTags(sp3).slice(),k=tg.indexOf(t.dataset.sptag);
+      if(k>=0)tg.splice(k,1);else tg.push(t.dataset.sptag);
+      sp3.tags=tg.length?tg:undefined;save();render();return;
+    }
+    if(t.dataset.remcyc!==undefined){
+      var q=t.dataset.remcyc.split(":"),sp4=spot(q[0]);if(!sp4)return;
+      var ar=spRem(sp4).slice(),ix=+q[1];if(!ar[ix])return;
+      ar[ix]={t:ar[ix].t,w:(ar[ix].w+1)%REMW.length};sp4.rem=ar;save();render();return;
+    }
+    if(t.dataset.remdel!==undefined){
+      var q2=t.dataset.remdel.split(":"),sp5=spot(q2[0]);if(!sp5)return;
+      var ar2=spRem(sp5).slice();ar2.splice(+q2[1],1);sp5.rem=ar2.length?ar2:undefined;save();render();return;
+    }
+    if(t.dataset.remadd!==undefined){
+      var sp6=spot(t.dataset.remadd);if(!sp6)return;
+      var inp=document.getElementById("remin-"+sp6.id),v=inp?inp.value.trim():"";
+      if(!v){if(inp)inp.focus();return}
+      var ar3=spRem(sp6).slice();
+      if(ar3.length>=SPREMMAX){say("一個景點最多 "+SPREMMAX+" 則提醒。");return}
+      ar3.push({t:v.slice(0,90),w:0});sp6.rem=ar3;save();render();
+      var again=document.getElementById("remin-"+sp6.id);if(again)again.focus();
+      return;
+    }
+    if(t.dataset.tixdel!==undefined){
+      var q3=t.dataset.tixdel.split(":"),sp7=spot(q3[0]);if(!sp7)return;
+      var ar4=spTix(sp7).slice();ar4.splice(+q3[1],1);sp7.tix=ar4.length?ar4:undefined;save();render();say("已刪除票券");return;
+    }
+    if(t.dataset.tixopen!==undefined){
+      var q4=t.dataset.tixopen.split(":"),sp8=spot(q4[0]);if(!sp8)return;
+      var d=spTix(sp8)[+q4[1]];if(d)tixOpen(d);return;
+    }
   });
+  /* 票券放大 */
+  function tixOpen(d){
+    var b=document.getElementById("tixBox");
+    if(!b){
+      b=document.createElement("div");b.id="tixBox";document.body.appendChild(b);
+      b.addEventListener("click",function(){b.classList.remove("on")});
+    }
+    b.innerHTML='<img src="'+d+'" alt="票券">';
+    b.classList.add("on");
+  }
   /* ---- trips, cloud sync, sharing ---- */
   try{themeState=JSON.parse(localStorage.getItem(KEY+"-themestate")||"null")||{ts:0,dirty:false};if(typeof themeState.ts!=="number")themeState={ts:0,dirty:false}}catch(e){themeState={ts:0,dirty:false}}
   try{deviceId=localStorage.getItem(KEY+"-dev")||"";if(!deviceId){deviceId=uid()+uid();if(!viewerMode)localStorage.setItem(KEY+"-dev",deviceId)}}catch(e){deviceId=uid()+uid()}
@@ -5906,7 +6073,7 @@ body.viewer.vready :is(#vDl,#vLib,#vSug,#vFx,#vMap,#vSplit,#fabTg){animation:fab
   }
   function lbClean(x){
     if(!x||typeof x!=="object"||!str(x.name).trim())return null;
-    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
+    return {id:uid(),cat:str(x.cat).slice(0,20),name:str(x.name).slice(0,120),ko:str(x.ko).slice(0,120),hours:str(x.hours).slice(0,60),area:str(x.area).slice(0,30),addr:str(x.addr).slice(0,200),note:str(x.note).slice(0,2000),naver:okNaver(str(x.naver)),img:IMGRE.test(str(x.img))?x.img:"",imgs:cleanImgs(x.imgs,str(x.img)),url:okUrl(str(x.url)),phone:str(x.phone).slice(0,40)||undefined,tags:cleanTags(x.tags),rem:cleanRem(x.rem),tix:cleanTix(x.tix),gid:/^[A-Za-z0-9_-]{10,200}$/.test(str(x.gid))?x.gid:undefined,lat:okLL(x.lat,x.lng)?x.lat:undefined,lng:okLL(x.lat,x.lng)?x.lng:undefined};
   }
   function lbOpen(){
     if(!lbEl){lbEl=document.createElement("div");lbEl.id="lbSheet";document.body.appendChild(lbEl);lbBind()}

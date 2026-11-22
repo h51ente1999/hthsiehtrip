@@ -170,9 +170,23 @@ label.f>*:not(span){margin-top:4px}
 /* 加入視窗不需要右上角的 ✕，用下面的「取消」就好 */
 #joinCard .mx{display:none}
 #joinCard>h2:first-of-type{padding-right:0}
+/* 和 trip／分享頁同一套外觀 */
+:root{--pop:cubic-bezier(.34,1.56,.64,1)}
+body::before{content:"";position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--blue) 22%,transparent) 0,transparent 38%),
+             radial-gradient(circle at 90% 20%,color-mix(in srgb,var(--blue2,var(--tag-food)) 30%,transparent) 0,transparent 36%),
+             radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--blue) 16%,transparent) 0,transparent 40%),var(--page)}
+.card{border-radius:20px!important;padding:16px!important;border:0!important;
+  box-shadow:0 8px 24px rgba(30,42,74,.07)!important}
+.btn,button.btn{border-radius:999px}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
-try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
+try{
+  var vid=null;try{vid=new URLSearchParams(location.search).get("view")}catch(e){}
+  var r=vid?localStorage.getItem("travel-spots-v1-vth-"+vid):null;      /* 從分享頁開的，用那份行程的主題 */
+  if(r==null)r=localStorage.getItem("travel-spots-v1-theme");
+  th=r===null?D:(JSON.parse(r||"{}")||{});
+}catch(e){th=D}
 var st=document.documentElement.style;Object.keys(th).forEach(function(k){if(k!=="--hit")st.setProperty(k,th[k])});
 if(th["--blue2"])st.setProperty("--dayg2",th["--blue2"]);
 if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;st.setProperty("--on-blue",l>0.55?"#0D2626":"#fff")}})();</script>
@@ -331,7 +345,7 @@ function clean(o,id){
   var imgs=[];(Array.isArray(o.imgs)?o.imgs:[]).slice(0,MAXIMG).forEach(function(v){if(typeof v==="string"&&/^data:image\//.test(v)&&v.length<900000)imgs.push(v)});
   return {id:id,title:String(o.title||"").slice(0,80),url:String(o.url||"").slice(0,600),site:String(o.site||"").slice(0,40),
     price:Number(o.price)>0?Number(o.price):0,ccy:String(o.ccy||"").slice(0,5).toUpperCase(),qty:Math.min(99,Math.max(1,Math.round(Number(o.qty)||1))),
-    note:String(o.note||"").slice(0,200),shop:String(o.shop||"").slice(0,40),orig:String(o.orig||"").slice(0,120),got:o.got===true,imgs:imgs,
+    note:String(o.note||"").slice(0,200),shop:String(o.shop||"").slice(0,40),spot:String(o.spot||"").slice(0,40),orig:String(o.orig||"").slice(0,120),got:o.got===true,imgs:imgs,
     by:String(o.by||"").slice(0,64),ts:Number(o.ts)||0};
 }
 async function connect(){
@@ -398,6 +412,48 @@ function bytesOf(imgs){var n=0;imgs.forEach(function(v){n+=v.length});return n}
 
 /* ---------- 清單 ---------- */
 function draw(){drawBar();drawList()}
+/* ===== 給分享頁「今天」用的橋接（?bridge=1）=====
+   分享頁不自己寫 Firestore，一律丟訊息進來，由這一頁用既有的登入與權限寫入。 */
+var BRD=/[?&]bridge=1/.test(location.search);
+function brdPost(m){if(!BRD)return;try{m.brd="buy";parent.postMessage(m,location.origin)}catch(e){}}
+function brdState(){
+  var need=(ERR==="NEEDJOIN"),pick=!!(ME&&PEOPLE[ME.uid]&&!PEOPLE[ME.uid].memberId&&members().length);
+  return {ready:true,joined:!!(LED&&!need),needJoin:need,needPick:pick,err:(need?"":ERR||""),
+    cur:(LED&&LED.cur)||"",me:meName(),
+    items:ITEMS.map(function(x){return {id:x.id,title:x.title,price:x.price,ccy:x.ccy,qty:x.qty,got:!!x.got,spot:x.spot||"",shop:x.shop||""}})};
+}
+if(BRD){
+  (function(){
+    var d0=draw;draw=function(){d0.apply(this,arguments);brdPost({state:brdState()})};
+    window.addEventListener("message",async function(e){
+      if(e.source!==parent||e.origin!==location.origin)return;
+      var d=e.data;if(!d||d.brd!=="buy")return;
+      if(d.ping){brdPost({state:brdState()});return}
+      if(d.add){
+        if(!API||!META||!LED){brdPost({rid:d.rid,err:"offline"});return}
+        if(ERR==="NEEDJOIN"){brdPost({rid:d.rid,err:"needjoin"});return}
+        var o=clean({title:d.add.title,price:d.add.price,ccy:d.add.ccy||(LED&&LED.cur)||"JPY",qty:d.add.qty||1,
+          shop:d.add.shop||"",spot:d.add.spot||"",note:"",got:false,imgs:[],
+          by:(ME&&ME.uid)||"",ts:Date.now()},"b"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+        if(!o.title){brdPost({rid:d.rid,err:"empty"});return}
+        try{await API.saveBuy(META.sid,o);brdPost({rid:d.rid,ok:true})}
+        catch(err){brdPost({rid:d.rid,err:(err&&err.code)||"error"})}
+        return;
+      }
+      if(d.toggle){
+        if(!API||!META||!LED||ERR==="NEEDJOIN"){brdPost({rid:d.rid,err:"offline"});return}
+        var x=ITEMS.filter(function(v){return v.id===d.toggle})[0];
+        if(!x){brdPost({rid:d.rid,err:"gone"});return}
+        var o2=clean(Object.assign({},x,{got:!x.got,by:x.by||(ME&&ME.uid)||"",ts:x.ts||Date.now()}),x.id);
+        try{await API.saveBuy(META.sid,o2);brdPost({rid:d.rid,ok:true})}
+        catch(err){brdPost({rid:d.rid,err:(err&&err.code)||"error"})}
+        return;
+      }
+    });
+    brdPost({boot:true});
+  })();
+}
+
 function drawBar(){
   if(VIEW){$("tripBar").hidden=true;$("btnBar").hidden=true;document.body.classList.add("tbar-closed");return}
   var sel=$("tripSel");
@@ -543,7 +599,7 @@ function pickMeModal(){
 var IMGS=[],ORIG="";
 function edit(id){
   var x=ITEMS.filter(function(v){return v.id===id})[0],nw=!x;
-  x=x||{id:"",title:"",url:"",site:"",price:0,ccy:(LED&&LED.cur)||"JPY",qty:1,note:"",shop:"",got:false,imgs:[],by:ME?ME.uid:"",ts:0};
+  x=x||{id:"",title:"",url:"",site:"",price:0,ccy:(LED&&LED.cur)||"JPY",qty:1,note:"",shop:"",spot:"",got:false,imgs:[],by:ME?ME.uid:"",ts:0};
   IMGS=x.imgs.slice();ORIG=x.orig||"";
   var c=$("editCard");c.hidden=false;$("setCard").hidden=true;
   var opts=Object.keys(CUR).map(function(k){return '<option value="'+k+'"'+(x.ccy===k?" selected":"")+'>'+k+'</option>'}).join("");
@@ -586,7 +642,7 @@ function edit(id){
     if(!t){$("eMsg").textContent="請填名稱。";return}
     if(!API||!META){$("eMsg").textContent="還沒連上雲端。";return}
     var o=clean({title:t,url:$("eU").value.trim(),site:x.site,price:$("eP").value,ccy:$("eC").value,qty:$("eQ").value,
-      note:$("eN").value.trim(),shop:$("eS").value.trim(),got:$("eG").checked,imgs:IMGS,orig:ORIG,
+      note:$("eN").value.trim(),shop:$("eS").value.trim(),spot:x.spot||"",got:$("eG").checked,imgs:IMGS,orig:ORIG,
       by:x.by||(ME&&ME.uid)||"",ts:x.ts||Date.now()},x.id||("b"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)));
     this.disabled=true;$("eMsg").textContent="";
     try{await API.saveBuy(META.sid,o);c.hidden=true;toast(nw?"已新增":"已儲存")}

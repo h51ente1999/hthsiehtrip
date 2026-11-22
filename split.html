@@ -169,9 +169,23 @@ html.pre *{transition:none!important;animation:none!important}
 .armed,button.armed{background:var(--warn,#c0503f)!important;background-image:none!important;border-color:var(--warn,#c0503f)!important;color:#fff!important;animation:armpulse 1s ease-in-out infinite}
 @keyframes armpulse{50%{opacity:.72}}
 @media (prefers-reduced-motion:reduce){.armed,button.armed{animation:none}}
+/* 和 trip／分享頁同一套外觀 */
+:root{--pop:cubic-bezier(.34,1.56,.64,1)}
+body::before{content:"";position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--blue) 22%,transparent) 0,transparent 38%),
+             radial-gradient(circle at 90% 20%,color-mix(in srgb,var(--blue2,var(--tag-food)) 30%,transparent) 0,transparent 36%),
+             radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--blue) 16%,transparent) 0,transparent 40%),var(--page)}
+.card{border-radius:20px!important;padding:16px!important;border:0!important;
+  box-shadow:0 8px 24px rgba(30,42,74,.07)!important}
+.btn,button.btn{border-radius:999px}
 </style>
 <script>(function(){var D={"--page":"#d8dfec","--blue":"#5a8dbd","--bg":"#f3f5fa","--surface":"#ffffff","--ink":"#232a3c","--on-blue":"#ffffff","--tag-food":"#c8805f","--blue2":"#8570b4"},th=D;
-try{var r=localStorage.getItem("travel-spots-v1-theme");th=r===null?D:(JSON.parse(r||"{}")||{})}catch(e){th=D}
+try{
+  var vid=null;try{vid=new URLSearchParams(location.search).get("view")}catch(e){}
+  var r=vid?localStorage.getItem("travel-spots-v1-vth-"+vid):null;      /* 從分享頁開的，用那份行程的主題 */
+  if(r==null)r=localStorage.getItem("travel-spots-v1-theme");
+  th=r===null?D:(JSON.parse(r||"{}")||{});
+}catch(e){th=D}
 var st=document.documentElement.style;Object.keys(th).forEach(function(k){if(k!=="--hit")st.setProperty(k,th[k])});
 if(th["--blue2"])st.setProperty("--dayg2",th["--blue2"]);
 if(th["--blue"]&&!th["--on-blue"]){var n=parseInt(th["--blue"].slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;st.setProperty("--on-blue",l>0.55?"#0D2626":"#fff")}
@@ -457,7 +471,7 @@ function cleanExp(e){
   var ccy=e.ccy==="TWD"||CUR[e.ccy]?e.ccy:null;if(!ccy)return null;
   var r=ccy==="TWD"?1:Number(e.rate);if(!(r>0))return null;
   var sh={},ok=false;Object.keys(e.shares||{}).forEach(function(k){var v=Number(e.shares[k]);if(v>0){sh[k]=v;ok=true}});if(!ok)return null;
-  return {id:String(e.id),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:String(e.payer||""),shares:sh,note:typeof e.note==="string"?e.note.slice(0,200):"",img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",by:typeof e.by==="string"?e.by:"",ts:Number(e.ts)||0};
+  return {id:String(e.id),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:String(e.payer||""),shares:sh,note:typeof e.note==="string"?e.note.slice(0,200):"",img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",spot:typeof e.spot==="string"?e.spot.slice(0,40):"",by:typeof e.by==="string"?e.by:"",ts:Number(e.ts)||0};
 }
 async function startListen(meta){
   CLED={meta:meta,doc:null,people:{},exps:[],L:null,err:"",sig:"",asked:false,drawn:false,rate:null};
@@ -1314,7 +1328,7 @@ function submitForm(){
   if(!keys.length){err.textContent="至少要有一位參與分攤。";return}
   var sum=0;keys.forEach(function(k){sum+=sh[k]});
   if(Math.abs(sum-100)>=0.01){err.textContent="分攤比例合計要等於 100%（目前 "+(Math.round(sum*100)/100)+"%）。";return}
-  var e={id:F.id||uid(),date:F.date,title:F.title.trim(),amount:a,ccy:F.ccy,rate:rate,pay:F.pay,payer:F.payer,shares:sh,note:(F.note||"").trim().slice(0,200),img:F.img||"",ts:Date.now()};
+  var e={id:F.id||uid(),date:F.date,title:F.title.trim(),amount:a,ccy:F.ccy,rate:rate,pay:F.pay,payer:F.payer,shares:sh,note:(F.note||"").trim().slice(0,200),img:F.img||"",spot:F.spot||"",ts:Date.now()};
   if(L.cloud){
     if(!ME){err.textContent="尚未登入雲端，請重新整理頁面。";return}
     if(F.id){var old=L.expenses.filter(function(x){return x.id===F.id})[0];if(!old||!isMine(L,old)){err.textContent="只有上傳者能編輯這筆。";return}}
@@ -1415,11 +1429,67 @@ function editExp(id){
   var inc={},pct={},eq=true,ids=Object.keys(e.shares||{});
   L.members.forEach(function(m){inc[m.id]=ids.indexOf(m.id)>=0;pct[m.id]=e.shares[m.id]!=null?String(e.shares[m.id]):""});
   var ref=equalShares(L,{inc:inc});ids.forEach(function(k){if(Math.abs((ref[k]||0)-e.shares[k])>0.011)eq=false});
-  S.F={id:e.id,date:e.date,title:e.title,note:e.note||"",amount:String(e.amount),pay:e.pay,ccy:e.ccy,ccyTouched:true,payer:e.payer,mode:eq?"equal":"pct",inc:inc,pct:pct,img:e.img||"",rate:e.ccy==="TWD"?(L.rate?String(+L.rate.r.toPrecision(5)):""):String(e.rate),rateTouched:true};
+  S.F={id:e.id,date:e.date,title:e.title,note:e.note||"",amount:String(e.amount),pay:e.pay,ccy:e.ccy,ccyTouched:true,payer:e.payer,spot:e.spot||"",mode:eq?"equal":"pct",inc:inc,pct:pct,img:e.img||"",rate:e.ccy==="TWD"?(L.rate?String(+L.rate.r.toPrecision(5)):""):String(e.rate),rateTouched:true};
   drawForm();$("formCard").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function drawAll(){drawLedgerSel();if(!cur())return;drawSum();drawForm();drawList()}
+/* ===== 給分享頁「今天」用的橋接（?bridge=1）=====
+   分享頁不自己寫 Firestore，一律丟訊息進來，由這一頁用既有的登入與分攤規則寫入。 */
+var BRD=/[?&]bridge=1/.test(location.search);
+function brdPost(m){if(!BRD)return;try{m.brd="split";parent.postMessage(m,location.origin)}catch(e){}}
+function brdState(){
+  var L=cur();
+  if(!L)return {ready:true,joined:false,needJoin:NOLED.mode==="join",none:NOLED.mode==="none"};
+  return {ready:true,joined:true,needPick:!!(L.cloud&&!L.myMember),cur:L.cur,rate:(L.rate&&L.rate.r)||0,
+    me:L.myMember?mname(L,L.myMember):"",myId:L.myMember||"",people:L.members.length,
+    members:L.members.map(function(m){return {id:m.id,name:m.name}}),
+    exps:L.expenses.map(function(e){return {id:e.id,date:e.date,title:e.title,amount:e.amount,ccy:e.ccy,rate:e.rate,
+      payer:e.payer,payerName:mname(L,e.payer),share:(e.shares&&L.myMember&&e.shares[L.myMember])||0,spot:e.spot||"",ts:e.ts||0}})};
+}
+if(BRD){
+  (function(){
+    var d0=drawAll;drawAll=function(){d0.apply(this,arguments);brdPost({state:brdState()})};
+    var dn=drawNoLedger;drawNoLedger=function(){dn.apply(this,arguments);brdPost({state:brdState()})};
+    window.addEventListener("message",async function(e){
+      if(e.source!==parent||e.origin!==location.origin)return;
+      var d=e.data;if(!d||d.brd!=="split")return;
+      if(d.ping){brdPost({state:brdState()});return}
+      if(d.add){
+        var L=cur();
+        if(!L){brdPost({rid:d.rid,err:"needjoin"});return}
+        if(!L.members.length){brdPost({rid:d.rid,err:"nomember"});return}
+        var amt=parseFloat(d.add.amount);
+        if(!(amt>0)){brdPost({rid:d.rid,err:"amount"});return}
+        var F=newF(L,S.F);
+        F.ccy=(d.add.ccy==="TWD"||CUR[d.add.ccy])?d.add.ccy:L.cur;
+        F.pay=(d.add.pay==="card")?"card":"cash";
+        var ok={};L.members.forEach(function(m){ok[m.id]=1});
+        if(d.add.payer&&ok[d.add.payer])F.payer=d.add.payer;
+        if(Array.isArray(d.add.inc)&&d.add.inc.length){      /* 指定誰要分攤，平均分 */
+          F.mode="equal";
+          L.members.forEach(function(m){F.inc[m.id]=d.add.inc.indexOf(m.id)>=0});
+        }
+        var rate=1;
+        if(F.ccy!=="TWD"){rate=(L.rate&&L.rate.r)||0;if(!(rate>0)){brdPost({rid:d.rid,err:"rate"});return}}
+        var sh=curShares(L,F),keys=Object.keys(sh);
+        if(!keys.length){brdPost({rid:d.rid,err:"share"});return}
+        var ex={id:uid(),date:today(),title:String(d.add.title||"").trim().slice(0,60),amount:amt,ccy:F.ccy,rate:rate,
+          pay:F.pay,payer:F.payer,shares:sh,note:"",img:"",spot:String(d.add.spot||"").slice(0,40),ts:Date.now()};
+        try{
+          if(L.cloud){
+            if(!ME){brdPost({rid:d.rid,err:"noauth"});return}
+            ex.by=ME.uid;await API.saveExpense(L.id,ex);
+          }else{L.expenses.push(ex);persist();drawAll()}
+          brdPost({rid:d.rid,ok:true});
+        }catch(err){brdPost({rid:d.rid,err:(err&&err.code)||"error"})}
+        return;
+      }
+    });
+    brdPost({boot:true});
+  })();
+}
+
 
 /* ---------- 備份匯出／匯入（JSON，含截圖，未加密） ---------- */
 /* ---------- 找回雲端帳本（這台裝置上看不到，但你擁有的） ---------- */
@@ -1520,7 +1590,7 @@ function cleanLedger(x){
     var sh={},ok=false;Object.keys(e.shares||{}).forEach(function(k){var v=Number(e.shares[k]);if(ids[k]&&v>0){sh[k]=v;ok=true}});if(!ok)return;
     var ccy=e.ccy==="TWD"||CUR[e.ccy]?e.ccy:null;if(!ccy)return;
     var r=ccy==="TWD"?1:Number(e.rate);if(!(r>0))return;
-    exp.push({id:typeof e.id==="string"?e.id:uid(),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:e.payer,shares:sh,note:typeof e.note==="string"?e.note.slice(0,200):"",img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",ts:Number(e.ts)||0});
+    exp.push({id:typeof e.id==="string"?e.id:uid(),date:e.date.slice(0,10),title:typeof e.title==="string"?e.title.slice(0,60):"",amount:a,ccy:ccy,rate:r,pay:e.pay==="card"?"card":"cash",payer:e.payer,shares:sh,note:typeof e.note==="string"?e.note.slice(0,200):"",img:typeof e.img==="string"&&/^data:image\/(jpeg|png|webp);base64,/.test(e.img)?e.img:"",spot:typeof e.spot==="string"?e.spot.slice(0,40):"",ts:Number(e.ts)||0});
   });
   var rt=x.rate&&Number(x.rate.r)>0?{r:Number(x.rate.r),t:Number(x.rate.t)||0}:null;
   return {id:x.id,tripId:typeof x.tripId==="string"?x.tripId:"",name:typeof x.name==="string"&&x.name?x.name.slice(0,40):"帳本",cur:CUR[x.cur]?x.cur:"KRW",rate:rt,members:mem,expenses:exp,ts:Number(x.ts)||Date.now()};
