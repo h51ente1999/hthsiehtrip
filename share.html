@@ -1299,10 +1299,17 @@ body.viewer.vready.t-today :is(#toTop,#vDl,#vLib,#vFx,#vSug,#vMap,#fabTg,#vDlMen
 .tdcd .rt b{color:var(--ink);font-variant-numeric:tabular-nums}
 .tdcd .bar{margin-top:11px;height:8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 9%,transparent);overflow:hidden}
 .tdcd .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(135deg,var(--blue),var(--dayg2))}
-.tdnote{margin-top:12px;border-radius:16px;background:color-mix(in srgb,var(--warn,#c9801a) 13%,transparent);
-  padding:12px 14px;display:flex;gap:9px;font-size:.88rem;line-height:1.65}
-.tdnote{color:var(--ink)}
-.tdnote svg{flex:0 0 auto;margin-top:3px}
+/* 備註：中性灰，不加圖示也不加標題 */
+.tdmemo{margin-top:12px;padding:11px 14px;border-radius:14px;color:var(--ink);font-size:.88rem;line-height:1.7;
+  background:color-mix(in srgb,var(--ink) 5%,transparent)}
+/* 提醒：琥珀色，有鈴鐺和提醒時機 */
+.tdrem{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.tdrem .r{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:14px;color:var(--ink);
+  font-size:.88rem;line-height:1.6;background:color-mix(in srgb,var(--warn,#c9801a) 15%,transparent)}
+.tdrem svg{flex:0 0 auto;margin-top:2px;color:var(--warn,#c9801a)}
+.tdrem b{flex:1;min-width:0;font-weight:600}
+.tdrem i{flex:0 0 auto;font-style:normal;font-size:.68rem;font-weight:700;white-space:nowrap;margin-top:3px;
+  color:color-mix(in srgb,var(--warn,#c9801a) 70%,var(--ink))}
 .vwtag{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
 .vwtag i{font-style:normal;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:7px;
   background:color-mix(in srgb,var(--warn,#c9801a) 16%,transparent);color:var(--ink)}
@@ -1325,9 +1332,6 @@ body.viewer.vready .tdnx:active{transform:translateY(1px)}
 .tdwtag{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .tdwtag i{font-style:normal;font-size:.76rem;font-weight:700;padding:4px 10px;border-radius:9px;
   background:color-mix(in srgb,var(--warn,#c9801a) 16%,transparent);color:var(--ink)}
-.tdnote .rmi{display:flex;align-items:baseline;gap:6px;margin-top:5px}
-.tdnote .rmi:first-child{margin-top:0}
-.tdnote .rmi b{font-size:.68rem;font-weight:700;color:var(--muted);white-space:nowrap}
 .tdtix{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .tdtix button{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 15px;border-radius:14px;
   border:1px solid var(--line,#dde);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;font-weight:700;cursor:pointer}
@@ -2267,12 +2271,12 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
       h+='<div class="tdksub">'+tdIco("nav")+'<b>'+esc(ksp.name)+'</b>'+(ksp.addr?'<span>'+esc(ksp.addr)+'</span>':'')+'</div>';
     }
     if(tg.length)h+='<div class="tdwtag">'+tg.map(function(x){return '<i>'+esc(x)+'</i>'}).join("")+'</div>';
-    if(sp.note||rm.length){
-      h+='<div class="tdnote"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--warn,#c9801a)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span>'
-        +(sp.note?esc(sp.note).replace(/\n/g,"<br>"):"")
-        +rm.map(function(x){return '<span class="rmi">'+esc(x.t)+'<b>'+esc(REMW[x.w]||REMW[0])+'</b></span>'}).join("")
-        +'</span></div>';
-    }
+    /* 備註是說明，提醒是提醒，兩件事分開放 */
+    if(sp.note)h+='<div class="tdmemo">'+esc(sp.note).replace(/\n/g,"<br>")+'</div>';
+    if(rm.length)h+='<div class="tdrem">'+rm.map(function(x){
+      return '<span class="r"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>'
+        +'<b>'+esc(x.t)+'</b><i>'+esc(REMW[x.w]||REMW[0])+'</i></span>';
+    }).join("")+'</div>';
     if(tx.length)h+='<div class="tdtix">'+tx.map(function(d,i){
       return '<button type="button" data-tdtix="'+esc(nsp.id)+':'+i+'">'+tdIco("ticket")+'票券 '+(tx.length>1?(i+1):'')+'</button>';
     }).join("")+'</div>';
@@ -2344,12 +2348,13 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
     if(st.needJoin||!st.joined)
       return tdSec("bag","這裡的購物清單",'<p class="tdmini">購物清單是和旅伴共用的，加入一次之後就能在這裡直接勾。</p><button type="button" class="tdbtn" data-tdtab="buy">加入購物清單</button>');
     var mine=(st.items||[]).filter(function(x){return x.spot===sp.id}),h="";
-    h+=mine.length?('<ul class="tdbl">'+mine.map(function(x){
+    if(!mine.length)return "";                       /* 這一站沒東西要買就整塊不出現 */
+    h+=('<ul class="tdbl">'+mine.map(function(x){
         return '<li><button type="button" class="ck'+(x.got?" on":"")+'" data-tdbuy="'+esc(x.id)+'" aria-pressed="'+(x.got?"true":"false")+'">'
           +'<span class="bx">'+(x.got?'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':'')+'</span>'
           +'<span class="tt">'+esc(x.title||"（未命名）")+(x.qty>1?' ×'+x.qty:'')+'</span>'
           +(x.price>0?'<span class="pr">'+esc(tdMoney(x.price,x.ccy))+'</span>':'')+'</button></li>';
-      }).join("")+'</ul>'):'<p class="tdmini">這一站還沒有要買的東西。</p>';
+      }).join("")+'</ul>');
     h+='<p class="tdmsg" id="tdBMsg" hidden></p>';   /* 這裡只顯示和打勾，要新增請到購物清單分頁 */
     return tdSec("bag","這裡的購物清單",h);
   }
