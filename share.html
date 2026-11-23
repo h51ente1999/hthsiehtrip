@@ -1372,6 +1372,7 @@ body.viewer.vready .tdnx:active{transform:translateY(1px)}
 .tdsec .hd h3{margin:0;font-size:1rem;font-weight:700;color:var(--ink)}
 .tdld{color:var(--muted);font-size:.88rem;padding:4px 2px}
 .tdmini{margin:0 0 10px;color:var(--muted);font-size:.86rem;line-height:1.6}
+.tdwarn{margin:0 2px 12px;padding:10px 13px;border-radius:14px;font-size:.84rem;line-height:1.6;color:var(--ink);background:color-mix(in srgb,var(--dayg2) 20%,transparent)}
 .tdbtn{width:100%;height:46px;border-radius:14px;border:0;background:linear-gradient(135deg,var(--blue),var(--dayg2));color:var(--on-blue,#fff);font:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
 .tdbl{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
 .tdbl .ck{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:8px 12px;border:0;border-radius:14px;
@@ -2218,6 +2219,8 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
       }).join("")+'</div>';
     }
 
+    if(!d1)h+='<p class="tdwarn">行程還沒填去程航班的「出發時間」，所以對不出今天是第幾天，先顯示第 '+(day+1)+' 天。</p>';
+
     if(!vl.length){
       h+='<div class="tdc1"><div class="tdst q"><i></i>這天還沒有安排行程</div></div><p class="tdend">到「行程」分頁看看其他天，或請行程主人再加幾站。</p>';
       el.innerHTML=h+tdJump();return;
@@ -2566,7 +2569,24 @@ body.viewer #vDl,body.viewer #vDlMenu{display:none!important}
       }
     });
   })();
-  setInterval(function(){if(viewerMode&&VTAB==="today"&&!document.hidden)tdDraw()},60000);
+  var tdDK="",tdLastToday=null;
+  function tdTick(){
+    if(!viewerMode||!tdReady())return;
+    var n=tdNowParts(),k=n.y+"-"+n.m+"-"+n.d,ti=tdTodayIdx();
+    if(tdDK&&k!==tdDK){
+      /* 過了午夜：原本跟著「今天」走的話就自動跳到新的今天 */
+      if(tdDayI==null||tdDayI===tdLastToday){tdDayI=null;tdSel=null;TDKID=null}
+    }
+    tdDK=k;tdLastToday=ti;
+    if(VTAB==="today")tdDraw();
+  }
+  setInterval(function(){if(!document.hidden)tdTick()},30000);
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden)return;
+    tdTick();try{vClockDraw()}catch(e){}
+  });
+  window.addEventListener("pageshow",function(){tdTick();try{vClockDraw()}catch(e){}});
+  window.addEventListener("focus",function(){tdTick()});
   function vNavH(){
     var n=$("vNav3");if(!n||n.hidden||!n.getBoundingClientRect)return;
     var r=n.getBoundingClientRect(),h=Math.round(window.innerHeight-r.top);   /* 膠囊高度＋下方的空隙 */
